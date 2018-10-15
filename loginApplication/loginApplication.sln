@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "loginApplication", "loginApplication\loginApplication.pyproj", "{324D7812-E903-4600-8F1A-9C4C3EB15B52}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{324D7812-E903-4600-8F1A-9C4C3EB15B52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{324D7812-E903-4600-8F1A-9C4C3EB15B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E36C1A5-5EF5-4279-899E-694B2534DDD6}
+	EndGlobalSection
+EndGlobal
