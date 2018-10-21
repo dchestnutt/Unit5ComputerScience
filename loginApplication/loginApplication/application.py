@@ -1,11 +1,23 @@
+######################################
+## WJEC GCE Computer Science Unit 5 ##
+## Daniel Chestnutt - 71401 - 2127  ##
+## application.py - Main Window(s)  ##
+######################################
+
+# ***** Importing Modules ***** #
+
 from tkinter import *
 from tkinter import messagebox as ms
 from tkinter import Menu
 import sqlite3
 
+# ***** Creating the Window ***** #
+
 window = Tk()
 window.geometry('1000x500+0+0')
 window.title("Example Code")          
+
+# ***** Defining Variables ***** #
 
 usernameNew = StringVar()
 passwordNew = StringVar()
@@ -23,14 +35,48 @@ titleNew = StringVar()
 firstnameNew = StringVar()
 surnameNew = StringVar()
 emailNew = StringVar()
+mobileNew = StringVar()
 
 # ***** Defining Functions ***** #
 
 # Create a New User Account #
 def createUser():
     tempWindow = Tk()
-    tempWindow.geometry('700x400+100+100')
+    tempWindow.geometry('700x300+100+100')
     tempWindow.title("Create a New User")
+
+    def appendUser():
+        usernameNew1 = usernameNew.get()
+        passwordNew1 = passwordNew.get()
+        canViewPatientData1 = canViewPatientData.get()
+        canEditPatientData1 = canEditPatientData.get()
+        canViewConsultations1 = canViewConsultations.get()
+        canEditConsultations1 = canEditConsultations.get()
+        canCommunicatePatients1 = canCommunicatePatients.get()
+        canViewStatistics1 = canViewStatistics.get()
+        canViewAppointments1 =  canViewAppointments.get()
+        canCancelAppointments1 =  canCancelAppointments.get()
+        canCreateUsers1 = canCreateUsers.get()
+        canEditUsers1 = canEditUsers.get()
+        titleNew1 = titleNew.get()
+        firstnameNew1 = firstnameNew.get()
+        surnameNew1 = surnameNew.get()
+        emailNew1 = emailNew.get()
+        mobileNew1 = mobileNew.get()
+
+        conn = sqlite3.connect('Users.db')
+        with conn:
+            cursor = conn.cursor()
+        cursor.execute("CREATE TABLE IF NOT EXISTS UserAccounts (username TEXT, password TEXT, ViewPatientData TEXT, EditPatientData TEXT, ViewConsultations TEXT, EditConsultations TEXT, CommunicatePatients TEXT, ViewStatistics TEXT, ViewAppointments TEXT, CancelAppointments TEXT, CreateUsers TEXT, EditUsers TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT)")
+        cursor.execute("INSERT INTO UserAccounts (username, password, ViewPatientData, EditPatientData, ViewConsultations, EditConsultations, CommunicatePatients, ViewStatistics, ViewAppointments, CancelAppointments, CreateUsers, EditUsers, title, firstname, surname, email, mobile) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                       (usernameNew1, passwordNew1, canViewPatientData1, canEditPatientData1, canViewConsultations1, canEditConsultations1, canCommunicatePatients1, canViewStatistics1, canViewAppointments1, canCancelAppointments1, canCreateUsers1, canEditUsers1, titleNew1, firstnameNew1, surnameNew1, emailNew1, mobileNew1))
+        conn.commit()
+
+        print("Data Appended.")
+
+        ms.showinfo("Information", "User Created Succesfully!")
+
+        return
 
     labelInstructions = Label(tempWindow, 
                              text="Antrim Castle Surgery - Administration Portal (Create a User)",
@@ -90,7 +136,14 @@ def createUser():
                        font=("corbel", 10))
     labelEmail.grid(row=9, column=0)
     entryEmail = Entry(tempWindow, textvar=emailNew)
-    entryEmail.grid(row=9, column=1, columnspan=4)
+    entryEmail.grid(row=9, column=1, columnspan=2)
+
+    labelEmail = Label(tempWindow,
+                       text="Mobile: ",
+                       font=("corbel", 10))
+    labelEmail.grid(row=10, column=0)
+    entryEmail = Entry(tempWindow, textvar=mobileNew)
+    entryEmail.grid(row=10, column=1, columnspan=2)
 
     labelPermissions = Label(tempWindow,    
                              text="User Permissions: ",  
@@ -156,6 +209,11 @@ def createUser():
                 font=("corbel", 10),
                 variable=canEditUsers,
                 onvalue='Yes', offvalue='No').grid(row=6, column=8, sticky='W',)
+
+    Button(tempWindow, text='Create User', width=20, bg='darkblue', fg='white', command=appendUser).grid(row=12, column=5, columnspan=3)
+    Button(tempWindow, text='Exit', width=20, bg='darkblue', fg='white', command=tempWindow.destroy).grid(row=12, column=8, columnspan=2)
+
+    tempWindow.mainloop()
 
 # Edit an Existing User Account #
 def editUser():
