@@ -15,7 +15,7 @@ import sqlite3
 # ***** Creating the Window ***** #
 
 window = Tk()
-window.geometry('1400x700+50+50')
+window.geometry('1366x768+0+0')
 window.title("Antrim Castle Surgery - Medical Informations System")          
 
 # ***** Defining Functions ***** #
@@ -28,7 +28,7 @@ def logIn():
 # Create a New User Account #
 def createUser():
     tempWindow = Tk()
-    tempWindow.geometry('700x300+100+100')
+    tempWindow.geometry('700x300+300+100')
     tempWindow.title("Create a New User")
 
     usernameNew = StringVar()
@@ -249,7 +249,7 @@ def editPatient():
 # Create a new Patient Record #
 def addPatient():
     tempWindow = Tk()
-    tempWindow.geometry('700x450+100+100')
+    tempWindow.geometry('700x450+300+100')
     tempWindow.title("Register a new Patient")
 
     patientTitle = StringVar()
@@ -325,9 +325,33 @@ def addPatient():
                        regType1, oldGP1, oldGPAddress1, oldGPPostcode1, hcn1, personnelNum1, enDate1, diDate1, organYN1, kidney1, heart1, lungs1, liver1, corneas1, pancreas1))
         conn.commit()
 
-        ms.showinfo("Information", "Registration Succesful!", parent=tempWindow)
+        def clearWindow():
+            comboboxTitle.current([0])
+            entryForename.delete(0, END)
+            entrySurname.delete(0, END)
+            entryPrevSurname.delete(0, END)
+            entryDOB.delete(0, END)
+            comboboxCountry.current([0])
+            entryHousenumber.delete(0, END)
+            entryStreet.delete(0, END)
+            entryPostcode.delete(0, END)
+            entryCounty.delete(0, END)
+            entryContactNo.delete(0, END)
+            comboboxRegType.current([0])
+            entryOldGP.delete(0, END)
+            entryOldGPAddress.delete(0, END)
+            entryOldGPPostcode.delete(0, END)
+            entryHCN.delete(0, END)
+            entryPersonnelNum.delete(0, END)
+            entryEnDate.delete(0, END)
+            entryDiDate.delete(0, END)
 
-        return
+        again = ms.askyesno("Succesful!", "Would you like to register another patient?", parent=tempWindow)
+
+        if again == True:
+            clearWindow()
+        else:
+            tempWindow.destroy()
 
     labelTitle = Label(tempWindow, text="Antrim Castle Surgery - Registration Application", font=("corbel bold", 10), anchor=N)
     labelTitle.grid(row=0, column=1, columnspan=6)
@@ -339,7 +363,8 @@ def addPatient():
     labelPatientTitle.grid(row=2, column=0)
     comboboxTitle = ttk.Combobox(tempWindow, textvariable=patientTitle)
     comboboxTitle.grid(row=2, column=1, columnspan=2)
-    comboboxTitle.config(values = ('Mr', 'Mrs', 'Miss', 'Ms', 'Dr', 'Rev', 'Prof', 'Sir', 'Other'), width=17)
+    comboboxTitle.config(values = ('Please Select...', 'Mr', 'Mrs', 'Miss', 'Ms', 'Dr', 'Rev', 'Prof', 'Sir', 'Other'), width=17)
+    comboboxTitle.current([0])
 
     labelForename = Label(tempWindow, text="Forename(s): ", font=("corbel", 10))
     labelForename.grid(row=3, column=0)
@@ -381,8 +406,9 @@ def addPatient():
     labelCountry.grid(row=9, column=0)
     comboboxCountry = ttk.Combobox(tempWindow, textvariable=country)
     comboboxCountry.grid(row=9, column=1, columnspan=2)
-    comboboxCountry.config(values = ('Australia', 'Belgium', 'Canada', 'Denmark', 'Egypt', 'France', 'Germany', 'Hungary', 'Ireland', 'Jamaica', 'Kenya', 'Lithuania', 'Macedonia', 
+    comboboxCountry.config(values = ('Please Select...',  'Australia', 'Belgium', 'Canada', 'Denmark', 'Egypt', 'France', 'Germany', 'Hungary', 'Ireland', 'Jamaica', 'Kenya', 'Lithuania', 'Macedonia', 
                                    'Norway', 'Oman', 'Poland', 'Quatar', 'Russia', 'Spain', 'Tanzania', 'United Kingdom', 'Venuzuala', 'Yugoslavia', 'Zambia'), width=17)
+    comboboxCountry.current([0])
 
     spacerLabel = Label(tempWindow, text=" ")
     spacerLabel.grid(row=10, column=0, columnspan=4)
@@ -426,15 +452,16 @@ def addPatient():
     labelRegType.grid(row=2, column=4)
     comboboxRegType = ttk.Combobox(tempWindow, textvariable=regType)
     comboboxRegType.grid(row=2, column=5, columnspan=2)
-    comboboxRegType.config(values = ('First ever registration with a GP Surgery', 'Moving GP Surgery'), width=17)
+    comboboxRegType.config(values = ('Please Select...', 'First ever registration with a GP Surgery', 'Moving GP Surgery'), width=17)
+    comboboxRegType.current([0])
 
     spacerLabel = Label(tempWindow, text=" ")
     spacerLabel.grid(row=3, column=4, columnspan=3)
 
-    labeloldGP = Label(tempWindow, text="Old GP: ", font=("corbel", 10))
-    labeloldGP.grid(row=4, column=4)
-    entryoldGP = Entry(tempWindow, textvar=oldGP)
-    entryoldGP.grid(row=4, column=5, columnspan=2)
+    labelOldGP = Label(tempWindow, text="Old GP: ", font=("corbel", 10))
+    labelOldGP.grid(row=4, column=4)
+    entryOldGP = Entry(tempWindow, textvar=oldGP)
+    entryOldGP.grid(row=4, column=5, columnspan=2)
 
     labelOldGPAddress = Label(tempWindow, text="Address: ", font=("corbel", 10))
     labelOldGPAddress.grid(row=5, column=4)
@@ -611,6 +638,19 @@ spacerLabel.grid(row=4, column=0, columnspan=9)
 
 Button(window, text='Log-in', width=20, bg='darkblue', fg='white', command=logIn).grid(row=5, column=3)
 Button(window, text='Exit System', width=20, bg='darkblue', fg='white', command=window.destroy).grid(row=5, column=5)
+
+spacerLabel = Label(window, text=" ", width=20)
+spacerLabel.grid(row=6, column=0, columnspan=9)
+
+day = "Wednesday"
+date = "23rd"
+month = "October"
+year = "2018"
+
+labelInstructions = Label(window, 
+                          text="Today is " + day + " the " + date + " of " + month + " " + year,
+                          font=("corbel", 10))                 
+labelInstructions.grid(row=7, column=3, columnspan=3)
 
 labelInstructions = Label(window, 
                           text="Options Menu",
