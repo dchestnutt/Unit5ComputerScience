@@ -4,6 +4,10 @@
 ## application.py - Main Window(s)  ##
 ######################################
 
+###########################
+## Prototype Version 1.0 ##
+###########################
+
 # ***** Importing Modules ***** #
 
 from tkinter import *
@@ -12,11 +16,23 @@ from tkinter import Menu
 from tkinter import ttk
 import sqlite3
 
-# ***** Creating the Window ***** #
+# ***** Initial Declaration of Variables ***** #
 
 logedIn = False
 
-# Test Comment
+# ***** Functions and Procedures ***** #
+
+# Note: these need to be declared before we create any of our windows as they
+#       will need to be called by these windows. Therefore, we begin by creating
+#       all variables/functions which will be used before we even create the
+#       window/form in which they will be utilised by the program.
+
+# The principle behind by system is that each form will be drawn in its own pop-up 
+# window (excluding some basic informational displays which will be found on the
+# main program window. Therefore, each of the below functions will draw their own
+# window which is called 'tempWindow'; once the user is finished with this form
+# they will either exit or commit the entered details. Upon this, the window will 
+# close and the user will be returned to the main application.
 
 # Create a New User Account #
 def createUser():
@@ -44,42 +60,27 @@ def createUser():
     userTypeNew = StringVar()
 
     def appendUser():
-        usernameNew1 = usernameNew.get()
-        passwordNew1 = passwordNew.get()
-        canViewPatientData1 = canViewPatientData.get()
-        canEditPatientData1 = canEditPatientData.get()
-        canViewConsultations1 = canViewConsultations.get()
-        canEditConsultations1 = canEditConsultations.get()
-        canCommunicatePatients1 = canCommunicatePatients.get()
-        canViewStatistics1 = canViewStatistics.get()
-        canViewAppointments1 =  canViewAppointments.get()
-        canCancelAppointments1 =  canCancelAppointments.get()
-        canCreateUsers1 = canCreateUsers.get()
-        canEditUsers1 = canEditUsers.get()
-        titleNew1 = titleNew.get()
-        firstnameNew1 = firstnameNew.get()
-        surnameNew1 = surnameNew.get()
-        emailNew1 = emailNew.get()
-        mobileNew1 = mobileNew.get()
-        userTypeNew1 = userTypeNew.get()
-
         conn = sqlite3.connect('Users.db')
         with conn:
             cursor = conn.cursor()
 
-        cursor.execute("CREATE TABLE IF NOT EXISTS UserAccounts (username TEXT, password TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)")
-        cursor.execute("INSERT INTO UserAccounts (username, password, title, firstname, surname, email, mobile, userType) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                       (usernameNew1, passwordNew1, titleNew1, firstnameNew1, surnameNew1, emailNew1, mobileNew1, userTypeNew1))
-        
-        cursor.execute("CREATE TABLE IF NOT EXISTS UserPermissions (ViewPatientData TEXT, EditPatientData TEXT, ViewConsultations TEXT, EditConsultations TEXT, CommunicatePatients TEXT, ViewStatistics TEXT, ViewAppointments TEXT, CancelAppointments TEXT, CreateUsers TEXT, EditUsers TEXT")
-        cursor.execute("INSERT INTO UserPermissions (ViewPatientData, EditPatientData, ViewConsultations, EditConsultations, CommunicatePatients, ViewStatistics, ViewAppointments, CancelAppointments, CreateUsers, EditUsers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                       (canViewPatientData1, canEditPatientData1, canViewConsultations1, canEditConsultations1, canCommunicatePatients1, canViewStatistics1, canViewAppointments1, canCancelAppointments1, canCreateUsers1, canEditUsers1))
+        cursor.execute("CREATE TABLE IF NOT EXISTS UserAccounts (userID INTEGER PRIMARY KEY, username TEXT, password TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)")
+        cursor.execute("INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, userType) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)", (usernameNew.get(), passwordNew.get(), titleNew.get(), firstnameNew.get(), surnameNew.get(), emailNew.get(), mobileNew.get(), userTypeNew.get()))
         
         conn.commit()
 
         ms.showinfo("Information", "User Created Succesfully!", parent=tempWindow)
 
         return
+
+#conn = sqlite3.connect('Users.db')
+#with conn:
+#    cursor = conn.cursor()
+#
+#    cursor.execute("CREATE TABLE IF NOT EXISTS UserAccounts (userID INTEGER PRIMARY KEY, username TEXT, password TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)")
+#    cursor.execute("INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, userType) VALUES (NULL, 'admin', 'Password1', 'Mr', 'System', 'Administrator', 'systemadmin@acs.com', '02894413910', 'Administrator')")
+#    
+#    conn.commit()
 
     labelInstructions = Label(tempWindow, 
                              text="Antrim Castle Surgery - Administration Portal (Create a User)",
@@ -139,7 +140,7 @@ def createUser():
     comboboxUserType = ttk.Combobox(tempWindow, textvariable=userTypeNew)
     comboboxUserType.grid(row=8, column=6, columnspan=2)
     comboboxUserType.config(values = ('Doctor', 'Practice Nurse', 'Treatment Nurse', 'Pharmacist', 
-                                      'Councillor', 'Receptionist', 'Practice Manager'), width=17)
+                                      'Councillor', 'Receptionist', 'Practice Manager', 'Administrator'), width=17)
 
     labelEmail = Label(tempWindow,
                        text="E-mail: ",
@@ -563,6 +564,7 @@ def addDocument():
 def viewDocument():
     print("View Document Function Called.")
 
+# Create the main Program Window #
 def mainWindow():
     window = Tk()
     window.geometry('1366x768+0+0')
@@ -647,14 +649,48 @@ def mainWindow():
 
     window.mainloop()
 
+# Check User Details for Validity #
 def checkUser():
-    print("Check User")
-        
-    logedIn = True
-
-    tempWindow.destroy()
     
-    mainWindow() 
+    usernameReturn = username.get()
+    passwordReturn = password.get()
+    
+    conn = sqlite3.connect('Users.db')
+
+    with conn:
+        cursor = conn.cursor()
+        findUser = ("SELECT * FROM UserAccounts WHERE username = ? and password = ?")
+        cursor.execute(findUser, [(username.get()),(password.get())])
+
+        result = cursor.fetchall()
+
+        if result:
+            logedIn = True
+            tempWindow.destroy()
+            mainWindow() 
+        else:
+            ms.showerror('User Not Found', 'Username or Password not Found.')
+            entryUsername.delete(0, END)
+            entryPassword.delete(0, END)
+
+val = 1
+
+# ***** Creating an Admin User Account ***** #
+
+#conn = sqlite3.connect('Users.db')
+#with conn:
+#    cursor = conn.cursor()
+#
+#    cursor.execute("CREATE TABLE IF NOT EXISTS UserAccounts (userID INTEGER PRIMARY KEY, username TEXT, password TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)")
+#    cursor.execute("INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, userType) VALUES (NULL, 'admin', 'Password1', 'Mr', 'System', 'Administrator', 'systemadmin@acs.com', '02894413910', 'Administrator')")
+#    
+#    conn.commit()
+
+# ***** Drawing the Login Window ***** #
+
+# This window will be used to initialise our program by asking the user for their
+# login details and checking this against the details which are stored in our
+# "Users" database. This allows for us to ensure confidentiality & security.
 
 tempWindow = Tk()
 tempWindow.geometry('160x180+580+250')
