@@ -14,16 +14,9 @@ import sqlite3
 
 # ***** Creating the Window ***** #
 
-window = Tk()
-window.geometry('1366x768+0+0')
-window.title("Antrim Castle Surgery - Medical Informations System")          
+logedIn = False
 
-# ***** Defining Functions ***** #
-
-# Login to a User Account #
-
-def logIn():
-    print("Log-in Function Called.")
+# Test Comment
 
 # Create a New User Account #
 def createUser():
@@ -73,9 +66,15 @@ def createUser():
         conn = sqlite3.connect('Users.db')
         with conn:
             cursor = conn.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS UserAccounts (username TEXT, password TEXT, ViewPatientData TEXT, EditPatientData TEXT, ViewConsultations TEXT, EditConsultations TEXT, CommunicatePatients TEXT, ViewStatistics TEXT, ViewAppointments TEXT, CancelAppointments TEXT, CreateUsers TEXT, EditUsers TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)")
-        cursor.execute("INSERT INTO UserAccounts (username, password, ViewPatientData, EditPatientData, ViewConsultations, EditConsultations, CommunicatePatients, ViewStatistics, ViewAppointments, CancelAppointments, CreateUsers, EditUsers, title, firstname, surname, email, mobile, userType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                       (usernameNew1, passwordNew1, canViewPatientData1, canEditPatientData1, canViewConsultations1, canEditConsultations1, canCommunicatePatients1, canViewStatistics1, canViewAppointments1, canCancelAppointments1, canCreateUsers1, canEditUsers1, titleNew1, firstnameNew1, surnameNew1, emailNew1, mobileNew1, userTypeNew1))
+
+        cursor.execute("CREATE TABLE IF NOT EXISTS UserAccounts (username TEXT, password TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)")
+        cursor.execute("INSERT INTO UserAccounts (username, password, title, firstname, surname, email, mobile, userType) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                       (usernameNew1, passwordNew1, titleNew1, firstnameNew1, surnameNew1, emailNew1, mobileNew1, userTypeNew1))
+        
+        cursor.execute("CREATE TABLE IF NOT EXISTS UserPermissions (ViewPatientData TEXT, EditPatientData TEXT, ViewConsultations TEXT, EditConsultations TEXT, CommunicatePatients TEXT, ViewStatistics TEXT, ViewAppointments TEXT, CancelAppointments TEXT, CreateUsers TEXT, EditUsers TEXT")
+        cursor.execute("INSERT INTO UserPermissions (ViewPatientData, EditPatientData, ViewConsultations, EditConsultations, CommunicatePatients, ViewStatistics, ViewAppointments, CancelAppointments, CreateUsers, EditUsers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                       (canViewPatientData1, canEditPatientData1, canViewConsultations1, canEditConsultations1, canCommunicatePatients1, canViewStatistics1, canViewAppointments1, canCancelAppointments1, canCreateUsers1, canEditUsers1))
+        
         conn.commit()
 
         ms.showinfo("Information", "User Created Succesfully!", parent=tempWindow)
@@ -564,114 +563,128 @@ def addDocument():
 def viewDocument():
     print("View Document Function Called.")
 
-# ***** The Menu Bar ***** #
+def mainWindow():
+    window = Tk()
+    window.geometry('1366x768+0+0')
+    window.title("Antrim Castle Surgery - Medical Informations System") 
+    
+    menu = Menu(window)
 
-menu = Menu(window)
+    dropdownUsers = Menu(menu) 
 
-dropdownUsers = Menu(menu) 
+    dropdownUsers.add_command(label='Create New User', command=createUser) 
+    dropdownUsers.add_command(label='Edit Existing User', command=editUser) 
+    dropdownUsers.add_command(label='Change User', command=changeUser)
+    dropdownUsers.add_command(label='Log-Off', command=logOff)
 
-dropdownUsers.add_command(label='Create New User', command=createUser) 
-dropdownUsers.add_command(label='Edit Existing User', command=editUser) 
-dropdownUsers.add_command(label='Change User', command=changeUser)
-dropdownUsers.add_command(label='Log-Off', command=logOff)
+    menu.add_cascade(label='User Accounts', menu=dropdownUsers)
 
-menu.add_cascade(label='User Accounts', menu=dropdownUsers)
+    dropdownPatients = Menu(menu) 
 
-dropdownPatients = Menu(menu) 
+    dropdownPatients.add_command(label='Search Patients', command=searchPatient) 
+    dropdownPatients.add_command(label='Edit Patient Details', command=editPatient) 
+    dropdownPatients.add_command(label='Add a new Patient', command=addPatient)
 
-dropdownPatients.add_command(label='Search Patients', command=searchPatient) 
-dropdownPatients.add_command(label='Edit Patient Details', command=editPatient) 
-dropdownPatients.add_command(label='Add a new Patient', command=addPatient)
+    menu.add_cascade(label='Patient Records', menu=dropdownPatients)
 
-menu.add_cascade(label='Patient Records', menu=dropdownPatients)
+    dropdownDocuments = Menu(menu) 
 
-dropdownDocuments = Menu(menu) 
+    dropdownDocuments.add_command(label='Add New Document', command=addDocument) 
+    dropdownDocuments.add_command(label='View Saved Documents', command=viewDocument) 
 
-dropdownDocuments.add_command(label='Add New Document', command=addDocument) 
-dropdownDocuments.add_command(label='View Saved Documents', command=viewDocument) 
+    menu.add_cascade(label='Documents', menu=dropdownDocuments)
 
-menu.add_cascade(label='Documents', menu=dropdownDocuments)
+    window.config(menu=menu)
 
-window.config(menu=menu)
+    # ***** Initial Opening Window ***** #
 
-# ***** Initial Opening Window ***** #
+    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel.grid(row=0, column=0, columnspan=9)
 
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=0, column=0, columnspan=9)
+    # START. - These labels format the window by 
+    # dividing it into 8 columns of equal width.
+    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel.grid(row=0, column=0, rowspan=20)
+    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel.grid(row=0, column=1, rowspan=20)
+    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel.grid(row=0, column=2, rowspan=20)
+    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel.grid(row=0, column=3, rowspan=20)
+    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel.grid(row=0, column=4, rowspan=20)
+    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel.grid(row=0, column=5, rowspan=20)
+    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel.grid(row=0, column=6, rowspan=20)
+    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel.grid(row=0, column=7, rowspan=20)
+    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel.grid(row=0, column=8, rowspan=20)
+    # END.
 
-# START. - These labels format the window by dividing it into 8 columns of equal width.
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=0, column=0, rowspan=20)
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=0, column=1, rowspan=20)
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=0, column=2, rowspan=20)
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=0, column=3, rowspan=20)
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=0, column=4, rowspan=20)
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=0, column=5, rowspan=20)
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=0, column=6, rowspan=20)
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=0, column=7, rowspan=20)
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=0, column=8, rowspan=20)
-# END.
+    labelInstructions = Label(window, 
+                              text="Options Menu",
+                              font=("corbel", 14))                 
+    labelInstructions.grid(row=3, column=0, columnspan=2)
 
-labelWelcome = Label(window, 
-                     text="Antrim Castle Surgery - Medical Informations System",
-                     font=("corbel bold", 20))                 
-labelWelcome.grid(row=1, column=1, columnspan=7) 
+    Button(window, text='Search Patient Records', width=20, bg='darkblue', fg='white', command=searchPatient).grid(row=5, column=0, columnspan=2)
+    Button(window, text='Register New Patients', width=20, bg='darkblue', fg='white', command=addPatient).grid(row=6, column=0, columnspan=2)
+    Button(window, text='Edit Patient Records', width=20, bg='darkblue', fg='white', command=editPatient).grid(row=7, column=0, columnspan=2)
+    Button(window, text='Add New Documents', width=20, bg='darkblue', fg='white', command=addDocument).grid(row=8, column=0, columnspan=2)
+    Button(window, text='View Saved Documents', width=20, bg='darkblue', fg='white', command=viewDocument).grid(row=9, column=0, columnspan=2)
 
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=2, column=0, columnspan=9)
+    labelInstructions = Label(window, 
+                              text="System Options",
+                              font=("corbel", 14))                 
+    labelInstructions.grid(row=3, column=7, columnspan=2)
 
-labelInstructions = Label(window, 
-                          text="Welcome... You must log in to continue.",
-                          font=("corbel", 14))                 
-labelInstructions.grid(row=3, column=3, columnspan=3)
+    Button(window, text='Create New Users', width=20, bg='darkblue', fg='white', command=createUser).grid(row=5, column=7, columnspan=2)
+    Button(window, text='Edit User Accounts', width=20, bg='darkblue', fg='white', command=editUser).grid(row=6, column=7, columnspan=2)
+    Button(window, text='Change Current User', width=20, bg='darkblue', fg='white', command=changeUser).grid(row=7, column=7, columnspan=2)
 
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=4, column=0, columnspan=9)
+    # ***** Running the Code ***** #
 
-Button(window, text='Log-in', width=20, bg='darkblue', fg='white', command=logIn).grid(row=5, column=3)
-Button(window, text='Exit System', width=20, bg='darkblue', fg='white', command=window.destroy).grid(row=5, column=5)
+    window.mainloop()
 
-spacerLabel = Label(window, text=" ", width=20)
-spacerLabel.grid(row=6, column=0, columnspan=9)
+def checkUser():
+    print("Check User")
+        
+    logedIn = True
 
-day = "Wednesday"
-date = "23rd"
-month = "October"
-year = "2018"
+    tempWindow.destroy()
+    
+    mainWindow() 
 
-labelInstructions = Label(window, 
-                          text="Today is " + day + " the " + date + " of " + month + " " + year,
-                          font=("corbel", 10))                 
-labelInstructions.grid(row=7, column=3, columnspan=3)
+tempWindow = Tk()
+tempWindow.geometry('160x180+580+250')
+tempWindow.title("Antrim Castle Surgery - Medical Informations System")
 
-labelInstructions = Label(window, 
-                          text="Options Menu",
-                          font=("corbel", 14))                 
-labelInstructions.grid(row=3, column=0, columnspan=2)
+username = StringVar()
+password = StringVar()
 
-Button(window, text='Search Patient Records', width=20, bg='darkblue', fg='white', command=searchPatient).grid(row=5, column=0, columnspan=2)
-Button(window, text='Register New Patients', width=20, bg='darkblue', fg='white', command=addPatient).grid(row=6, column=0, columnspan=2)
-Button(window, text='Edit Patient Records', width=20, bg='darkblue', fg='white', command=editPatient).grid(row=7, column=0, columnspan=2)
-Button(window, text='Add New Documents', width=20, bg='darkblue', fg='white', command=addDocument).grid(row=8, column=0, columnspan=2)
-Button(window, text='View Saved Documents', width=20, bg='darkblue', fg='white', command=viewDocument).grid(row=9, column=0, columnspan=2)
+spacerLabel = Label(tempWindow, text=" ")
+spacerLabel.pack()
 
-labelInstructions = Label(window, 
-                          text="System Options",
-                          font=("corbel", 14))                 
-labelInstructions.grid(row=3, column=7, columnspan=2)
+labelUsername = Label(tempWindow, 
+                        text="Username: ", 
+                        font=("corbel", 10),
+                        padx=5)                                   
+labelUsername.pack()
+entryUsername = Entry(tempWindow, textvar=username)            
+entryUsername.pack()
 
-Button(window, text='Create New Users', width=20, bg='darkblue', fg='white', command=createUser).grid(row=5, column=7, columnspan=2)
-Button(window, text='Edit User Accounts', width=20, bg='darkblue', fg='white', command=editUser).grid(row=6, column=7, columnspan=2)
-Button(window, text='Change Current User', width=20, bg='darkblue', fg='white', command=changeUser).grid(row=7, column=7, columnspan=2)
+labelPassword = Label(tempWindow, 
+                        text="Password: ", 
+                        font=("corbel", 10),
+                        padx=5)                                  
+labelPassword.pack()
+entryPassword = Entry(tempWindow, textvar=password, show = '•') 
+entryPassword.pack()
 
-# ***** Running the Code ***** #
+spacerLabel = Label(tempWindow, text=" ")
+spacerLabel.pack()
 
-window.mainloop()
+logedIn = Button(tempWindow, text='Log-In', bg='darkblue', fg='white', command=checkUser).pack()
+
+tempWindow.mainloop()
