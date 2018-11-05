@@ -15,6 +15,7 @@ from tkinter import messagebox as ms
 from tkinter import Menu
 from tkinter import ttk
 import sqlite3
+import os
 
 # ***** Initial Declaration of Variables ***** #
 
@@ -233,10 +234,6 @@ def editUser():
 # Change current User Account #
 def changeUser():
     print("Change User Function Called.")
-
-# Log-out of the System #
-def logOff():
-    print("Log-out Function Called.")
 
 # Search Patient Records #
 def searchPatient():
@@ -570,6 +567,10 @@ def mainWindow():
     window.geometry('1366x768+0+0')
     window.title("Antrim Castle Surgery - Medical Informations System") 
     
+    def logOff():
+        window.destroy()
+        os.system("application.py")
+
     menu = Menu(window)
 
     dropdownUsers = Menu(menu) 
@@ -644,6 +645,7 @@ def mainWindow():
     Button(window, text='Create New Users', width=20, bg='darkblue', fg='white', command=createUser).grid(row=5, column=7, columnspan=2)
     Button(window, text='Edit User Accounts', width=20, bg='darkblue', fg='white', command=editUser).grid(row=6, column=7, columnspan=2)
     Button(window, text='Change Current User', width=20, bg='darkblue', fg='white', command=changeUser).grid(row=7, column=7, columnspan=2)
+    Button(window, text='Log-Off', width=20, bg='darkblue', fg='white', command=logOff).grid(row=8, column=7, columnspan=2)
 
     # ***** Running the Code ***** #
 
@@ -651,10 +653,6 @@ def mainWindow():
 
 # Check User Details for Validity #
 def checkUser():
-    
-    usernameReturn = username.get()
-    passwordReturn = password.get()
-    
     conn = sqlite3.connect('Users.db')
 
     with conn:
@@ -666,6 +664,38 @@ def checkUser():
 
         if result:
             logedIn = True
+
+            getDetails = ("SELECT firstname FROM UserAccounts WHERE username = ?")
+            cursor.execute(getDetails, [(username.get())])
+            userFirstname = cursor.fetchall()
+
+            getDetails = ("SELECT surname FROM UserAccounts WHERE username = ?")
+            cursor.execute(getDetails, [(username.get())])
+            userSurname = cursor.fetchall()
+            
+            getDetails = ("SELECT title FROM UserAccounts WHERE username = ?")
+            cursor.execute(getDetails, [(username.get())])
+            userTitle = cursor.fetchall()
+            
+            getDetails = ("SELECT mobile FROM UserAccounts WHERE username = ?")
+            cursor.execute(getDetails, [(username.get())])
+            userMobile = cursor.fetchall()
+
+            getDetails = ("SELECT email FROM UserAccounts WHERE username = ?")
+            cursor.execute(getDetails, [(username.get())])
+            userEmail = cursor.fetchall()
+
+            getDetails = ("SELECT userType FROM UserAccounts WHERE username = ?")
+            cursor.execute(getDetails, [(username.get())])
+            userUserType = cursor.fetchall()
+
+            print("Firstname: " + str(userFirstname))
+            print("Surname: " + str(userSurname))
+            print("Title: " + str(userTitle))
+            print("Mobile: " + str(userMobile))
+            print("Email: " + str(userEmail))
+            print("User Type: " + str(userUserType))
+
             tempWindow.destroy()
             mainWindow() 
         else:
@@ -673,7 +703,7 @@ def checkUser():
             entryUsername.delete(0, END)
             entryPassword.delete(0, END)
 
-val = 1
+ignoreThis = 1
 
 # ***** Creating an Admin User Account ***** #
 
