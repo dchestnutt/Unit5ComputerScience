@@ -657,44 +657,22 @@ def checkUser():
 
     with conn:
         cursor = conn.cursor()
-        findUser = ("SELECT * FROM UserAccounts WHERE username = ? and password = ?")
-        cursor.execute(findUser, [(username.get()),(password.get())])
+        cursor.execute("SELECT * FROM UserAccounts WHERE username = ? and password = ?", (username.get(), password.get()))
 
         result = cursor.fetchall()
 
         if result:
             logedIn = True
 
-            getDetails = ("SELECT firstname FROM UserAccounts WHERE username = ?")
-            cursor.execute(getDetails, [(username.get())])
-            userFirstname = cursor.fetchall()
+            detailList = []
 
-            getDetails = ("SELECT surname FROM UserAccounts WHERE username = ?")
-            cursor.execute(getDetails, [(username.get())])
-            userSurname = cursor.fetchall()
+            unTest = ("admin",)
+
+            for row in cursor.execute('SELECT * FROM UserAccounts WHERE username = ?', unTest):
+                print(row)
+                detailList.append(row)
             
-            getDetails = ("SELECT title FROM UserAccounts WHERE username = ?")
-            cursor.execute(getDetails, [(username.get())])
-            userTitle = cursor.fetchall()
-            
-            getDetails = ("SELECT mobile FROM UserAccounts WHERE username = ?")
-            cursor.execute(getDetails, [(username.get())])
-            userMobile = cursor.fetchall()
-
-            getDetails = ("SELECT email FROM UserAccounts WHERE username = ?")
-            cursor.execute(getDetails, [(username.get())])
-            userEmail = cursor.fetchall()
-
-            getDetails = ("SELECT userType FROM UserAccounts WHERE username = ?")
-            cursor.execute(getDetails, [(username.get())])
-            userUserType = cursor.fetchall()
-
-            print("Firstname: " + str(userFirstname))
-            print("Surname: " + str(userSurname))
-            print("Title: " + str(userTitle))
-            print("Mobile: " + str(userMobile))
-            print("Email: " + str(userEmail))
-            print("User Type: " + str(userUserType))
+            print(detailList)
 
             tempWindow.destroy()
             mainWindow() 
