@@ -664,15 +664,20 @@ def checkUser():
         if result:
             logedIn = True
 
-            detailList = []
+            unTest = "admin"
+            term = "*"
 
-            unTest = ("admin",)
+            userDetails = StringVar()
+            tupleDetails = StringVar()
 
-            for row in cursor.execute('SELECT * FROM UserAccounts WHERE username = ?', unTest):
-                print(row)
-                detailList.append(row)
-            
-            print(detailList)
+            cursorUser = conn.cursor()
+
+            cursorUser.execute('SELECT * FROM UserAccounts WHERE username = ?', (unTest,))
+            tupleDetails = cursorUser.fetchall()
+
+            userDetails = ','.join(str(y) for x in tupleDetails for y in x if len(x) > 0)
+
+            print(userDetails)
 
             tempWindow.destroy()
             mainWindow() 
