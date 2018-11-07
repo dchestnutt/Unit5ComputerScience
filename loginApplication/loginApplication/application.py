@@ -19,7 +19,8 @@ import os
 
 # ***** Initial Declaration of Variables ***** #
 
-logedIn = False
+global userDetails
+userDetails = []
 
 # ***** Functions and Procedures ***** #
 
@@ -73,15 +74,6 @@ def createUser():
         ms.showinfo("Information", "User Created Succesfully!", parent=tempWindow)
 
         return
-
-#conn = sqlite3.connect('Users.db')
-#with conn:
-#    cursor = conn.cursor()
-#
-#    cursor.execute("CREATE TABLE IF NOT EXISTS UserAccounts (userID INTEGER PRIMARY KEY, username TEXT, password TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)")
-#    cursor.execute("INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, userType) VALUES (NULL, 'admin', 'Password1', 'Mr', 'System', 'Administrator', 'systemadmin@acs.com', '02894413910', 'Administrator')")
-#    
-#    conn.commit()
 
     labelInstructions = Label(tempWindow, 
                              text="Antrim Castle Surgery - Administration Portal (Create a User)",
@@ -307,20 +299,24 @@ def addPatient():
         pancreas1 = pancreas.get()
 
         conn = sqlite3.connect('Patients.db')
+        
         with conn:
-            cursor = conn.cursor()
-        cursor.execute("""CREATE TABLE IF NOT EXISTS PatientDemo (patientTitle TEXT, forename TEXT, surname TEXT, prevSurname TEXT, dateOfBirth TEXT, gender TEXT,
-                                                                 country TEXT, housenumber TEXT, street TEXT, postcode TEXT, county TEXT, contactnumber TEXT,
-                                                                 regType TEXT, oldGP TEXT, oldGPAddress TEXT, oldGPPostcode TEXT, hcn TEXT, personnelNum TEXT,
-                                                                 enDate TEXT, diDate TEXT, organYN TEXT, kidney TEXT, heart TEXT, lungs TEXT, liver TEXT, 
-                                                                 corneas TEXT, pancreas TEXT)""")
-        cursor.execute("""INSERT INTO PatientDemo (patientTitle, forename, surname, prevSurname, dateOfBirth, gender, country, housenumber, street, postcode, county,
-                                                   contactnumber, regType, oldGP, oldGPAddress, oldGPPostcode, hcn, personnelNum, enDate, diDate, organYN, kidney, 
-                                                   heart, lungs, liver, corneas, pancreas)
-                                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                      (patientTitle1, forename1, surname1, prevSurname1, dateOfBirth1, gender1, country1, housenumber1, street1, postcode1, county1, contactnumber1, 
-                       regType1, oldGP1, oldGPAddress1, oldGPPostcode1, hcn1, personnelNum1, enDate1, diDate1, organYN1, kidney1, heart1, lungs1, liver1, corneas1, pancreas1))
-        conn.commit()
+            cursor1 = conn.cursor()
+            
+            cursor1.execute("CREATE TABLE IF NOT EXISTS PatientDemo (patientID INTEGER PRIMARY KEY, patientTitle TEXT, forename TEXT, surname TEXT, prevSurname TEXT, dateOfBirth TEXT, gender TEXT, country TEXT, housenumber TEXT, street TEXT, postcode TEXT, county TEXT, contactnumber TEXT, regType TEXT, oldGP TEXT, oldGPAddress TEXT, oldGPPostcode TEXT, hcn TEXT)")
+            cursor1.execute("INSERT INTO PatientDemo (patientID, patientTitle, forename, surname, prevSurname, dateOfBirth, gender, country, housenumber, street, postcode, county, contactnumber, regType, oldGP, oldGPAddress, oldGPPostcode, hcn) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (patientTitle.get(), forename.get(), surname.get(), prevSurname.get(), dateOfBirth.get(), gender.get(), country.get(), housenumber.get(), street.get(), postcode.get(), county.get(), contactnumber.get(), regType.get(), oldGP.get(), oldGPAddress.get(), oldGPPostcode.get(), hcn.get(),))
+
+            cursor2 = conn.cursor()
+
+            cursor2.execute("CREATE TABLE IF NOT EXISTS PatientAF (patientID INTEGER PRIMARY KEY, personnelNum TEXT, enDate TEXT, diDate TEXT)")
+            cursor2.execute("INSERT INTO PatientAF (patientID, personnelNum, enDate, diDate) VALUES (NULL, ?, ?, ?)", (personnelNum.get(), enDate.get(), diDate.get(),))
+            
+            cursor3 = conn.cursor()
+
+            cursor3.execute("CREATE TABLE IF NOT EXISTS PatientOD (patientID INTEGER PRIMARY KEY, organYN TEXT, kidney TEXT, heart TEXT, lungs TEXT, liver TEXT, corneas TEXT, pancreas TEXT)")
+            cursor3.execute("INSERT INTO PatientOD (patientID, organYN, kidney, heart, lungs, liver, corneas, pancreas) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)", (organYN.get(), kidney.get(), heart.get(), lungs.get(), liver.get(), corneas.get(), pancreas.get(),))
+            
+            conn.commit()
 
         def clearWindow():
             comboboxTitle.current([0])
@@ -566,6 +562,7 @@ def mainWindow():
     window = Tk()
     window.geometry('1366x768+0+0')
     window.title("Antrim Castle Surgery - Medical Informations System") 
+    window.config(bg="white")
     
     def logOff():
         window.destroy()
@@ -601,34 +598,35 @@ def mainWindow():
 
     # ***** Initial Opening Window ***** #
 
-    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=0, columnspan=9)
 
     # START. - These labels format the window by 
     # dividing it into 8 columns of equal width.
-    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=0, rowspan=20)
-    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=1, rowspan=20)
-    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=2, rowspan=20)
-    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=3, rowspan=20)
-    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=4, rowspan=20)
-    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=5, rowspan=20)
-    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=6, rowspan=20)
-    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=7, rowspan=20)
-    spacerLabel = Label(window, text=" ", width=20)
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=8, rowspan=20)
     # END.
 
     labelInstructions = Label(window, 
                               text="Options Menu",
-                              font=("corbel", 14))                 
+                              font=("corbel", 14),
+                              bg="white")                 
     labelInstructions.grid(row=3, column=0, columnspan=2)
 
     Button(window, text='Search Patient Records', width=20, bg='darkblue', fg='white', command=searchPatient).grid(row=5, column=0, columnspan=2)
@@ -639,13 +637,38 @@ def mainWindow():
 
     labelInstructions = Label(window, 
                               text="System Options",
-                              font=("corbel", 14))                 
+                              font=("corbel", 14),
+                              bg="white")                                  
     labelInstructions.grid(row=3, column=7, columnspan=2)
 
     Button(window, text='Create New Users', width=20, bg='darkblue', fg='white', command=createUser).grid(row=5, column=7, columnspan=2)
     Button(window, text='Edit User Accounts', width=20, bg='darkblue', fg='white', command=editUser).grid(row=6, column=7, columnspan=2)
     Button(window, text='Change Current User', width=20, bg='darkblue', fg='white', command=changeUser).grid(row=7, column=7, columnspan=2)
     Button(window, text='Log-Off', width=20, bg='darkblue', fg='white', command=logOff).grid(row=8, column=7, columnspan=2)
+
+    title = userDetails[3]
+    firstname = userDetails[4]
+    surname = userDetails[5]
+   
+    welcomeText = "Welcome back " + title + " " + firstname + " " + surname + "!"
+
+    #labelACS = Label(window, 
+    #                 text="Antrim Castle Surgery",
+    #                 font=("corbel bold", 18))
+    #labelACS.grid(row=3, column=2, columnspan=5)
+
+    photoLogo = PhotoImage(file="surgeryLogoSmall.png")
+    logo = Label(image=photoLogo)
+    logo.grid(row=2, rowspan=2, column=2, columnspan=5, sticky=N)
+
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
+    spacerLabel.grid(row=5, column=0, columnspan=9)
+
+    labelHello = Label(window, text=welcomeText,
+                       font=("corbel", 14),
+                       bg="white")
+    labelHello.grid(row=6, column=3, columnspan=3)
+
 
     # ***** Running the Code ***** #
 
@@ -662,22 +685,16 @@ def checkUser():
         result = cursor.fetchall()
 
         if result:
-            logedIn = True
-
-            unTest = "admin"
-            term = "*"
-
-            userDetails = StringVar()
             tupleDetails = StringVar()
 
             cursorUser = conn.cursor()
 
-            cursorUser.execute('SELECT * FROM UserAccounts WHERE username = ?', (unTest,))
+            cursorUser.execute('SELECT * FROM UserAccounts WHERE username = ?', (username.get(),))
             tupleDetails = cursorUser.fetchall()
 
-            userDetails = ','.join(str(y) for x in tupleDetails for y in x if len(x) > 0)
-
-            print(userDetails)
+            for stringDetails in tupleDetails:
+                for detail in stringDetails:
+                    userDetails.append(detail)
 
             tempWindow.destroy()
             mainWindow() 
@@ -689,6 +706,11 @@ def checkUser():
 ignoreThis = 1
 
 # ***** Creating an Admin User Account ***** #
+
+
+# Note: This code should be commented out. It is only needed to create the initial user
+#       account which is used to log-in for the first time and therefore create 
+#       subsequent user accounts and access levels etc. 
 
 #conn = sqlite3.connect('Users.db')
 #with conn:
