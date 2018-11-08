@@ -333,21 +333,28 @@ def addPatient():
         entryEnDate.delete(0, END)
         entryDiDate.delete(0, END)
 
-    def appendPatient():
+    def appendPatient(patientTitle, forename, surname, prevSurname, dateOfBirth, genderNew, country, housenumber, street, postcode, county, contactNo, regType, oldGP, oldGPAddress, oldGPPostcode, hcn, personnelNum, enDate, diDate, organYNNew, kidneyNew, heartNew, lungsNew, liverNew, corneasNew, pancreasNew):
         conn = sqlite3.connect('Patients.db')
         
         with conn:
             cursor = conn.cursor()
             
-        cursor.execute("CREATE TABLE IF NOT EXISTS PatientDemo (patientID INTEGER PRIMARY KEY, patientTitle TEXT, forename TEXT, surname TEXT, prevSurname TEXT, dateOfBirth TEXT, gender TEXT, country TEXT, housenumber TEXT, street TEXT, postcode TEXT, county TEXT, contactnumber TEXT, regType TEXT, oldGP TEXT, oldGPAddress TEXT, oldGPPostcode TEXT, hcn TEXT)")
-        cursor.execute("INSERT INTO PatientDemo (patientID, patientTitle, forename, surname, prevSurname, dateOfBirth, gender, country, housenumber, street, postcode, county, contactnumber, regType, oldGP, oldGPAddress, oldGPPostcode, hcn) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (patientTitle.get(), forename.get(), surname.get(), prevSurname.get(), dateOfBirth.get(), gender.get(), country.get(), housenumber.get(), street.get(), postcode.get(), county.get(), contactnumber.get(), regType.get(), oldGP.get(), oldGPAddress.get(), oldGPPostcode.get(), hcn.get(),))
+        #cursor.execute("CREATE TABLE IF NOT EXISTS PatientDemo (patientID INTEGER PRIMARY KEY, patientTitle TEXT, forename TEXT, surname TEXT, prevSurname TEXT, dateOfBirth TEXT, gender TEXT, country TEXT, housenumber TEXT, street TEXT, postcode TEXT, county TEXT, contactnumber TEXT, regType TEXT, oldGP TEXT, oldGPAddress TEXT, oldGPPostcode TEXT, hcn TEXT)")
+        
+        insertPatientDemo = "INSERT INTO PatientDemo (patientID, patientTitle, forename, surname, prevSurname, dateOfBirth, gender, country, housenumber, street, postcode, county, contactnumber, regType, oldGP, oldGPAddress, oldGPPostcode, hcn) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" 
+        cursor.execute(insertPatientDemo, [(patientTitle), (forename), (surname), (prevSurname), (dateOfBirth), (genderNew), (country), (housenumber), (street), (postcode), (county), (contactNo), (regType), (oldGP), (oldGPAddress), (oldGPPostcode), (hcn)])
 
-        cursor.execute("CREATE TABLE IF NOT EXISTS PatientAF (patientID INTEGER PRIMARY KEY, personnelNum TEXT, enDate TEXT, diDate TEXT)")
-        cursor.execute("INSERT INTO PatientAF (patientID, personnelNum, enDate, diDate) VALUES (NULL, ?, ?, ?)", (personnelNum.get(), enDate.get(), diDate.get(),))
+        #cursor.execute("CREATE TABLE IF NOT EXISTS PatientAF (patientID INTEGER PRIMARY KEY, personnelNum TEXT, enDate TEXT, diDate TEXT)")
+        
+        insertPatientAF = "INSERT INTO PatientAF (patientID, personnelNum, enDate, diDate) VALUES (NULL, ?, ?, ?)"
+        cursor.execute(insertPatientAF, [(personnelNum), (enDate), (diDate)])
             
-        cursor.execute("CREATE TABLE IF NOT EXISTS PatientOD (patientID INTEGER PRIMARY KEY, organYN TEXT, kidney TEXT, heart TEXT, lungs TEXT, liver TEXT, corneas TEXT, pancreas TEXT)")
-        cursor.execute("INSERT INTO PatientOD (patientID, organYN, kidney, heart, lungs, liver, corneas, pancreas) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)", (organYN.get(), kidney.get(), heart.get(), lungs.get(), liver.get(), corneas.get(), pancreas.get(),))
+        #cursor.execute("CREATE TABLE IF NOT EXISTS PatientOD (patientID INTEGER PRIMARY KEY, organYN TEXT, kidney TEXT, heart TEXT, lungs TEXT, liver TEXT, corneas TEXT, pancreas TEXT)")
+        
+        insertPatientOD = "INSERT INTO PatientOD (patientID, organYN, kidney, heart, lungs, liver, corneas, pancreas) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)"
+        cursor.execute(insertPatientOD, [(organYNNew), (kidneyNew), (heartNew), (lungsNew), (liverNew), (corneasNew), (pancreasNew)])
             
+
         conn.commit()
 
         again = ms.askyesno("Succesful!", "Would you like to register another patient?", parent=tempWindow)
@@ -356,6 +363,39 @@ def addPatient():
             clearWindow()
         else:
             tempWindow.destroy()
+
+    def getPatientValues():
+        title = comboboxTitle.get()
+        forename = entryForename.get()
+        surname = entrySurname.get()
+        prevSurname = entryPrevSurname.get()
+        dob = entryDOB.get()
+        genderNew = gender.get()
+        country = comboboxCountry.get()
+        housenumber = entryHousenumber.get()
+        street = entryStreet.get()
+        postcode = entryPostcode.get()
+        county = entryCounty.get()
+        contactNo = entryContactNo.get()
+        regType = comboboxRegType.get()
+        oldGP = entryOldGP.get()
+        oldGPAddress = entryOldGPAddress.get()
+        oldGPPostcode = entryOldGPPostcode.get()
+        hcn = entryHCN.get()
+
+        personnelNum = entryPersonnelNum.get()
+        enDate = entryEnDate.get()
+        diDate = entryDiDate.get()
+
+        organYNNew = organYN.get()
+        kidneyNew = kidney.get()
+        heartNew = heart.get()
+        liverNew = liver.get()
+        corneasNew = corneas.get()
+        lungsNew = lungs.get()
+        pancreasNew = pancreas.get()
+
+        appendPatient(patientTitle, forename, surname, prevSurname, dateOfBirth, genderNew, country, housenumber, street, postcode, county, contactNo, regType, oldGP, oldGPAddress, oldGPPostcode, hcn, personnelNum, enDate, diDate, organYNNew, kidneyNew, heartNew, lungsNew, liverNew, corneasNew, pancreasNew)
 
     labelTitle = Label(tempWindow, text="Antrim Castle Surgery - Registration Application", font=("corbel bold", 14), anchor=N)
     labelTitle.grid(row=0, column=1, columnspan=6)
@@ -551,7 +591,7 @@ def addPatient():
                 variable=pancreas,
                 onvalue='Yes', offvalue='No').grid(row=17, column=7, sticky='W')
 
-    Button(tempWindow, text='Save Data to Record', bg='darkblue', fg='white', cursor='hand2', command=appendPatient).grid(row=18, column=1, columnspan=2)
+    Button(tempWindow, text='Save Data to Record', bg='darkblue', fg='white', cursor='hand2', command=getPatientValues).grid(row=18, column=1, columnspan=2)
     Button(tempWindow, text='Exit', bg='darkblue', fg='white', cursor='hand2', command=tempWindow.destroy).grid(row=18, column=3, columnspan=2)
 
     tempWindow.mainloop()
