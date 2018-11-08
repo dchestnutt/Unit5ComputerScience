@@ -1,7 +1,6 @@
 ######################################
 ## WJEC GCE Computer Science Unit 5 ##
 ## Daniel Chestnutt - 71401 - 2127  ##
-## application.py - Main Window(s)  ##
 ######################################
 
 ###########################
@@ -36,11 +35,26 @@ userDetails = []
 # they will either exit or commit the entered details. Upon this, the window will 
 # close and the user will be returned to the main application.
 
+# Center the Window on the Monitor #
+def center(toplevel):
+    toplevel.update_idletasks()
+
+    screen_width = toplevel.winfo_screenwidth()
+    screen_height = toplevel.winfo_screenheight()
+
+    size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+    x = screen_width/2 - size[0]/2
+    y = screen_height/2 - size[1]/2
+
+    toplevel.geometry("+%d+%d" % (x, y)) 
+
 # Create a New User Account #
 def createUser():
     tempWindow = Tk()
-    tempWindow.geometry('700x300+300+100')
+    tempWindow.geometry('700x300')
     tempWindow.title("Create a New User")
+
+    center(tempWindow)
 
     usernameNew = StringVar()
     passwordNew = StringVar()
@@ -71,15 +85,15 @@ def createUser():
         entryEmail.delete(0, END)
         entryMobile.delete(0, END)
 
-    def appendUser():
+    def appendUser(username, password, title, firstname, surname, email, mobile, userType):
         with sqlite3.connect('Users.db') as usersDB:
             cursorUser = usersDB.cursor()
 
         cursorUser.execute("CREATE TABLE IF NOT EXISTS UserAccounts (userID INTEGER PRIMARY KEY, username TEXT, password TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)")
-        
+       
         insertUser = "INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, userType) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)"
-        cursorUser.execute(insertUser,[(usernameNew.get()), (passwordNew.get()), (titleNew.get()), (firstnameNew.get()), (surnameNew.get()), (emailNew.get()), (mobileNew.get()), (userTypeNew.get())])
-        
+        cursorUser.execute(insertUser,[(username), (password), (title), (firstname), (surname), (email), (mobile), (userType)])
+
         usersDB.commit()
 
         again = ms.askyesno("Succesful!", "Would you like to create another user?", parent=tempWindow)
@@ -88,6 +102,18 @@ def createUser():
             clearWindow()
         else:
             tempWindow.destroy()
+
+    def getValues():
+        username = entryUsername.get()
+        password = entryPassword.get()
+        title = comboboxTitle.get()
+        firstname = entryFirstName.get()
+        surname = entrySurname.get()
+        email = entryEmail.get()
+        mobile = entryMobile.get()
+        userType = comboboxUserType.get()
+
+        appendUser(username, password, title, firstname, surname, email, mobile, userType)
 
     labelInstructions = Label(tempWindow, 
                              text="Antrim Castle Surgery - Administration Portal (Create a User)",
@@ -228,7 +254,7 @@ def createUser():
                 variable=canEditUsers,
                 onvalue='Yes', offvalue='No').grid(row=6, column=8, sticky='W',)
 
-    Button(tempWindow, text='Create User', width=20, bg='darkblue', fg='white', command=appendUser).grid(row=12, column=5, columnspan=3)
+    Button(tempWindow, text='Create User', width=20, bg='darkblue', fg='white', command=getValues).grid(row=12, column=5, columnspan=3)
     Button(tempWindow, text='Exit', width=20, bg='darkblue', fg='white', command=tempWindow.destroy).grid(row=12, column=8, columnspan=2)
 
     tempWindow.mainloop()
@@ -253,8 +279,10 @@ def editPatient():
 # Create a new Patient Record #
 def addPatient():
     tempWindow = Tk()
-    tempWindow.geometry('700x450+300+100')
+    tempWindow.geometry('700x450')
     tempWindow.title("Register a new Patient")
+
+    center(tempWindow)
 
     patientTitle = StringVar()
     forename = StringVar()
@@ -555,7 +583,7 @@ def editStock():
 # Begin a new Consultation #
 def newCons():
     tempWindow = Tk()
-    tempWindow.geometry('600x880+300+50')
+    tempWindow.geometry('740x670+300+20')
     tempWindow.title("Antrim Castle Surgery - Medical Informations System")
 
     def saveCons():
@@ -577,11 +605,11 @@ def newCons():
     # Define Columns #
     spacerLabel = Label(tempWindow, text=" ", width=2)
     spacerLabel.grid(row=0, column=0)
-    spacerLabel = Label(tempWindow, text=" ", width=25)
+    spacerLabel = Label(tempWindow, text=" ", width=30)
     spacerLabel.grid(row=0, column=1)
-    spacerLabel = Label(tempWindow, text=" ", width=25)
+    spacerLabel = Label(tempWindow, text=" ", width=30)
     spacerLabel.grid(row=0, column=2)
-    spacerLabel = Label(tempWindow, text=" ", width=25)
+    spacerLabel = Label(tempWindow, text=" ", width=30)
     spacerLabel.grid(row=0, column=3)
     spacerLabel = Label(tempWindow, text=" ", width=2)
     spacerLabel.grid(row=0, column=4)
@@ -604,7 +632,7 @@ def newCons():
 
     labelPC = Label(tempWindow, text="Presenting Complaint (PC)", font=("corbel bold", 10))
     labelPC.grid(row=3, column=1, columnspan=3)
-    entryPC = Text(tempWindow, height=6, width=70)
+    entryPC = Text(tempWindow, height=3, width=86)
     entryPC.grid(row=4, column=1, columnspan=3)
     entryPC.config(yscrollcommand=scrollbar1.set)
     scrollbar1.grid(row=4, column=4, sticky=N+S)
@@ -615,7 +643,7 @@ def newCons():
 
     labelOE = Label(tempWindow, text="On Examination (O/E)", font=("corbel bold", 10))
     labelOE.grid(row=6, column=1, columnspan=3)
-    entryOE = Text(tempWindow, height=6, width=70)
+    entryOE = Text(tempWindow, height=3, width=86)
     entryOE.grid(row=7, column=1, columnspan=3)
     entryOE.config(yscrollcommand=scrollbar2.set)
     scrollbar2.grid(row=7, column=4, sticky=N+S)
@@ -626,7 +654,7 @@ def newCons():
 
     labelHX = Label(tempWindow, text="History - Medical & Social (Hx)", font=("corbel bold", 10))
     labelHX.grid(row=9, column=1, columnspan=3)
-    entryHX = Text(tempWindow, height=6, width=70)
+    entryHX = Text(tempWindow, height=3, width=86)
     entryHX.grid(row=10, column=1, columnspan=3)
     entryHX.config(yscrollcommand=scrollbar3.set)
     scrollbar3.grid(row=10, column=4, sticky=N+S)
@@ -637,7 +665,7 @@ def newCons():
 
     labelPX = Label(tempWindow, text="Treatment Plan/Medications (Px)", font=("corbel bold", 10))
     labelPX.grid(row=12, column=1, columnspan=3)
-    entryPX = Text(tempWindow, height=6, width=70)
+    entryPX = Text(tempWindow, height=3, width=86)
     entryPX.grid(row=13, column=1, columnspan=3)
     entryPX.config(yscrollcommand=scrollbar4.set)
     scrollbar4.grid(row=13, column=4, sticky=N+S)
@@ -648,7 +676,7 @@ def newCons():
 
     labelDX = Label(tempWindow, text="Diagnosis (Dx)", font=("corbel bold", 10))
     labelDX.grid(row=15, column=1, columnspan=3)
-    entryDX = Text(tempWindow, height=1, width=70)
+    entryDX = Text(tempWindow, height=1, width=86)
     entryDX.grid(row=16, column=1, columnspan=3)
 
     spacerLabel = Label(tempWindow, text=" ")
@@ -656,7 +684,7 @@ def newCons():
 
     labelCom = Label(tempWindow, text="Comments", font=("corbel bold", 10))
     labelCom.grid(row=18, column=1, columnspan=3)
-    entryCom = Text(tempWindow, height=6, width=70)
+    entryCom = Text(tempWindow, height=3, width=86)
     entryCom.grid(row=19, column=1, columnspan=3)
     entryCom.config(yscrollcommand=scrollbar5.set)
     scrollbar5.grid(row=19, column=4, sticky=N+S)
@@ -886,6 +914,8 @@ tempWindow = Tk()
 tempWindow.geometry('500x280+580+250')
 tempWindow.title("Antrim Castle Surgery - Medical Informations System")
 tempWindow.config(bg="white")
+
+center(tempWindow)
 
 username = StringVar()
 password = StringVar()
