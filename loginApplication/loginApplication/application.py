@@ -5,7 +5,7 @@
 ######################################
 
 ###########################
-## Prototype Version 1.0 ##
+## Prototype Version 1.1 ##
 ###########################
 
 # ***** Importing Modules ***** #
@@ -44,6 +44,12 @@ def createUser():
 
     usernameNew = StringVar()
     passwordNew = StringVar()
+    titleNew = StringVar()
+    firstnameNew = StringVar()
+    surnameNew = StringVar()
+    emailNew = StringVar()
+    mobileNew = StringVar()
+    userTypeNew = StringVar()
     canViewPatientData = StringVar()
     canEditPatientData = StringVar()
     canViewConsultations = StringVar()
@@ -54,30 +60,38 @@ def createUser():
     canCancelAppointments = StringVar()
     canCreateUsers = StringVar()
     canEditUsers = StringVar()
-    titleNew = StringVar()
-    firstnameNew = StringVar()
-    surnameNew = StringVar()
-    emailNew = StringVar()
-    mobileNew = StringVar()
-    userTypeNew = StringVar()
+
+    def clearWindow():
+        entryUsername.delete(0, END)
+        entryPassword.delete(0, END)
+        entryFirstname.delete(0, END)
+        entrySurname.delete(0, END)
+        comboboxTitle.current([0])
+        comboboxUserType.current([0])
+        entryEmail.delete(0, END)
+        entryMobile.delete(0, END)
 
     def appendUser():
-        conn = sqlite3.connect('Users.db')
-        with conn:
-            cursor = conn.cursor()
+        with sqlite3.connect('Users.db') as usersDB:
+            cursorUser = usersDB.cursor()
 
-        cursor.execute("CREATE TABLE IF NOT EXISTS UserAccounts (userID INTEGER PRIMARY KEY, username TEXT, password TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)")
-        cursor.execute("INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, userType) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)", (usernameNew.get(), passwordNew.get(), titleNew.get(), firstnameNew.get(), surnameNew.get(), emailNew.get(), mobileNew.get(), userTypeNew.get()))
+        cursorUser.execute("CREATE TABLE IF NOT EXISTS UserAccounts (userID INTEGER PRIMARY KEY, username TEXT, password TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)")
         
-        conn.commit()
+        insertUser = "INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, userType) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)"
+        cursorUser.execute(insertUser,[(usernameNew.get()), (passwordNew.get()), (titleNew.get()), (firstnameNew.get()), (surnameNew.get()), (emailNew.get()), (mobileNew.get()), (userTypeNew.get())])
+        
+        usersDB.commit()
 
-        ms.showinfo("Information", "User Created Succesfully!", parent=tempWindow)
+        again = ms.askyesno("Succesful!", "Would you like to create another user?", parent=tempWindow)
 
-        return
+        if again == True:
+            clearWindow()
+        else:
+            tempWindow.destroy()
 
     labelInstructions = Label(tempWindow, 
                              text="Antrim Castle Surgery - Administration Portal (Create a User)",
-                             font=("corbel bold", 10),
+                             font=("corbel bold", 14),
                              anchor=N)                 
     labelInstructions.grid(row=0, column=1, columnspan=8) 
 
@@ -88,7 +102,7 @@ def createUser():
                           text="Username: ", 
                           font=("corbel", 10))                 
     labelUsername.grid(row=2, column=0)                   
-    entryUsername = Entry(tempWindow, textvar=usernameNew) 
+    entryUsername = Entry(tempWindow, textvariable=usernameNew) 
     entryUsername.grid(row=2, column=1, columnspan=2)            
     
     labelPassword = Label(tempWindow, 
@@ -142,12 +156,12 @@ def createUser():
     entryEmail = Entry(tempWindow, textvar=emailNew)
     entryEmail.grid(row=9, column=1, columnspan=2)
 
-    labelEmail = Label(tempWindow,
+    labelMobile = Label(tempWindow,
                        text="Mobile: ",
                        font=("corbel", 10))
-    labelEmail.grid(row=10, column=0)
-    entryEmail = Entry(tempWindow, textvar=mobileNew)
-    entryEmail.grid(row=10, column=1, columnspan=2)
+    labelMobile.grid(row=10, column=0)
+    entryMobile = Entry(tempWindow, textvar=mobileNew)
+    entryMobile.grid(row=10, column=1, columnspan=2)
 
     labelPermissions = Label(tempWindow,    
                              text="User Permissions: ",  
@@ -182,11 +196,11 @@ def createUser():
                 cursor='hand2',
                 font=("corbel", 10),
                 variable=canCommunicatePatients,
-                onvalue='Yes', offvalue='No').grid(row=6, column=7, sticky='W',)
+               onvalue='Yes', offvalue='No').grid(row=6, column=7, sticky='W',)
     Checkbutton(tempWindow, 
                 text="View Patient Statistics", 
                 cursor='hand2',
-                font=("corbel", 10),
+               font=("corbel", 10),
                 variable=canViewStatistics,
                 onvalue='Yes', offvalue='No').grid(row=2, column=8, sticky='W',)
     Checkbutton(tempWindow, 
@@ -225,7 +239,8 @@ def editUser():
 
 # Change current User Account #
 def changeUser():
-    print("Change User Function Called.")
+    window.destroy()
+    os.system("application.py")
 
 # Search Patient Records #
 def searchPatient():
@@ -269,75 +284,43 @@ def addPatient():
     corneas = StringVar()
     pancreas = StringVar()
 
-    def appendPatient():
-        patientTitle1 = patientTitle.get()
-        forename1 = forename.get()
-        surname1 = surname.get()
-        prevSurname1 = prevSurname.get()
-        dateOfBirth1 = dateOfBirth.get()
-        gender1 = gender.get()
-        country1 = country.get()
-        housenumber1 = housenumber.get()
-        street1 = street.get()
-        postcode1 = postcode.get()
-        county1 = county.get()
-        contactnumber1 = contactnumber.get()
-        regType1 = regType.get()
-        oldGP1 = oldGP.get()
-        oldGPAddress1 = oldGPAddress.get()
-        oldGPPostcode1 = oldGPPostcode.get()
-        hcn1 = hcn.get()
-        personnelNum1 = personnelNum.get()
-        enDate1 = enDate.get()
-        diDate1 = diDate.get()
-        organYN1 = organYN.get()
-        kidney1 = kidney.get()
-        heart1 = heart.get()
-        lungs1 = lungs.get()
-        liver1 = liver.get() 
-        corneas1 = corneas.get()
-        pancreas1 = pancreas.get()
+    def clearWindow():
+        comboboxTitle.current([0])
+        entryForename.delete(0, END)
+        entrySurname.delete(0, END)
+        entryPrevSurname.delete(0, END)
+        entryDOB.delete(0, END)
+        comboboxCountry.current([0])
+        entryHousenumber.delete(0, END)
+        entryStreet.delete(0, END)
+        entryPostcode.delete(0, END)
+        entryCounty.delete(0, END)
+        entryContactNo.delete(0, END)
+        comboboxRegType.current([0])
+        entryOldGP.delete(0, END)
+        entryOldGPAddress.delete(0, END)
+        entryOldGPPostcode.delete(0, END)
+        entryHCN.delete(0, END)
+        entryPersonnelNum.delete(0, END)
+        entryEnDate.delete(0, END)
+        entryDiDate.delete(0, END)
 
+    def appendPatient():
         conn = sqlite3.connect('Patients.db')
         
         with conn:
-            cursor1 = conn.cursor()
+            cursor = conn.cursor()
             
-            cursor1.execute("CREATE TABLE IF NOT EXISTS PatientDemo (patientID INTEGER PRIMARY KEY, patientTitle TEXT, forename TEXT, surname TEXT, prevSurname TEXT, dateOfBirth TEXT, gender TEXT, country TEXT, housenumber TEXT, street TEXT, postcode TEXT, county TEXT, contactnumber TEXT, regType TEXT, oldGP TEXT, oldGPAddress TEXT, oldGPPostcode TEXT, hcn TEXT)")
-            cursor1.execute("INSERT INTO PatientDemo (patientID, patientTitle, forename, surname, prevSurname, dateOfBirth, gender, country, housenumber, street, postcode, county, contactnumber, regType, oldGP, oldGPAddress, oldGPPostcode, hcn) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (patientTitle.get(), forename.get(), surname.get(), prevSurname.get(), dateOfBirth.get(), gender.get(), country.get(), housenumber.get(), street.get(), postcode.get(), county.get(), contactnumber.get(), regType.get(), oldGP.get(), oldGPAddress.get(), oldGPPostcode.get(), hcn.get(),))
+        cursor.execute("CREATE TABLE IF NOT EXISTS PatientDemo (patientID INTEGER PRIMARY KEY, patientTitle TEXT, forename TEXT, surname TEXT, prevSurname TEXT, dateOfBirth TEXT, gender TEXT, country TEXT, housenumber TEXT, street TEXT, postcode TEXT, county TEXT, contactnumber TEXT, regType TEXT, oldGP TEXT, oldGPAddress TEXT, oldGPPostcode TEXT, hcn TEXT)")
+        cursor.execute("INSERT INTO PatientDemo (patientID, patientTitle, forename, surname, prevSurname, dateOfBirth, gender, country, housenumber, street, postcode, county, contactnumber, regType, oldGP, oldGPAddress, oldGPPostcode, hcn) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (patientTitle.get(), forename.get(), surname.get(), prevSurname.get(), dateOfBirth.get(), gender.get(), country.get(), housenumber.get(), street.get(), postcode.get(), county.get(), contactnumber.get(), regType.get(), oldGP.get(), oldGPAddress.get(), oldGPPostcode.get(), hcn.get(),))
 
-            cursor2 = conn.cursor()
-
-            cursor2.execute("CREATE TABLE IF NOT EXISTS PatientAF (patientID INTEGER PRIMARY KEY, personnelNum TEXT, enDate TEXT, diDate TEXT)")
-            cursor2.execute("INSERT INTO PatientAF (patientID, personnelNum, enDate, diDate) VALUES (NULL, ?, ?, ?)", (personnelNum.get(), enDate.get(), diDate.get(),))
+        cursor.execute("CREATE TABLE IF NOT EXISTS PatientAF (patientID INTEGER PRIMARY KEY, personnelNum TEXT, enDate TEXT, diDate TEXT)")
+        cursor.execute("INSERT INTO PatientAF (patientID, personnelNum, enDate, diDate) VALUES (NULL, ?, ?, ?)", (personnelNum.get(), enDate.get(), diDate.get(),))
             
-            cursor3 = conn.cursor()
-
-            cursor3.execute("CREATE TABLE IF NOT EXISTS PatientOD (patientID INTEGER PRIMARY KEY, organYN TEXT, kidney TEXT, heart TEXT, lungs TEXT, liver TEXT, corneas TEXT, pancreas TEXT)")
-            cursor3.execute("INSERT INTO PatientOD (patientID, organYN, kidney, heart, lungs, liver, corneas, pancreas) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)", (organYN.get(), kidney.get(), heart.get(), lungs.get(), liver.get(), corneas.get(), pancreas.get(),))
+        cursor.execute("CREATE TABLE IF NOT EXISTS PatientOD (patientID INTEGER PRIMARY KEY, organYN TEXT, kidney TEXT, heart TEXT, lungs TEXT, liver TEXT, corneas TEXT, pancreas TEXT)")
+        cursor.execute("INSERT INTO PatientOD (patientID, organYN, kidney, heart, lungs, liver, corneas, pancreas) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)", (organYN.get(), kidney.get(), heart.get(), lungs.get(), liver.get(), corneas.get(), pancreas.get(),))
             
-            conn.commit()
-
-        def clearWindow():
-            comboboxTitle.current([0])
-            entryForename.delete(0, END)
-            entrySurname.delete(0, END)
-            entryPrevSurname.delete(0, END)
-            entryDOB.delete(0, END)
-            comboboxCountry.current([0])
-            entryHousenumber.delete(0, END)
-            entryStreet.delete(0, END)
-            entryPostcode.delete(0, END)
-            entryCounty.delete(0, END)
-            entryContactNo.delete(0, END)
-            comboboxRegType.current([0])
-            entryOldGP.delete(0, END)
-            entryOldGPAddress.delete(0, END)
-            entryOldGPPostcode.delete(0, END)
-            entryHCN.delete(0, END)
-            entryPersonnelNum.delete(0, END)
-            entryEnDate.delete(0, END)
-            entryDiDate.delete(0, END)
+        conn.commit()
 
         again = ms.askyesno("Succesful!", "Would you like to register another patient?", parent=tempWindow)
 
@@ -346,7 +329,7 @@ def addPatient():
         else:
             tempWindow.destroy()
 
-    labelTitle = Label(tempWindow, text="Antrim Castle Surgery - Registration Application", font=("corbel bold", 10), anchor=N)
+    labelTitle = Label(tempWindow, text="Antrim Castle Surgery - Registration Application", font=("corbel bold", 14), anchor=N)
     labelTitle.grid(row=0, column=1, columnspan=6)
 
     spacerLabel = Label(tempWindow, text=" ")
@@ -433,10 +416,6 @@ def addPatient():
     labelContactNo.grid(row=16, column=0)
     entryContactNo = Entry(tempWindow, textvar=contactnumber)
     entryContactNo.grid(row=16, column=1, columnspan=2)
-
-    #########################################
-    ## BEGIN SECOND COLUMN OF ENTRY LABELS ##
-    #########################################
 
     spacerLabel = Label(tempWindow, text=" ", width=4)
     spacerLabel.grid(row=0, column=3, rowspan=18)
@@ -557,13 +536,160 @@ def addDocument():
 def viewDocument():
     print("View Document Function Called.")
 
+# View Health Statistics #
+def viewStatistics():
+    print("View Statistics Function Called.")
+
+# Internal Communications #
+def internalComms():
+    print("Internal Communications Function Called.")
+
+# View Item Stocks List #
+def viewStock():
+    print("View Item Stock Lists.")
+
+# Edit Item Stocks List #
+def editStock():
+    print("Edit Item Stock Lists.")
+
+# Begin a new Consultation #
+def newCons():
+    tempWindow = Tk()
+    tempWindow.geometry('600x880+300+50')
+    tempWindow.title("Antrim Castle Surgery - Medical Informations System")
+
+    def saveCons():
+        print("Consultation Saved.")
+
+    def delCons():
+        print("Consultation Deleted.")
+
+    def viewDetails():
+        print("View Details Function Called.")
+
+    searchTerm = StringVar()
+    scrollbar1 = Scrollbar(tempWindow)
+    scrollbar2 = Scrollbar(tempWindow)
+    scrollbar3 = Scrollbar(tempWindow)
+    scrollbar4 = Scrollbar(tempWindow)
+    scrollbar5 = Scrollbar(tempWindow)
+
+    # Define Columns #
+    spacerLabel = Label(tempWindow, text=" ", width=2)
+    spacerLabel.grid(row=0, column=0)
+    spacerLabel = Label(tempWindow, text=" ", width=25)
+    spacerLabel.grid(row=0, column=1)
+    spacerLabel = Label(tempWindow, text=" ", width=25)
+    spacerLabel.grid(row=0, column=2)
+    spacerLabel = Label(tempWindow, text=" ", width=25)
+    spacerLabel.grid(row=0, column=3)
+    spacerLabel = Label(tempWindow, text=" ", width=2)
+    spacerLabel.grid(row=0, column=4)
+    # END.
+
+    spacerLabel = Label(tempWindow, text=" ")
+    spacerLabel.grid(row=0, column=0, columnspan=4)
+
+    labelSearch = Label(tempWindow, 
+                        text="Search for Patient: ",
+                        font=("corbel bold", 10))
+    labelSearch.grid(row=1, column=1)
+    entrySearch = Entry(tempWindow, textvar=searchTerm)
+    entrySearch.grid(row=1, column=2, sticky=E+W)
+
+    searchButton = Button(tempWindow, text='Search', bg='darkblue', fg='white', command=checkUser).grid(row=1, column=3)
+
+    spacerLabel = Label(tempWindow, text=" ")
+    spacerLabel.grid(row=2, column=0, columnspan=4)
+
+    labelPC = Label(tempWindow, text="Presenting Complaint (PC)", font=("corbel bold", 10))
+    labelPC.grid(row=3, column=1, columnspan=3)
+    entryPC = Text(tempWindow, height=6, width=70)
+    entryPC.grid(row=4, column=1, columnspan=3)
+    entryPC.config(yscrollcommand=scrollbar1.set)
+    scrollbar1.grid(row=4, column=4, sticky=N+S)
+    scrollbar1.config(command=entryPC.yview)
+
+    spacerLabel = Label(tempWindow, text=" ")
+    spacerLabel.grid(row=5, column=0, columnspan=4)
+
+    labelOE = Label(tempWindow, text="On Examination (O/E)", font=("corbel bold", 10))
+    labelOE.grid(row=6, column=1, columnspan=3)
+    entryOE = Text(tempWindow, height=6, width=70)
+    entryOE.grid(row=7, column=1, columnspan=3)
+    entryOE.config(yscrollcommand=scrollbar2.set)
+    scrollbar2.grid(row=7, column=4, sticky=N+S)
+    scrollbar2.config(command=entryOE.yview)
+
+    spacerLabel = Label(tempWindow, text=" ")
+    spacerLabel.grid(row=8, column=0, columnspan=4)
+
+    labelHX = Label(tempWindow, text="History - Medical & Social (Hx)", font=("corbel bold", 10))
+    labelHX.grid(row=9, column=1, columnspan=3)
+    entryHX = Text(tempWindow, height=6, width=70)
+    entryHX.grid(row=10, column=1, columnspan=3)
+    entryHX.config(yscrollcommand=scrollbar3.set)
+    scrollbar3.grid(row=10, column=4, sticky=N+S)
+    scrollbar3.config(command=entryHX.yview)
+
+    spacerLabel = Label(tempWindow, text=" ")
+    spacerLabel.grid(row=11, column=0, columnspan=4)
+
+    labelPX = Label(tempWindow, text="Treatment Plan/Medications (Px)", font=("corbel bold", 10))
+    labelPX.grid(row=12, column=1, columnspan=3)
+    entryPX = Text(tempWindow, height=6, width=70)
+    entryPX.grid(row=13, column=1, columnspan=3)
+    entryPX.config(yscrollcommand=scrollbar4.set)
+    scrollbar4.grid(row=13, column=4, sticky=N+S)
+    scrollbar4.config(command=entryPX.yview)
+
+    spacerLabel = Label(tempWindow, text=" ")
+    spacerLabel.grid(row=14, column=0, columnspan=4)
+
+    labelDX = Label(tempWindow, text="Diagnosis (Dx)", font=("corbel bold", 10))
+    labelDX.grid(row=15, column=1, columnspan=3)
+    entryDX = Text(tempWindow, height=1, width=70)
+    entryDX.grid(row=16, column=1, columnspan=3)
+
+    spacerLabel = Label(tempWindow, text=" ")
+    spacerLabel.grid(row=17, column=0, columnspan=4)
+
+    labelCom = Label(tempWindow, text="Comments", font=("corbel bold", 10))
+    labelCom.grid(row=18, column=1, columnspan=3)
+    entryCom = Text(tempWindow, height=6, width=70)
+    entryCom.grid(row=19, column=1, columnspan=3)
+    entryCom.config(yscrollcommand=scrollbar5.set)
+    scrollbar5.grid(row=19, column=4, sticky=N+S)
+    scrollbar5.config(command=entryCom.yview)
+
+    spacerLabel = Label(tempWindow, text=" ")
+    spacerLabel.grid(row=20, column=0, columnspan=4)
+
+    saveCons = Button(tempWindow, text='Save Consultation', bg='darkblue', fg='white', command=saveCons).grid(row=21, column=1)
+    delCons = Button(tempWindow, text='Delete Consultation', bg='darkblue', fg='white', command=delCons).grid(row=21, column=2)
+    viewDetails = Button(tempWindow, text='View Patient Details', bg='darkblue', fg='white', command=viewDetails).grid(row=21, column=3)
+
+    tempWindow.mainloop()
+
+# Search Consultations #
+def searchCons():
+    print("Search Consultations Function Called.")
+
+# Create a New Appointment #
+def newApp():
+    print("Create a New Appointment Function Called.")
+
+# Edit Patient Appointments #
+def editApp():
+    print("Edit Appointment Function Called.")
+
 # Create the main Program Window #
 def mainWindow():
     window = Tk()
     window.geometry('1366x768+0+0')
     window.title("Antrim Castle Surgery - Medical Informations System") 
     window.config(bg="white")
-    
+
     def logOff():
         window.destroy()
         os.system("application.py")
@@ -583,7 +709,7 @@ def mainWindow():
 
     dropdownPatients.add_command(label='Search Patients', command=searchPatient) 
     dropdownPatients.add_command(label='Edit Patient Details', command=editPatient) 
-    dropdownPatients.add_command(label='Add a new Patient', command=addPatient)
+    dropdownPatients.add_command(label='Register a new Patient', command=addPatient)
 
     menu.add_cascade(label='Patient Records', menu=dropdownPatients)
 
@@ -594,9 +720,30 @@ def mainWindow():
 
     menu.add_cascade(label='Documents', menu=dropdownDocuments)
 
-    window.config(menu=menu)
+    dropdownOther = Menu(menu) 
 
-    # ***** Initial Opening Window ***** #
+    dropdownOther.add_command(label='View Health Statistics', command=viewStatistics) 
+    dropdownOther.add_command(label='Internal Communications', command=internalComms) 
+    dropdownOther.add_command(label='View Item Stock List', command=viewStock) 
+    dropdownOther.add_command(label='Edit Item Stock List', command=editStock) 
+
+    menu.add_cascade(label='Other', menu=dropdownOther)
+
+    dropdownConsultations = Menu(menu) 
+
+    dropdownConsultations.add_command(label='Begin a new Consultation', command=newCons) 
+    dropdownConsultations.add_command(label='Search Consultations', command=searchCons) 
+
+    menu.add_cascade(label='Consultations', menu=dropdownConsultations)
+    
+    dropdownAppointments = Menu(menu) 
+
+    dropdownAppointments.add_command(label='Book a new Appointment', command=newApp) 
+    dropdownAppointments.add_command(label='Change Appointments', command=editApp) 
+
+    menu.add_cascade(label='Appointments', menu=dropdownAppointments)
+
+    window.config(menu=menu)
 
     spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=0, column=0, columnspan=9)
@@ -629,17 +776,31 @@ def mainWindow():
                               bg="white")                 
     labelInstructions.grid(row=3, column=0, columnspan=2)
 
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
+    spacerLabel.grid(row=4, column=0, columnspan=2)
+
     Button(window, text='Search Patient Records', width=20, bg='darkblue', fg='white', command=searchPatient).grid(row=5, column=0, columnspan=2)
     Button(window, text='Register New Patients', width=20, bg='darkblue', fg='white', command=addPatient).grid(row=6, column=0, columnspan=2)
     Button(window, text='Edit Patient Records', width=20, bg='darkblue', fg='white', command=editPatient).grid(row=7, column=0, columnspan=2)
     Button(window, text='Add New Documents', width=20, bg='darkblue', fg='white', command=addDocument).grid(row=8, column=0, columnspan=2)
     Button(window, text='View Saved Documents', width=20, bg='darkblue', fg='white', command=viewDocument).grid(row=9, column=0, columnspan=2)
+    Button(window, text='View Health Statistics', width=20, bg='darkblue', fg='white', command=viewStatistics).grid(row=10, column=0, columnspan=2)
+    Button(window, text='Begin a new Consultation', width=20, bg='darkblue', fg='white', command=newCons).grid(row=11, column=0, columnspan=2)
+    Button(window, text='Search Consultations', width=20, bg='darkblue', fg='white', command=searchCons).grid(row=12, column=0, columnspan=2)
+    Button(window, text='Internal Communications', width=20, bg='darkblue', fg='white', command=internalComms).grid(row=13, column=0, columnspan=2)
+    Button(window, text='Book a new Appointment', width=20, bg='darkblue', fg='white', command=newApp).grid(row=14, column=0, columnspan=2)
+    Button(window, text='Change Appointments', width=20, bg='darkblue', fg='white', command=editApp).grid(row=15, column=0, columnspan=2)
+    Button(window, text='View Item Stock List', width=20, bg='darkblue', fg='white', command=viewStock).grid(row=16, column=0, columnspan=2)
+    Button(window, text='Edit Item Stock List', width=20, bg='darkblue', fg='white', command=editStock).grid(row=17, column=0, columnspan=2)
 
     labelInstructions = Label(window, 
                               text="System Options",
                               font=("corbel", 14),
                               bg="white")                                  
     labelInstructions.grid(row=3, column=7, columnspan=2)
+
+    spacerLabel = Label(window, text=" ", width=20, bg="white")
+    spacerLabel.grid(row=4, column=7, columnspan=2)
 
     Button(window, text='Create New Users', width=20, bg='darkblue', fg='white', command=createUser).grid(row=5, column=7, columnspan=2)
     Button(window, text='Edit User Accounts', width=20, bg='darkblue', fg='white', command=editUser).grid(row=6, column=7, columnspan=2)
@@ -652,14 +813,9 @@ def mainWindow():
    
     welcomeText = "Welcome back " + title + " " + firstname + " " + surname + "!"
 
-    #labelACS = Label(window, 
-    #                 text="Antrim Castle Surgery",
-    #                 font=("corbel bold", 18))
-    #labelACS.grid(row=3, column=2, columnspan=5)
-
     photoLogo = PhotoImage(file="surgeryLogoSmall.png")
     logo = Label(image=photoLogo)
-    logo.grid(row=2, rowspan=2, column=2, columnspan=5, sticky=N)
+    logo.grid(row=1, rowspan=2, column=2, columnspan=5, sticky=N)
 
     spacerLabel = Label(window, text=" ", width=20, bg="white")
     spacerLabel.grid(row=5, column=0, columnspan=9)
@@ -667,7 +823,7 @@ def mainWindow():
     labelHello = Label(window, text=welcomeText,
                        font=("corbel", 14),
                        bg="white")
-    labelHello.grid(row=6, column=3, columnspan=3)
+    labelHello.grid(row=4, column=3, columnspan=3, rowspan=2)
 
 
     # ***** Running the Code ***** #
@@ -707,7 +863,6 @@ ignoreThis = 1
 
 # ***** Creating an Admin User Account ***** #
 
-
 # Note: This code should be commented out. It is only needed to create the initial user
 #       account which is used to log-in for the first time and therefore create 
 #       subsequent user accounts and access levels etc. 
@@ -728,34 +883,49 @@ ignoreThis = 1
 # "Users" database. This allows for us to ensure confidentiality & security.
 
 tempWindow = Tk()
-tempWindow.geometry('160x180+580+250')
+tempWindow.geometry('500x280+580+250')
 tempWindow.title("Antrim Castle Surgery - Medical Informations System")
+tempWindow.config(bg="white")
 
 username = StringVar()
 password = StringVar()
 
-spacerLabel = Label(tempWindow, text=" ")
-spacerLabel.pack()
+photoLogo = PhotoImage(file="surgeryLogoSmall.png")
+logo = Label(image=photoLogo)
+logo.grid(row=0, column=0, columnspan=2, rowspan=2)
+
+spacerLabel = Label(tempWindow, text=" ", bg="white")
+spacerLabel.grid(row=2, column=0, columnspan=2)
+
+spacerLabel = Label(tempWindow, text="Welcome! Please login to continue.",
+                    font=("corbel bold", 12),
+                    bg="white")
+spacerLabel.grid(row=3, column=0, columnspan=2)
+
+spacerLabel = Label(tempWindow, text=" ", bg="white")
+spacerLabel.grid(row=4, column=0, columnspan=2)
 
 labelUsername = Label(tempWindow, 
                         text="Username: ", 
                         font=("corbel", 10),
+                        bg="white",
                         padx=5)                                   
-labelUsername.pack()
+labelUsername.grid(row=5, column=0, sticky=E)
 entryUsername = Entry(tempWindow, textvar=username)            
-entryUsername.pack()
+entryUsername.grid(row=5, column=1, sticky=W)
 
 labelPassword = Label(tempWindow, 
                         text="Password: ", 
                         font=("corbel", 10),
+                        bg="white",
                         padx=5)                                  
-labelPassword.pack()
+labelPassword.grid(row=6, column=0, sticky=E)
 entryPassword = Entry(tempWindow, textvar=password, show = '•') 
-entryPassword.pack()
+entryPassword.grid(row=6, column=1, sticky=W)
 
-spacerLabel = Label(tempWindow, text=" ")
-spacerLabel.pack()
+spacerLabel = Label(tempWindow, text=" ", bg="white")
+spacerLabel.grid(row=7, column=0, columnspan=2)
 
-logedIn = Button(tempWindow, text='Log-In', bg='darkblue', fg='white', command=checkUser).pack()
+logedIn = Button(tempWindow, text='Log-In', bg='darkblue', fg='white', command=checkUser).grid(row=8, column=0, columnspan=2)
 
 tempWindow.mainloop()
