@@ -7,6 +7,18 @@
 ## Prototype Version 1.1 ##
 ###########################
 
+# ***** Things To-Do ***** #
+# 1. FIX Radiobuttons & Checkbuttons not returning values in addPatient()
+# 2. FIX search of patients.db within newCons()
+# 3. IMPLEMENT calendar function on mainWindow to display booked appointments for that specific user
+# 4. IMPLEMENT edit user accounts function
+# 5. IMPLEMENT search patient records function
+# 6. IMPLEMENT add & view documents function
+# 7. IMPLEMENT view statistics function
+# 8. IMPLEMENT search consultations function
+# 9. IMPLEMENT create & edit appointments function
+# 10. CHANGE colours & formatting in mainWindow to make it look better
+
 # ***** Importing Modules ***** #
 
 from tkinter import *
@@ -35,7 +47,8 @@ userDetails = []
 # they will either exit or commit the entered details. Upon this, the window will 
 # close and the user will be returned to the main application.
 
-# Center the Window on the Monitor #
+# Center the Window on the Monitor # 
+# Status: FULLY WORKING
 def center(toplevel):
     toplevel.update_idletasks()
 
@@ -48,7 +61,8 @@ def center(toplevel):
 
     toplevel.geometry("+%d+%d" % (x, y)) 
 
-# Create a New User Account #
+# Create a New User Account # 
+# Status: FULLY WORKING
 def createUser():
     tempWindow = Tk()
     tempWindow.geometry('700x300')
@@ -290,20 +304,24 @@ def createUser():
 
     tempWindow.mainloop()
 
-# Edit an Existing User Account #
+# Edit an Existing User Account # 
+# Status: NOT YET IMPLEMENTED
 def editUser():
     print("Edit User Function Called.")
 
-# Change current User Account #
+# Change current User Account # 
+# Status: FULLY WORKING
 def changeUser():
     window.destroy()
     os.system("application.py")
 
-# Search Patient Records #
+# Search Patient Records # 
+# Status: NOT YET IMPLEMENTED
 def searchPatient():
     print("Search Patient Records Function Called.")
 
 # Edit Patient Records #
+# Status: BROKEN :(
 def editPatient():
     tempWindow = Tk()
     tempWindow.geometry('700x450')
@@ -736,6 +754,7 @@ def editPatient():
     tempWindow.mainloop()
 
 # Create a new Patient Record #
+# Status: BROKEN :(
 def addPatient():
     tempWindow = Tk()
     tempWindow.geometry('700x450')
@@ -843,6 +862,13 @@ def addPatient():
         
         genderGet = gender.get()
         
+        if genderGet == 1:
+            genderNew = "Male"
+        elif genderGet == 0:
+            genderNew = "Female"
+        else:
+            ms.showerror("Error!", "Gender Variable Error (Line 861)", parent=tempWindow)
+
         country = comboboxCountry.get()
         housenumber = entryHousenumber.get()
         street = entryStreet.get()
@@ -855,25 +881,11 @@ def addPatient():
         oldGPPostcode = entryOldGPPostcode.get()
         hcn = entryHCN.get()
 
-        if genderGet == 1:
-            genderNew = "Male"
-        elif genderGet == 0:
-            genderNew = "Female"
-        else:
-            ms.showerror("Error!", "Gender Variable Error (Line 861)", parent=tempWindow)
-
         personnelNum = entryPersonnelNum.get()
         enDate = entryEnDate.get()
         diDate = entryDiDate.get()
 
         organYNGet = organYN.get()
-
-        kidneyNew = kidneyButton.get()
-        heartNew = heartButton.get()
-        liverNew = liverButton.get()
-        corneasNew = corneasButton.get()
-        lungsNew = lungsButton.get()
-        pancreasNew = pancreasButton.get()
 
         if organYNGet == 1:
             organYNNew = "Yes"
@@ -881,6 +893,13 @@ def addPatient():
             organYNNew = "No"
         else:
             ms.showerror("Error!", "Organ Donation Variable Error (Line 880)", parent=tempWindow)
+
+        kidneyNew = kidneyButton.get()
+        heartNew = heartButton.get()
+        liverNew = liverButton.get()
+        corneasNew = corneasButton.get()
+        lungsNew = lungsButton.get()
+        pancreasNew = pancreasButton.get()
 
         appendPatient(title, forename, surname, prevSurname, dob, genderNew, country, 
                       housenumber, street, postcode, county, contactNo, regType, oldGP, oldGPAddress, 
@@ -1183,31 +1202,38 @@ def addPatient():
 
     tempWindow.mainloop()
 
-# Add a new Document #
+# Add a new Document # 
+# Status: NOT YET IMPLEMENTED
 def addDocument():
     print("Add New Document Function Called.")
 
 # View a Document #
+# Status: NOT YET IMPLEMENTED
 def viewDocument():
     print("View Document Function Called.")
 
 # View Health Statistics #
+# Status: NOT YET IMPLEMENTED
 def viewStatistics():
     print("View Statistics Function Called.")
 
 # Internal Communications #
+# Status: NOT IMPLEMENTED // MAY NOT IMPLEMENT
 def internalComms():
     print("Internal Communications Function Called.")
 
 # View Item Stocks List #
+# Status: NOT IMPLEMENTED // MAY NOT IMPLEMENT
 def viewStock():
     print("View Item Stock Lists.")
 
 # Edit Item Stocks List #
+# Status: NOT IMPLEMENTED // MAY NOT IMPLEMENT
 def editStock():
     print("Edit Item Stock Lists.")
 
 # Begin a new Consultation #
+# Status: WORKING // NOT FULLY FUNCTIONAL - (needs ability to search for patients)
 def newCons():
     tempWindow = Tk()
     tempWindow.geometry('740x670+300+20')
@@ -1386,23 +1412,27 @@ def newCons():
     tempWindow.mainloop()
 
 # Search Consultations #
+# Status: NOT YET IMPLEMENTED
 def searchCons():
     print("Search Consultations Function Called.")
 
 # Create a New Appointment #
+# Status: NOT YET IMPLEMENTED
 def newApp():
     print("Create a New Appointment Function Called.")
 
 # Edit Patient Appointments #
+# Status: NOT YET IMPLEMENTED
 def editApp():
     print("Edit Appointment Function Called.")
 
 # Create the main Program Window #
+# Status: WORKING // NOT FULLY FUNCTIONAL - (add calendar & change colours/formatting etc.)
 def mainWindow():
     window = Tk()
     window.geometry('1366x768+0+0')
     window.title("Antrim Castle Surgery - Medical Informations System") 
-    window.config(bg="white")
+    window.config(bg="#202C4F")
 
     def logOff():
         window.destroy()
@@ -1485,182 +1515,184 @@ def mainWindow():
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=0, column=0, columnspan=9)
 
     # START. - These labels format the window by 
     # dividing it into 8 columns of equal width.
     spacerLabel = Label(window, 
                         text=" ", 
-                        width=20, bg="white")
+                        width=20, bg="#202C4F")
     spacerLabel.grid(row=0, column=0, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=0, column=1, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=0, column=2, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=0, column=3, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=0, column=4, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=0, column=5, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=0, column=6, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=0, column=7, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=0, column=8, rowspan=20)
     # END.
 
     labelInstructions = Label(window, 
                               text="Options Menu",
-                              font=("corbel", 14),
-                              bg="white")                 
+                              font=("Helvetica", 14, "bold"),
+                              relief=RIDGE,
+                              bg="#202C4F")                 
     labelInstructions.grid(row=3, column=0, columnspan=2)
 
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=4, column=0, columnspan=2)
 
     Button(window, 
            text='Search Patient Records', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=searchPatient).grid(row=5, column=0, columnspan=2)
     Button(window, 
            text='Register New Patients', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=addPatient).grid(row=6, column=0, columnspan=2)
     Button(window, 
            text='Edit Patient Records', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=editPatient).grid(row=7, column=0, columnspan=2)
     Button(window, 
            text='Add New Documents', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=addDocument).grid(row=8, column=0, columnspan=2)
     Button(window, 
            text='View Saved Documents', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=viewDocument).grid(row=9, column=0, columnspan=2)
     Button(window, 
            text='View Health Statistics', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=viewStatistics).grid(row=10, column=0, columnspan=2)
     Button(window, 
            text='Begin a new Consultation', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=newCons).grid(row=11, column=0, columnspan=2)
     Button(window, 
            text='Search Consultations', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=searchCons).grid(row=12, column=0, columnspan=2)
     Button(window, 
            text='Internal Communications', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=internalComms).grid(row=13, column=0, columnspan=2)
     Button(window, 
            text='Book a new Appointment', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=newApp).grid(row=14, column=0, columnspan=2)
     Button(window, 
            text='Change Appointments', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=editApp).grid(row=15, column=0, columnspan=2)
     Button(window, 
            text='View Item Stock List', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=viewStock).grid(row=16, column=0, columnspan=2)
     Button(window, 
            text='Edit Item Stock List', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=editStock).grid(row=17, column=0, columnspan=2)
 
     labelInstructions = Label(window, 
                               text="System Options",
-                              font=("corbel", 14),
-                              bg="white")                                  
+                              font=("Helvetica", 14, "bold"),
+                              relief=RIDGE,
+                              bg="#202C4F")                                  
     labelInstructions.grid(row=3, column=7, columnspan=2)
 
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=4, column=7, columnspan=2)
 
     Button(window, 
            text='Create New Users', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=createUser).grid(row=5, column=7, columnspan=2)
     Button(window, 
            text='Edit User Accounts', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=editUser).grid(row=6, column=7, columnspan=2)
     Button(window, 
            text='Change Current User', 
            width=20, 
-           bg='darkblue', 
-           fg='white', command=changeUser).grid(row=7, column=7, columnspan=2)
+           bg='darkgrey', 
+           fg='black', command=changeUser).grid(row=7, column=7, columnspan=2)
     Button(window, 
            text='Log-Off', 
            width=20, 
-           bg='darkblue', 
-           fg='white', 
+           bg='darkgrey', 
+           fg='black', 
            command=logOff).grid(row=8, column=7, columnspan=2)
 
     title = userDetails[3]
@@ -1676,21 +1708,21 @@ def mainWindow():
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="white")
+                        bg="#202C4F")
     spacerLabel.grid(row=5, column=0, columnspan=9)
 
     labelHello = Label(window, 
                        text=welcomeText,
-                       font=("corbel", 14),
-                       bg="white")
+                       font=("Helvetica", 14, "bold italic"),
+                       bg="#202C4F")
     labelHello.grid(row=4, column=3, columnspan=3, rowspan=2)
 
 
     # ***** Running the Code ***** #
-
     window.mainloop()
 
 # Check User Details for Validity #
+# Status: FULLY WORKING
 def checkUser():
     conn = sqlite3.connect('Users.db')
 
@@ -1715,6 +1747,7 @@ def checkUser():
             tempWindow.destroy()
             mainWindow() 
         else:
+            print(result)
             ms.showerror('User Not Found', 'Username or Password not Found.')
             entryUsername.delete(0, END)
             entryPassword.delete(0, END)
@@ -1804,7 +1837,8 @@ spacerLabel.grid(row=7, column=0, columnspan=2)
 logedIn = Button(tempWindow, 
                  text='Log-In', 
                  bg='darkblue', 
-                 fg='white', 
+                 fg='white',
+                 width=20,
                  command=checkUser).grid(row=8, column=0, columnspan=2)
 
 tempWindow.mainloop()
