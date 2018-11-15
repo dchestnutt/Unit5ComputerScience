@@ -774,7 +774,7 @@ def addPatient():
     surname = StringVar()
     prevSurname = StringVar()
     dateOfBirth = StringVar()
-    gender = StringVar()
+    gender = IntVar()
     country = StringVar()
     housenumber = StringVar()
     street = StringVar()
@@ -789,13 +789,13 @@ def addPatient():
     personnelNum = StringVar()
     enDate = StringVar()
     diDate = StringVar()
-    organYN = StringVar()
-    kidney = StringVar()
-    heart = StringVar()
-    lungs = StringVar()
-    liver = StringVar() 
-    corneas = StringVar()
-    pancreas = StringVar()
+    organYN = IntVar()
+    kidney = IntVar()
+    heart = IntVar()
+    lungs = IntVar()
+    liver = IntVar() 
+    corneas = IntVar()
+    pancreas = IntVar()
 
     def clearWindow():
         comboboxTitle.current([0])
@@ -901,12 +901,33 @@ def addPatient():
         else:
             ms.showerror("Error!", "Organ Donation Variable Error (Line 880)", parent=tempWindow)
 
-        kidneyNew = kidneyButton.get()
-        heartNew = heartButton.get()
-        liverNew = liverButton.get()
-        corneasNew = corneasButton.get()
-        lungsNew = lungsButton.get()
-        pancreasNew = pancreasButton.get()
+        def changeVal(value):
+            if value == 0:
+                newValue = "No"
+            elif value == 1:
+                newValue = "Yes"
+            else:
+                ms.showerror("Error!", "Change Value Function Error (Line 910)", parent=tempWindow)
+
+            return newValue
+
+        kidney2 = kidney.get()
+        kidneyNew = changeVal(kidney2)
+
+        heart2 = heart.get()
+        heartNew = changeVal(heart2)
+
+        liver2 = liver.get()
+        liverNew = changeVal(liver2)
+
+        corneas2 = corneas.get()
+        corneasNew = changeVal(corneas2)
+
+        lungs2 = lungs.get()
+        lungsNew = changeVal(lungs2)
+
+        pancreas2 = pancreas.get()
+        pancreasNew = changeVal(pancreas2)
 
         appendPatient(title, forename, surname, prevSurname, dob, genderNew, country, 
                       housenumber, street, postcode, county, contactNo, regType, oldGP, oldGPAddress, 
@@ -1160,39 +1181,27 @@ def addPatient():
     kidneyButton = Checkbutton(tempWindow,
                                cursor='hand2',
                                text="Kidneys", 
-                               variable=kidney,
-                               onvalue='Yes', 
-                               offvalue='No').grid(row=16, column=5, sticky='W')
+                               variable=kidney).grid(row=16, column=5, sticky='W')
     heartButton = Checkbutton(tempWindow,
                               cursor='hand2',
                               text="Heart", 
-                              variable=heart,
-                              onvalue='Yes', 
-                              offvalue='No').grid(row=16, column=6, sticky='W')
+                              variable=heart).grid(row=16, column=6, sticky='W')
     liverButton = Checkbutton(tempWindow,
                               cursor='hand2',
                               text="Liver", 
-                              variable=liver,
-                              onvalue='Yes', 
-                              offvalue='No').grid(row=16, column=7, sticky='W')
+                              variable=liver).grid(row=16, column=7, sticky='W')
     corneasButton = Checkbutton(tempWindow,
                                 cursor='hand2',
                                 text="Corneas", 
-                                variable=corneas,
-                                onvalue='Yes', 
-                                offvalue='No').grid(row=17, column=5, sticky='W')
+                                variable=corneas).grid(row=17, column=5, sticky='W')
     lungsButton = Checkbutton(tempWindow,
                               cursor='hand2',
                               text="Lungs", 
-                              variable=lungs,
-                              onvalue='Yes', 
-                              offvalue='No').grid(row=17, column=6, sticky='W')
+                              variable=lungs).grid(row=17, column=6, sticky='W')
     pancreasButton = Checkbutton(tempWindow,
                                  cursor='hand2',
                                  text="Pancreas", 
-                                 variable=pancreas,
-                                 onvalue='Yes', 
-                                 offvalue='No').grid(row=17, column=7, sticky='W')
+                                 variable=pancreas).grid(row=17, column=7, sticky='W')
 
     Button(tempWindow, 
            text='Save Data to Record', 
