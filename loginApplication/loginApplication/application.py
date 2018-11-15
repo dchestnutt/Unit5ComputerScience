@@ -3,11 +3,14 @@
 ## Daniel Chestnutt - 71401 - 2127  ##
 ######################################
 
+
 ###########################
 ## Prototype Version 1.1 ##
 ###########################
 
+
 # ***** Things To-Do ***** #
+
 # 1. FIX Radiobuttons & Checkbuttons not returning values in addPatient()
 # 2. FIX search of patients.db within newCons()
 # 3. IMPLEMENT calendar function on mainWindow to display booked appointments for that specific user
@@ -19,6 +22,7 @@
 # 9. IMPLEMENT create & edit appointments function
 # 10. CHANGE colours & formatting in mainWindow to make it look better
 
+
 # ***** Importing Modules ***** #
 
 from tkinter import *
@@ -28,10 +32,12 @@ from tkinter import ttk
 import sqlite3
 import os
 
+
 # ***** Initial Declaration of Variables ***** #
 
 global userDetails
 userDetails = []
+
 
 # ***** Functions and Procedures ***** #
 
@@ -310,7 +316,7 @@ def editUser():
     print("Edit User Function Called.")
 
 # Change current User Account # 
-# Status: FULLY WORKING
+# Status: BROKEN
 def changeUser():
     window.destroy()
     os.system("application.py")
@@ -383,6 +389,7 @@ def editPatient():
                       housenumber, street, postcode, county, contactNo, regType, oldGP, oldGPAddress, 
                       oldGPPostcode, hcn, personnelNum, enDate, diDate, organYNNew, kidneyNew, heartNew, 
                       lungsNew, liverNew, corneasNew, pancreasNew):
+        
         conn = sqlite3.connect('Patients.db')
         
         with conn:
@@ -1754,6 +1761,7 @@ def checkUser():
 
 ignoreThis = 1
 
+
 # ***** Creating an Admin User Account ***** #
 
 # Note: This code should be commented out. It is only needed to create the initial user
@@ -1771,6 +1779,7 @@ ignoreThis = 1
 #                      '02894413910', 'Administrator')''')
 #    
 #    conn.commit()
+
 
 # ***** Drawing the Login Window ***** #
 
