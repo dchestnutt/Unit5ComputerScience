@@ -329,9 +329,14 @@ def searchPatient():
 # Edit Patient Records #
 # Status: BROKEN :(
 def editPatient():
+    print("Edit Patient Function Called.")
+
+# Create a new Patient Record #
+# Status: BROKEN :(
+def addPatient():
     tempWindow = Tk()
     tempWindow.geometry('700x450')
-    tempWindow.title("View and Edit Patient Registrations")
+    tempWindow.title("Register a new Patient")
 
     center(tempWindow)
 
@@ -340,7 +345,10 @@ def editPatient():
     surname = StringVar()
     prevSurname = StringVar()
     dateOfBirth = StringVar()
+    
+    global gender
     gender = StringVar()
+
     country = StringVar()
     housenumber = StringVar()
     street = StringVar()
@@ -362,440 +370,6 @@ def editPatient():
     liver = StringVar() 
     corneas = StringVar()
     pancreas = StringVar()
-
-    # idk if we will need this
-    def clearWindow():
-        comboboxTitle.current([0])
-        entryForename.delete(0, END)
-        entrySurname.delete(0, END)
-        entryPrevSurname.delete(0, END)
-        entryDOB.delete(0, END)
-        comboboxCountry.current([0])
-        entryHousenumber.delete(0, END)
-        entryStreet.delete(0, END)
-        entryPostcode.delete(0, END)
-        entryCounty.delete(0, END)
-        entryContactNo.delete(0, END)
-        comboboxRegType.current([0])
-        entryOldGP.delete(0, END)
-        entryOldGPAddress.delete(0, END)
-        entryOldGPPostcode.delete(0, END)
-        entryHCN.delete(0, END)
-        entryPersonnelNum.delete(0, END)
-        entryEnDate.delete(0, END)
-        entryDiDate.delete(0, END)
-
-    def appendPatient(patientTitle, forename, surname, prevSurname, dateOfBirth, genderNew, country, 
-                      housenumber, street, postcode, county, contactNo, regType, oldGP, oldGPAddress, 
-                      oldGPPostcode, hcn, personnelNum, enDate, diDate, organYNNew, kidneyNew, heartNew, 
-                      lungsNew, liverNew, corneasNew, pancreasNew):
-        
-        conn = sqlite3.connect('Patients.db')
-        
-        with conn:
-            cursor = conn.cursor()
-            
-        #cursor.execute('''CREATE TABLE IF NOT EXISTS PatientDemo (patientID INTEGER PRIMARY KEY, patientTitle TEXT, 
-        #                forename TEXT, surname TEXT, prevSurname TEXT, dateOfBirth TEXT, gender TEXT, country TEXT, 
-        #                housenumber TEXT, street TEXT, postcode TEXT, county TEXT, contactnumber TEXT, regType TEXT, 
-        #                oldGP TEXT, oldGPAddress TEXT, oldGPPostcode TEXT, hcn TEXT)''')
-        
-        insertPatientDemo = '''INSERT INTO PatientDemo (patientID, patientTitle, forename, surname, prevSurname, dateOfBirth, 
-                            gender, country, housenumber, street, postcode, county, contactnumber, regType, oldGP, oldGPAddress, 
-                            oldGPPostcode, hcn) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''' 
-        cursor.execute(insertPatientDemo, [(patientTitle), (forename), (surname), (prevSurname), (dateOfBirth), (genderNew), (country), 
-                                           (housenumber), (street), (postcode), (county), (contactNo), (regType), (oldGP), (oldGPAddress), 
-                                           (oldGPPostcode), (hcn)])
-
-        #cursor.execute("CREATE TABLE IF NOT EXISTS PatientAF (patientID INTEGER PRIMARY KEY, personnelNum TEXT, enDate TEXT, diDate TEXT)")
-        
-        insertPatientAF = "INSERT INTO PatientAF (patientID, personnelNum, enDate, diDate) VALUES (NULL, ?, ?, ?)"
-        cursor.execute(insertPatientAF, [(personnelNum), (enDate), (diDate)])
-            
-        cursor.execute('''CREATE TABLE IF NOT EXISTS PatientOD (patientID INTEGER PRIMARY KEY, organYN TEXT, kidney TEXT, 
-                          heart TEXT, lungs TEXT, liver TEXT, corneas TEXT, pancreas TEXT)''')
-        
-        insertPatientOD = '''INSERT INTO PatientOD (patientID, organYN, kidney, heart, lungs, liver, corneas, pancreas) 
-                             VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)'''
-        cursor.execute(insertPatientOD, [(organYNNew), (kidneyNew), (heartNew), (lungsNew), (liverNew), (corneasNew), (pancreasNew)])
-            
-        conn.commit()
-
-        again = ms.askyesno("Succesful!", "Would you like to register another patient?", parent=tempWindow)
-
-        if again == True:
-            clearWindow()
-        else:
-            tempWindow.destroy()
-
-    def getPatientValues():
-        title = comboboxTitle.get()
-        forename = entryForename.get()
-        surname = entrySurname.get()
-        prevSurname = entryPrevSurname.get()
-        dob = entryDOB.get()
-        genderNew = gender.get()
-        country = comboboxCountry.get()
-        housenumber = entryHousenumber.get()
-        street = entryStreet.get()
-        postcode = entryPostcode.get()
-        county = entryCounty.get()
-        contactNo = entryContactNo.get()
-        regType = comboboxRegType.get()
-        oldGP = entryOldGP.get()
-        oldGPAddress = entryOldGPAddress.get()
-        oldGPPostcode = entryOldGPPostcode.get()
-        hcn = entryHCN.get()
-
-        personnelNum = entryPersonnelNum.get()
-        enDate = entryEnDate.get()
-        diDate = entryDiDate.get()
-
-        organYNNew = organYN.get()
-        kidneyNew = kidney.get()
-        heartNew = heart.get()
-        liverNew = liver.get()
-        corneasNew = corneas.get()
-        lungsNew = lungs.get()
-        pancreasNew = pancreas.get()
-
-        appendPatient(patientTitle, forename, surname, prevSurname, dateOfBirth, genderNew, country, 
-                      housenumber, street, postcode, county, contactNo, regType, oldGP, oldGPAddress, 
-                      oldGPPostcode, hcn, personnelNum, enDate, diDate, organYNNew, kidneyNew, heartNew, 
-                      lungsNew, liverNew, corneasNew, pancreasNew)
-
-    labelTitle = Label(tempWindow, 
-                       text="Antrim Castle Surgery - Registration Application", 
-                       font=("corbel bold", 14), 
-                       anchor=N)
-    labelTitle.grid(row=0, column=1, columnspan=6)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=1, column=0, columnspan=4)
-
-    labelPatientTitle = Label(tempWindow, 
-                              text="Title: ", 
-                              font=("corbel", 10))
-    labelPatientTitle.grid(row=2, column=0)
-    comboboxTitle = ttk.Combobox(tempWindow, 
-                                 textvariable=patientTitle)
-    comboboxTitle.grid(row=2, column=1, columnspan=2)
-    comboboxTitle.config(values = ('Please Select...', 'Mr', 'Mrs', 'Miss', 'Ms', 'Dr', 'Rev', 'Prof', 'Sir', 'Other'), width=17)
-    comboboxTitle.current([0])
-
-    labelForename = Label(tempWindow, 
-                          text="Forename(s): ", 
-                          font=("corbel", 10))
-    labelForename.grid(row=3, column=0)
-    entryForename = Entry(tempWindow, 
-                          textvar=forename)
-    entryForename.grid(row=3, column=1, columnspan=2)
-
-    labelSurname = Label(tempWindow, 
-                         text="Surname: ", 
-                         font=("corbel", 10))
-    labelSurname.grid(row=4, column=0)
-    entrySurname = Entry(tempWindow, 
-                         textvar=surname)
-    entrySurname.grid(row=4, column=1, columnspan=2)
-
-    labelPrevSurname = Label(tempWindow, 
-                             text="Previous Surname: ", 
-                             font=("corbel", 10))
-    labelPrevSurname.grid(row=5, column=0)
-    entryPrevSurname = Entry(tempWindow, 
-                             textvar=prevSurname)
-    entryPrevSurname.grid(row=5, column=1, columnspan=2)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=6, column=0, columnspan=4)
-
-    labelDOB = Label(tempWindow, 
-                     text="Date of Birth: ", 
-                     font=("corbel", 10))
-    labelDOB.grid(row=7, column=0)
-    entryDOB = Entry(tempWindow, 
-                     textvar=dateOfBirth)
-    entryDOB.grid(row=7, column=1, columnspan=2)
-
-    labelGender = Label(tempWindow, 
-                        text="Gender: ", 
-                        font=("corbel", 10))
-    labelGender.grid(row=8, column=0)
-    Radiobutton(tempWindow, 
-                text="Male", 
-                variable=gender,
-                cursor='hand2',
-                value=1).grid(row=8, column=1)
-    Radiobutton(tempWindow,  
-                text="Female", 
-                variable=gender,
-                cursor='hand2',
-                value=2).grid(row=8, column=2)
-
-    labelCountry = Label(tempWindow, 
-                         text="Country of Birth: ", 
-                         font=("corbel", 10))
-    labelCountry.grid(row=9, column=0)
-    comboboxCountry = ttk.Combobox(tempWindow, 
-                                   textvariable=country)
-    comboboxCountry.grid(row=9, column=1, columnspan=2)
-    comboboxCountry.config(values = ('Please Select...',  'Australia', 'Belgium', 'Canada', 'Denmark', 'Egypt', 'France', 
-                                     'Germany', 'Hungary', 'Ireland', 'Jamaica', 'Kenya', 'Lithuania', 'Macedonia', 'Norway', 
-                                     'Oman', 'Poland', 'Quatar', 'Russia', 'Spain', 'Tanzania', 'United Kingdom', 'Venuzuala', 
-                                     'Yugoslavia', 'Zambia'), width=17)
-    comboboxCountry.current([0])
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=10, column=0, columnspan=4)
-
-    labelHousenumber = Label(tempWindow, 
-                             text="House Number: ", 
-                             font=("corbel", 10))
-    labelHousenumber.grid(row=11, column=0)
-    entryHousenumber = Entry(tempWindow, 
-                             textvar=housenumber)
-    entryHousenumber.grid(row=11, column=1, columnspan=2)
-
-    labelStreet = Label(tempWindow, 
-                        text="Street: ", 
-                        font=("corbel", 10))
-    labelStreet.grid(row=12, column=0)
-    entryStreet = Entry(tempWindow, 
-                        textvar=street)
-    entryStreet.grid(row=12, column=1, columnspan=2)
-
-    labelPostcode = Label(tempWindow, 
-                          text="Postcode: ", 
-                          font=("corbel", 10))
-    labelPostcode.grid(row=13, column=0)
-    entryPostcode = Entry(tempWindow, 
-                          textvar=postcode)
-    entryPostcode.grid(row=13, column=1, columnspan=2)
-
-    labelCounty = Label(tempWindow, 
-                        text="County: ", 
-                        font=("corbel", 10))
-    labelCounty.grid(row=14, column=0)
-    entryCounty = Entry(tempWindow, 
-                        textvar=county)
-    entryCounty.grid(row=14, column=1, columnspan=2)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=15, column=0, columnspan=4)
-
-    labelContactNo = Label(tempWindow, 
-                           text="Contact Number: ", 
-                           font=("corbel", 10))
-    labelContactNo.grid(row=16, column=0)
-    entryContactNo = Entry(tempWindow, 
-                           textvar=contactnumber)
-    entryContactNo.grid(row=16, column=1, columnspan=2)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ", 
-                        width=4)
-    spacerLabel.grid(row=0, column=3, rowspan=18)
-
-    labelRegType = Label(tempWindow, 
-                         text="Registration Type: ", 
-                         font=("corbel", 10))
-    labelRegType.grid(row=2, column=4)
-    comboboxRegType = ttk.Combobox(tempWindow, 
-                                   textvariable=regType)
-    comboboxRegType.grid(row=2, column=5, columnspan=2)
-    comboboxRegType.config(values = ('Please Select...', 'First ever registration with a GP Surgery', 
-                                     'Moving GP Surgery'), width=17)
-    comboboxRegType.current([0])
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=3, column=4, columnspan=3)
-
-    labelOldGP = Label(tempWindow, 
-                       text="Old GP: ", 
-                       font=("corbel", 10))
-    labelOldGP.grid(row=4, column=4)
-    entryOldGP = Entry(tempWindow, 
-                       textvar=oldGP)
-    entryOldGP.grid(row=4, column=5, columnspan=2)
-
-    labelOldGPAddress = Label(tempWindow, 
-                              text="Address: ", 
-                              font=("corbel", 10))
-    labelOldGPAddress.grid(row=5, column=4)
-    entryOldGPAddress = Entry(tempWindow, 
-                              textvar=oldGPAddress)
-    entryOldGPAddress.grid(row=5, column=5, columnspan=2)
-
-    labelOldGPPostcode = Label(tempWindow, 
-                               text="Postcode: ", 
-                               font=("corbel", 10))
-    labelOldGPPostcode.grid(row=6, column=4)
-    entryOldGPPostcode = Entry(tempWindow, 
-                               textvar=oldGPPostcode)
-    entryOldGPPostcode.grid(row=6, column=5, columnspan=2)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=7, column=4, columnspan=3)
-
-    labelHCN = Label(tempWindow, 
-                     text="Health & Care Number: ", 
-                     font=("corbel", 10))
-    labelHCN.grid(row=8, column=4)
-    entryHCN = Entry(tempWindow, 
-                     textvar=hcn)
-    entryHCN.grid(row=8, column=5, columnspan=2)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=9, column=4, columnspan=3)
-
-    labelGender = Label(tempWindow, 
-                        text="Complete the below if the patient is returning from the Armed Forces!", 
-                        font=("corbel", 10))
-    labelGender.grid(row=10, column=4, columnspan=4)
-
-    labelPersonnelNum = Label(tempWindow, 
-                              text="Personnel Number: ", 
-                              font=("corbel", 10))
-    labelPersonnelNum.grid(row=11, column=4)
-    entryPersonnelNum = Entry(tempWindow, 
-                              textvar=personnelNum)
-    entryPersonnelNum.grid(row=11, column=5, columnspan=2)
-
-    labelEnDate = Label(tempWindow, 
-                        text="Enlistment Date: ", 
-                        font=("corbel", 10))
-    labelEnDate.grid(row=12, column=4)
-    entryEnDate = Entry(tempWindow, 
-                        textvar=enDate)
-    entryEnDate.grid(row=12, column=5, columnspan=2)
-
-    labelDiDate = Label(tempWindow, 
-                        text="Discharge Date: ", 
-                        font=("corbel", 10))
-    labelDiDate.grid(row=13, column=4)
-    entryDiDate = Entry(tempWindow, 
-                        textvar=diDate)
-    entryDiDate.grid(row=13, column=5, columnspan=2)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=14, column=4, columnspan=3)
-
-    labelOrganYN = Label(tempWindow, 
-                         text="Has the Patient Consented to Organ Donation?", 
-                         font=("corbel", 10))
-    labelOrganYN.grid(row=15, column=4, columnspan=2)
-    Radiobutton(tempWindow, 
-                text="Yes", 
-                variable=organYN,
-                cursor='hand2',
-                value='Yes').grid(row=15, column=6)
-    Radiobutton(tempWindow, 
-                text="No", 
-                variable=organYN,
-                cursor='hand2',
-                value='No').grid(row=15, column=7)
-
-    labelOrganType = Label(tempWindow, 
-                           text="Organs to be donated: ", 
-                           font=("corbel", 10))
-    labelOrganType.grid(row=16, column=4)
-    Checkbutton(tempWindow,
-                cursor='hand2',
-                text="Kidneys", 
-                variable=kidney,
-                onvalue='Yes', 
-                offvalue='No').grid(row=16, column=5, sticky='W')
-    Checkbutton(tempWindow,
-                cursor='hand2',
-                text="Heart", 
-                variable=heart,
-                onvalue='Yes', 
-                offvalue='No').grid(row=16, column=6, sticky='W')
-    Checkbutton(tempWindow,
-                cursor='hand2',
-                text="Liver", 
-                variable=liver,
-                onvalue='Yes', 
-                offvalue='No').grid(row=16, column=7, sticky='W')
-    Checkbutton(tempWindow,
-                cursor='hand2',
-                text="Corneas", 
-                variable=corneas,
-                onvalue='Yes', 
-                offvalue='No').grid(row=17, column=5, sticky='W')
-    Checkbutton(tempWindow,
-                cursor='hand2',
-                text="Lungs", 
-                variable=lungs,
-                onvalue='Yes', 
-                offvalue='No').grid(row=17, column=6, sticky='W')
-    Checkbutton(tempWindow,
-                cursor='hand2',
-                text="Pancreas", 
-                variable=pancreas,
-                onvalue='Yes', 
-                offvalue='No').grid(row=17, column=7, sticky='W')
-
-    Button(tempWindow, 
-           text='Save Data to Record', 
-           bg='darkblue', 
-           fg='white', 
-           cursor='hand2', 
-           command=getPatientValues).grid(row=18, column=1, columnspan=2)
-    Button(tempWindow, 
-           text='Exit', 
-           bg='darkblue', 
-           fg='white', 
-           cursor='hand2', 
-           command=tempWindow.destroy).grid(row=18, column=3, columnspan=2)
-
-    tempWindow.mainloop()
-
-# Create a new Patient Record #
-# Status: BROKEN :(
-def addPatient():
-    tempWindow = Tk()
-    tempWindow.geometry('700x450')
-    tempWindow.title("Register a new Patient")
-
-    center(tempWindow)
-
-    patientTitle = StringVar()
-    forename = StringVar()
-    surname = StringVar()
-    prevSurname = StringVar()
-    dateOfBirth = StringVar()
-    gender = IntVar()
-    country = StringVar()
-    housenumber = StringVar()
-    street = StringVar()
-    postcode = StringVar()
-    county = StringVar()
-    contactnumber = StringVar()
-    regType = StringVar()
-    oldGP = StringVar()
-    oldGPAddress = StringVar()
-    oldGPPostcode = StringVar()
-    hcn = StringVar()
-    personnelNum = StringVar()
-    enDate = StringVar()
-    diDate = StringVar()
-    organYN = IntVar()
-    kidney = IntVar()
-    heart = IntVar()
-    lungs = IntVar()
-    liver = IntVar() 
-    corneas = IntVar()
-    pancreas = IntVar()
 
     def clearWindow():
         comboboxTitle.current([0])
@@ -860,21 +434,14 @@ def addPatient():
         else:
             tempWindow.destroy()
 
-    def getPatientValues():
+    def getPatientValues(genderNew):
         title = comboboxTitle.get()
         forename = entryForename.get()
         surname = entrySurname.get()
         prevSurname = entryPrevSurname.get()
         dob = entryDOB.get()
-        
-        genderGet = gender.get()
-        
-        if genderGet == 1:
-            genderNew = "Male"
-        elif genderGet == 0:
-            genderNew = "Female"
-        else:
-            ms.showerror("Error!", "Gender Variable Error (Line 861)", parent=tempWindow)
+
+        print("genderNew", genderNew)
 
         country = comboboxCountry.get()
         housenumber = entryHousenumber.get()
@@ -892,43 +459,14 @@ def addPatient():
         enDate = entryEnDate.get()
         diDate = entryDiDate.get()
 
-        organYNGet = organYN.get()
-
-        if organYNGet == 1:
-            organYNNew = "Yes"
-        elif organYNGet == 0:
-            organYNNew = "No"
-        else:
-            ms.showerror("Error!", "Organ Donation Variable Error (Line 880)", parent=tempWindow)
-
-        def changeVal(value):
-            if value == 0:
-                newValue = "No"
-            elif value == 1:
-                newValue = "Yes"
-            else:
-                ms.showerror("Error!", "Change Value Function Error (Line 910)", parent=tempWindow)
-
-            return newValue
-
-        kidney2 = kidney.get()
-        kidneyNew = changeVal(kidney2)
-
-        heart2 = heart.get()
-        heartNew = changeVal(heart2)
-
-        liver2 = liver.get()
-        liverNew = changeVal(liver2)
-
-        corneas2 = corneas.get()
-        corneasNew = changeVal(corneas2)
-
-        lungs2 = lungs.get()
-        lungsNew = changeVal(lungs2)
-
-        pancreas2 = pancreas.get()
-        pancreasNew = changeVal(pancreas2)
-
+        organYNNew = organYN.get()
+        kidneyNew = kidney.get()
+        heartNew = heart.get()
+        liverNew = liver.get()
+        corneasNew = corneas.get()
+        lungsNew = lungs.get()
+        pancreasNew = pancreas.get()
+        
         appendPatient(title, forename, surname, prevSurname, dob, genderNew, country, 
                       housenumber, street, postcode, county, contactNo, regType, oldGP, oldGPAddress, 
                       oldGPPostcode, hcn, personnelNum, enDate, diDate, organYNNew, kidneyNew, heartNew, 
@@ -994,16 +532,14 @@ def addPatient():
                         text="Gender: ", 
                         font=("corbel", 10))
     labelGender.grid(row=8, column=0)
-    genderButton1 = Radiobutton(tempWindow, 
-                                text="Male",
-                                value=1,
-                                variable=gender,
-                                cursor='hand2').grid(row=8, column=1)
-    genderButton2 = Radiobutton(tempWindow,  
-                                text="Female",
-                                value=0,
-                                variable=gender,
-                                cursor='hand2').grid(row=8, column=2)
+    Radiobutton(tempWindow, 
+                text="Male",
+                variable=gender,
+                value="Male").grid(row=8, column=1)
+    Radiobutton(tempWindow,  
+                text="Female",
+                variable=gender,
+                value="Female").grid(row=8, column=2)
 
     labelCountry = Label(tempWindow, 
                          text="Country of Birth: ", 
@@ -1181,34 +717,46 @@ def addPatient():
     kidneyButton = Checkbutton(tempWindow,
                                cursor='hand2',
                                text="Kidneys", 
-                               variable=kidney).grid(row=16, column=5, sticky='W')
+                               variable=kidney,
+                               onvalue="Yes",
+                               offvalue="No").grid(row=16, column=5, sticky='W')
     heartButton = Checkbutton(tempWindow,
                               cursor='hand2',
                               text="Heart", 
-                              variable=heart).grid(row=16, column=6, sticky='W')
+                              variable=heart,
+                              onvalue="Yes",
+                              offvalue="No").grid(row=16, column=6, sticky='W')
     liverButton = Checkbutton(tempWindow,
                               cursor='hand2',
                               text="Liver", 
-                              variable=liver).grid(row=16, column=7, sticky='W')
+                              variable=liver,
+                              onvalue="Yes",
+                              offvalue="No").grid(row=16, column=7, sticky='W')
     corneasButton = Checkbutton(tempWindow,
                                 cursor='hand2',
                                 text="Corneas", 
-                                variable=corneas).grid(row=17, column=5, sticky='W')
+                                variable=corneas,
+                                onvalue="Yes",
+                                offvalue="No").grid(row=17, column=5, sticky='W')
     lungsButton = Checkbutton(tempWindow,
                               cursor='hand2',
-                              text="Lungs", 
-                              variable=lungs).grid(row=17, column=6, sticky='W')
+                              text="Lungs",
+                              variable=lungs,
+                              onvalue="Yes",
+                              offvalue="No").grid(row=17, column=6, sticky='W')
     pancreasButton = Checkbutton(tempWindow,
                                  cursor='hand2',
                                  text="Pancreas", 
-                                 variable=pancreas).grid(row=17, column=7, sticky='W')
+                                 variable=pancreas,
+                                 onvalue="Yes",
+                                 offvalue="No").grid(row=17, column=7, sticky='W')
 
     Button(tempWindow, 
            text='Save Data to Record', 
            bg='darkblue', 
            fg='white', 
            cursor='hand2', 
-           command=getPatientValues).grid(row=18, column=1, columnspan=2)
+           command= lambda: getPatientValues(gender.get())).grid(row=18, column=1, columnspan=2)
     Button(tempWindow, 
            text='Exit', 
            bg='darkblue', 
