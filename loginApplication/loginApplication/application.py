@@ -25,12 +25,17 @@
 
 # ***** Importing Modules ***** #
 
+from __future__ import print_function
+
 from tkinter import *
 from tkinter import messagebox as ms
 from tkinter import Menu
 from tkinter import ttk
 import sqlite3
 import os
+
+from mailmerge import MailMerge
+from datetime import date
 
 
 # ***** Initial Declaration of Variables ***** #
@@ -52,6 +57,37 @@ userDetails = []
 # window which is called 'tempWindow'; once the user is finished with this form
 # they will either exit or commit the entered details. Upon this, the window will 
 # close and the user will be returned to the main application.
+
+# Mail Merge Data into Documents #
+
+def docMerge(template):
+    # pt??? firstInitial = firstname[0]
+    longDate = 0
+
+    userTitle = userDetails[3]
+    userFirstname = userDetails[4]
+    userFirstInitial = userFirstname[0]
+    userSurname = userDetails[5]
+
+    # Document 1 - Attend RE Test Results
+    with MailMerge('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/templates/attendReTests.docx') as document:
+        print(document.get_merge_fields())
+
+        document.merge(title=patientTitle,
+                       first_initial=firstInitial,
+                       surname=surname,
+                       housenumber=housenumber,
+                       street_name=streetName,
+                       postcode=postcode,
+                       county=county,
+                       country=country,
+                       long_date=longDate,
+                       firstname=firstname,
+                       staff_title=userTitle,
+                       staff_first_initial=userFirstName,
+                       staff_surname=userSurname,)
+
+        document.write('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/documentOutput/TESTattendReTests.docx')
 
 # Center the Window on the Monitor # 
 # Status: FULLY WORKING

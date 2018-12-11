@@ -32,6 +32,16 @@ from tkinter import ttk
 import sqlite3
 import os
 
+from __future__ import print_function
+from mailmerge import MailMerge
+from datetime import date
+
+# ***** Define Document Template Paths ***** #
+
+templateAttendReTests = "templates\attendReTests.docx"
+
+documentAttendReTests = MailMerge(templateAttendReTests)
+print(documentAttendReTests.get_merge_fields())
 
 # ***** Initial Declaration of Variables ***** #
 
