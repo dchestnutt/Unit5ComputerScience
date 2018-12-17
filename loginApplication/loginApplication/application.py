@@ -60,34 +60,194 @@ userDetails = []
 
 # Mail Merge Data into Documents #
 
-def docMerge(template):
-    # pt??? firstInitial = firstname[0]
-    longDate = 0
+def newDoc():
+    searchTerm = StringVar()
+    docType = StringVar()
+    
+    tempWindow = Tk()
+    tempWindow.geometry('430x200')
+    tempWindow.title("Create a New Document")
 
+    center(tempWindow)
+    
+    def createDoc():
+        print("Create Document Function Called.")
+
+    def searchUser(firstname, lastname, dob):
+        result = ""
+        
+        conn = sqlite3.connect('Patients.db')
+        
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM PatientDemo WHERE firstname = ? and lastname = ?", (firstname, lastname, dob))
+
+            result = cursor.fetchall()
+            
+            if result:
+                tupleDetails = StringVar()
+
+                cursor = conn.cursor()
+
+                cursor.execute('SELECT * FROM PatientDemo WHERE firstname = ? and lastname =  ? and dob = ?', (firstname, lastname, dob))
+            
+                tupleDetails = cursorUser.fetchall()
+
+                for stringDetails in tupleDetails:
+                    for detail in stringDetails:
+                        currentPatientDetails.append(detail)
+            else:
+                print(result)
+                ms.showerror('Patient Not Found', 'No patients with these matching details have been found.')
+                entryFirstname.delete(0, END)
+                entryLastname.delete(0, END)
+                entryDOB.delete(0, END)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ")
+    spacerLabel.grid(row=0, column=0, columnspan=7)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=0, rowspan=7)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=6, rowspan=7)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ")
+    spacerLabel.grid(row=2, column=0, columnspan=7)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ")
+    spacerLabel.grid(row=4, column=0, columnspan=7)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ")
+    spacerLabel.grid(row=5, column=0, columnspan=7)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ")
+    spacerLabel.grid(row=6, column=0, columnspan=7)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=2, rowspan=7)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=4, rowspan=7)
+
+    labelFirstname = Label(tempWindow, 
+                        text="Patient Firstname: ",
+                        font=("corbel bold", 10))
+    labelFirstname.grid(row=1, column=1)
+    entryFirstname = Entry(tempWindow, 
+                        textvar=searchTerm)
+    entryFirstname.grid(row=1, column=3, sticky=E+W)
+
+    labelLastname = Label(tempWindow, 
+                        text="Patient Lastname: ",
+                        font=("corbel bold", 10))
+    labelLastname.grid(row=2, column=1)
+    entryLastname = Entry(tempWindow, 
+                        textvar=searchTerm)
+    entryLastname.grid(row=2, column=3, sticky=E+W)
+
+    labelDOB = Label(tempWindow, 
+                        text="Patient Date of Birth: ",
+                        font=("corbel bold", 10))
+    labelDOB.grid(row=3, column=1)
+    entryDOB = Entry(tempWindow, 
+                        textvar=searchTerm)
+    entryDOB.grid(row=3, column=3, sticky=E+W)
+
+    searchButton = Button(tempWindow, 
+                          text='Search', 
+                          bg='darkblue', 
+                          fg='white', 
+                          command=searchUser).grid(row=2, column=5)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ")
+    spacerLabel.grid(row=4, column=0, columnspan=5)
+
+    labelDocType = Label(tempWindow, 
+                              text="Document Type: ", 
+                              font=("corbel", 10))
+    labelDocType.grid(row=5, column=1)
+    comboboxDocType = ttk.Combobox(tempWindow, 
+                                 textvariable=docType)
+    comboboxDocType.grid(row=5, column=3, columnspan=3, sticky=E+W)
+    comboboxDocType.config(values = ('Please Select...', 'Attend RE Tests', 'Attend RE Correspondence', 'Attend Annual Clinic', 'Repeat Tests'), width=17)
+    comboboxDocType.current([0])
+
+    createButton = Button(tempWindow, 
+                          text='Create Document', 
+                          bg='darkblue', 
+                          fg='white', 
+                          command=createDoc).grid(row=7, column=2, columnspan=3, sticky=E+W)
+
+    def getValues():
+        firstname = entryFirstname.get()
+        lastname = entryLastname.get()
+        dob = entryDOB.get()
+
+        return firstname, lastname, dob
+
+    def getCombobox():
+        result = comboboxDocType.get()
+
+        if result == 'Attend RE Tests':
+            templateType = 1
+        elif result == 'Attend RE Correspondence':
+            templateType = 2
+        elif result == 'Attend Annual Clinic':
+            templateType = 3
+        elif result == 'Repeat Tests':
+            templateType = 4
+        else:
+            print("ERROR LINE 126")
+
+        return templateType
+
+    templateType = getCombobox()
+
+    firstInitial = firstname[0]
+    longDate = 0
+                  
     userTitle = userDetails[3]
     userFirstname = userDetails[4]
     userFirstInitial = userFirstname[0]
     userSurname = userDetails[5]
 
     # Document 1 - Attend RE Test Results
-    with MailMerge('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/templates/attendReTests.docx') as document:
-        print(document.get_merge_fields())
+    if templateType == 1:
+        with MailMerge('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/templates/attendReTests.docx') as document:
 
-        document.merge(title=patientTitle,
-                       first_initial=firstInitial,
-                       surname=surname,
-                       housenumber=housenumber,
-                       street_name=streetName,
-                       postcode=postcode,
-                       county=county,
-                       country=country,
-                       long_date=longDate,
-                       firstname=firstname,
-                       staff_title=userTitle,
-                       staff_first_initial=userFirstName,
-                       staff_surname=userSurname,)
+            document.merge(title=patientTitle,
+                           first_initial=firstInitial,
+                           surname=surname,
+                           housenumber=housenumber,
+                           street_name=streetName,
+                           postcode=postcode,
+                           county=county,
+                           country=country,
+                           long_date=longDate,
+                           firstname=firstname,
+                           staff_title=userTitle,
+                           staff_first_initial=userFirstName,
+                           staff_surname=userSurname)
 
-        document.write('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/documentOutput/TESTattendReTests.docx')
+            document.write('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/documentOutput/TESTattendReTests.docx')
+    else:
+        print("Template name ERROR")
 
 # Center the Window on the Monitor # 
 # Status: FULLY WORKING
@@ -1502,6 +1662,8 @@ def mainWindow():
                                   command=addDocument) 
     dropdownDocuments.add_command(label='View Saved Documents', 
                                   command=viewDocument) 
+    dropdownDocuments.add_command(label='Create a New Document', 
+                                  command=newDoc) 
 
     menu.add_cascade(label='Documents', 
                      menu=dropdownDocuments)
@@ -1687,6 +1849,12 @@ def mainWindow():
            bg='darkgrey', 
            fg='black', 
            command=editStock).grid(row=17, column=0, columnspan=2)
+    Button(window, 
+           text='Create a new Document', 
+           width=20, 
+           bg='darkgrey', 
+           fg='black', 
+           command=newDoc).grid(row=18, column=0, columnspan=2)
 
     labelInstructions = Label(window, 
                               text="System Options",
