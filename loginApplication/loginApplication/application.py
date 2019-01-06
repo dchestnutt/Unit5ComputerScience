@@ -1924,11 +1924,11 @@ def mainWindow():
 def checkUser():
     conn = sqlite3.connect('Users.db')
 
-    with conn:
+    with conn:                  # Connect to the database
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM UserAccounts WHERE username = ? and password = ?", (username.get(), password.get()))
 
-        result = cursor.fetchall()
+        result = cursor.fetchall()  # Get all values returned from the database SELECT query
 
         if result:
             tupleDetails = StringVar()
@@ -1936,22 +1936,20 @@ def checkUser():
             cursorUser = conn.cursor()
 
             cursorUser.execute('SELECT * FROM UserAccounts WHERE username = ?', (username.get(),))
-            tupleDetails = cursorUser.fetchall()
+            tupleDetails = cursorUser.fetchall()    
 
-            for stringDetails in tupleDetails:
-                for detail in stringDetails:
-                    userDetails.append(detail)
+            for stringDetails in tupleDetails:      # Add each value pulled from the database to
+                for detail in stringDetails:        # a global list to allow them to be used later
+                    userDetails.append(detail)      # in the program when needed
 
-            tempWindow.destroy()
-            mainWindow() 
-        else:
-            print(result)
-            ms.showerror('User Not Found', 'Username or Password not Found.')
-            entryUsername.delete(0, END)
+            tempWindow.destroy()    # Close this window
+            mainWindow()            # Re-open the main menu
+        else:               # If no user details found - 
+            ms.showerror('User Not Found', 'Username or Password not Found.') # Show error message
+            entryUsername.delete(0, END) # Clear entry fields for a second attempt
             entryPassword.delete(0, END)
 
 ignoreThis = 1
-
 
 # ***** Creating an Admin User Account ***** #
 
