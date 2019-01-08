@@ -43,6 +43,9 @@ from datetime import date
 global userDetails
 userDetails = []
 
+global currentPatientDetails
+currentPatientDetails = []
+
 
 # ***** Functions and Procedures ***** #
 
@@ -63,116 +66,167 @@ userDetails = []
 def newDoc():
     searchTerm = StringVar()
     docType = StringVar()
-    
+    dobDay = StringVar()
+    dobMonth = StringVar()
+    dobYear = StringVar()
+    firstname = StringVar()
+    lastname = StringVar()
+
     tempWindow = Tk()
-    tempWindow.geometry('430x200')
+    tempWindow.geometry('460x200')
     tempWindow.title("Create a New Document")
 
     center(tempWindow)
     
-    def createDoc():
-        print("Create Document Function Called.")
+    def searchUser():       
+        def getValues():
+            firstname = entryFirstname.get()
+            lastname = entryLastname.get()
+            dobDay = comboboxDOBDay.get()
+            dobMonth = comboboxDOBMonth.get()
+            dobYear = comboboxDOBYear.get()
 
-    def searchUser(firstname, lastname, dob):
-        result = ""
+            dob = str(dobDay) + "/" + str(dobMonth) + "/" + str(dobYear) 
+
+            values = [firstname, lastname, dobDay, dobMonth, dobYear]
+
+            return values
+
+        values = getValues()
         
+        firstname = values[0]
+        lastname = values[1]
+        dobDay = values[2]
+        dobMonth = values[3]
+        dobYear = values[4]
+        
+        dob = str(dobDay) + "/" + str(dobMonth) + "/" + str(dobYear)
+
+        fullname = str(firstname) + " " + str(lastname)
+
         conn = sqlite3.connect('Patients.db')
         
         with conn:
             cursor = conn.cursor()
 
-            cursor.execute("SELECT * FROM PatientDemo WHERE firstname = ? and lastname = ?", (firstname, lastname, dob))
+            cursor.execute("SELECT * FROM PatientDemo WHERE forename = ? and surname = ? and dateOfBirth = ?", (firstname, lastname, dob))
 
             result = cursor.fetchall()
             
             if result:
-                tupleDetails = StringVar()
+                tupleDetails2 = StringVar()
 
                 cursor = conn.cursor()
 
-                cursor.execute('SELECT * FROM PatientDemo WHERE firstname = ? and lastname =  ? and dob = ?', (firstname, lastname, dob))
+                cursor.execute('SELECT * FROM PatientDemo WHERE forename = ? and surname =  ? and dateOfBirth = ?', (firstname, lastname, dob))
             
-                tupleDetails = cursorUser.fetchall()
+                tupleDetails2 = cursor.fetchall()
 
-                for stringDetails in tupleDetails:
-                    for detail in stringDetails:
+                for stringDetails2 in tupleDetails2:
+                    for detail in stringDetails2:
                         currentPatientDetails.append(detail)
+
+                ms.showinfo('Succesful!', 'The record of ' + fullname + ' has been loaded.', parent=tempWindow)
+
+                return currentPatientDetails
             else:
-                print(result)
                 ms.showerror('Patient Not Found', 'No patients with these matching details have been found.')
                 entryFirstname.delete(0, END)
                 entryLastname.delete(0, END)
                 entryDOB.delete(0, END)
-
+       
     spacerLabel = Label(tempWindow, 
                         text=" ")
-    spacerLabel.grid(row=0, column=0, columnspan=7)
+    spacerLabel.grid(row=0, column=0, columnspan=9)
 
     spacerLabel = Label(tempWindow, 
                         text=" ",
                         width=4)
-    spacerLabel.grid(row=0, column=0, rowspan=7)
+    spacerLabel.grid(row=0, column=0, rowspan=9)
 
     spacerLabel = Label(tempWindow, 
                         text=" ",
                         width=4)
-    spacerLabel.grid(row=0, column=6, rowspan=7)
+    spacerLabel.grid(row=0, column=6, rowspan=9)
 
     spacerLabel = Label(tempWindow, 
                         text=" ")
-    spacerLabel.grid(row=2, column=0, columnspan=7)
+    spacerLabel.grid(row=4, column=0, columnspan=9)
 
     spacerLabel = Label(tempWindow, 
                         text=" ")
-    spacerLabel.grid(row=4, column=0, columnspan=7)
+    spacerLabel.grid(row=8, column=0, columnspan=9)
 
     spacerLabel = Label(tempWindow, 
                         text=" ")
-    spacerLabel.grid(row=5, column=0, columnspan=7)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=6, column=0, columnspan=7)
+    spacerLabel.grid(row=6, column=0, columnspan=9)
 
     spacerLabel = Label(tempWindow, 
                         text=" ",
                         width=4)
-    spacerLabel.grid(row=0, column=2, rowspan=7)
+    spacerLabel.grid(row=0, column=2, rowspan=9)
 
     spacerLabel = Label(tempWindow, 
                         text=" ",
                         width=4)
-    spacerLabel.grid(row=0, column=4, rowspan=7)
+    spacerLabel.grid(row=0, column=8, rowspan=9)
 
     labelFirstname = Label(tempWindow, 
                         text="Patient Firstname: ",
                         font=("corbel bold", 10))
     labelFirstname.grid(row=1, column=1)
     entryFirstname = Entry(tempWindow, 
-                        textvar=searchTerm)
-    entryFirstname.grid(row=1, column=3, sticky=E+W)
+                        textvar=firstname)
+    entryFirstname.grid(row=1, column=3, columnspan=3, sticky=E+W)
 
     labelLastname = Label(tempWindow, 
                         text="Patient Lastname: ",
                         font=("corbel bold", 10))
     labelLastname.grid(row=2, column=1)
     entryLastname = Entry(tempWindow, 
-                        textvar=searchTerm)
-    entryLastname.grid(row=2, column=3, sticky=E+W)
+                        textvar=lastname)
+    entryLastname.grid(row=2, column=3, columnspan=3, sticky=E+W)
 
-    labelDOB = Label(tempWindow, 
-                        text="Patient Date of Birth: ",
-                        font=("corbel bold", 10))
-    labelDOB.grid(row=3, column=1)
-    entryDOB = Entry(tempWindow, 
-                        textvar=searchTerm)
-    entryDOB.grid(row=3, column=3, sticky=E+W)
+    labelDocType = Label(tempWindow, 
+                              text="Patient Date of Birth: ", 
+                              font=("corbel bold", 10))
+    labelDocType.grid(row=3, column=1)
+    
+    comboboxDOBDay = ttk.Combobox(tempWindow, 
+                                   textvariable=dobDay)
+    comboboxDOBDay.grid(row=3, column=3, sticky=E+W)
+    comboboxDOBDay.config(values = ('DD', '01', '02', '03', '04', '05', '05', '07', '08', '09', '10', '11', '12', '13', '14',
+                                     '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                                     '30', '31'), width=4)
+    comboboxDOBDay.current([0])
+
+    comboboxDOBMonth = ttk.Combobox(tempWindow, 
+                                   textvariable=dobMonth)
+    comboboxDOBMonth.grid(row=3, column=4, sticky=E+W)
+    comboboxDOBMonth.config(values = ('MM', '01', '02', '03', '04', '05', '05', '07', '08', '09', '10', '11', '12'), width=4)
+    comboboxDOBMonth.current([0])
+
+    comboboxDOBYear = ttk.Combobox(tempWindow, 
+                                   textvariable=dobYear)
+    comboboxDOBYear.grid(row=3, column=5, sticky=E+W)
+    comboboxDOBYear.config(values = ('YYYY', '1900', '1901', '1902', '1903', '1904', '1905', '1906', '1907', '1908', '1909',
+                                     '1910', '1911', '1912', '1913', '1914', '1915', '1916', '1917', '1918', '1919', '1920', 
+                                     '1921', '1922', '1923', '1924', '1925', '1926', '1927', '1928', '1929', '1930', '1931', 
+                                     '1932', '1933', '1934', '1935', '1936', '1937', '1938', '1939', '1940', '1941', '1942', 
+                                     '1943', '1944', '1945', '1946', '1947', '1948', '1949', '1950', '1951', '1952', '1953', 
+                                     '1954', '1955', '1956', '1957', '1958', '1959', '1960', '1961', '1962', '1963', '1964', 
+                                     '1965', '1966', '1967', '1968', '1969', '1970', '1971', '1972', '1973', '1974', '1975',
+                                     '1976', '1977', '1978', '1979', '1980', '1981', '1982', '1983', '1984', '1985', '1986',
+                                     '1987', '1988', '1989', '1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997', 
+                                     '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008',
+                                     '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019'), width=9)
+    comboboxDOBYear.current([0])
 
     searchButton = Button(tempWindow, 
                           text='Search', 
                           bg='darkblue', 
                           fg='white', 
-                          command=searchUser).grid(row=2, column=5)
+                          command=searchUser).grid(row=2, column=7)
 
     spacerLabel = Label(tempWindow, 
                         text=" ")
@@ -188,20 +242,9 @@ def newDoc():
     comboboxDocType.config(values = ('Please Select...', 'Attend RE Tests', 'Attend RE Correspondence', 'Attend Annual Clinic', 'Repeat Tests'), width=17)
     comboboxDocType.current([0])
 
-    createButton = Button(tempWindow, 
-                          text='Create Document', 
-                          bg='darkblue', 
-                          fg='white', 
-                          command=createDoc).grid(row=7, column=2, columnspan=3, sticky=E+W)
-
-    def getValues():
-        firstname = entryFirstname.get()
-        lastname = entryLastname.get()
-        dob = entryDOB.get()
-
-        return firstname, lastname, dob
-
     def getCombobox():
+        templateType = ""
+        
         result = comboboxDocType.get()
 
         if result == 'Attend RE Tests':
@@ -217,38 +260,79 @@ def newDoc():
 
         return templateType
 
-    templateType = getCombobox()
+    def createDoc():
+        def getCombobox():
+            templateType = ""
+        
+            result = comboboxDocType.get()
 
-    firstInitial = firstname[0]
-    longDate = 0
+            if result == 'Attend RE Tests':
+                templateType = 1
+            elif result == 'Attend RE Correspondence':
+                templateType = 2
+            elif result == 'Attend Annual Clinic':
+                templateType = 3
+            elif result == 'Repeat Tests':
+                templateType = 4
+            else:
+                print("ERROR LINE 126")
+
+            return templateType
+        
+        templateType = getCombobox()
+
+        #list empty?????????????????
+        print(currentPatientDetails)
+
+        longDate = "Wednesday 19 December 2018"
                   
-    userTitle = userDetails[3]
-    userFirstname = userDetails[4]
-    userFirstInitial = userFirstname[0]
-    userSurname = userDetails[5]
+        userTitle = userDetails[3]
+        userFirstname = userDetails[4]
+        userFirstInitial = userFirstname[0]
+        userSurname = userDetails[5]
 
-    # Document 1 - Attend RE Test Results
-    if templateType == 1:
-        with MailMerge('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/templates/attendReTests.docx') as document:
+        patientTitle = currentPatientDetails[1]
+        patientFirstname = currentPatientDetails[2]
+        patientSurname = currentPatientDetails[3]
+        patientDOB = currentPatientDetails[5]
+        patientCountry = currentPatientDetails[7]
+        patientCounty = currentPatientDetails[11]
+        patientHouseNum = currentPatientDetails[8]
+        patientStreet = currentPatientDetails[9]
+        patientPostcode = currentPatientDetails[10]
 
-            document.merge(title=patientTitle,
-                           first_initial=firstInitial,
-                           surname=surname,
-                           housenumber=housenumber,
-                           street_name=streetName,
-                           postcode=postcode,
-                           county=county,
-                           country=country,
+        patientFirstInitial = patientFirstname[0]
+
+        # Document 1 - Attend RE Test Results
+        if templateType == 1:
+            with MailMerge('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/templates/attendReTests.docx') as document:
+
+                document.merge(title=patientTitle,
+                           first_initial=patientFirstInitial,
+                           surname=patientSurname,
+                           housenumber=patientHouseNum,
+                           street_name=patientStreet,
+                           postcode=patientPostcode,
+                           county=patientCounty,
+                           country=patientCountry,
                            long_date=longDate,
-                           firstname=firstname,
+                           firstname=patientFirstname,
                            staff_title=userTitle,
-                           staff_first_initial=userFirstName,
+                           staff_first_initial=userFirstInitial,
                            staff_surname=userSurname)
 
-            document.write('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/documentOutput/TESTattendReTests.docx')
-    else:
-        print("Template name ERROR")
+                document.write('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/documentOutput/TESTattendReTests.docx')
+                
+                ms.showinfo('Success!', 'Document created succesfully.')
+        else:
+            print("Template name ERROR")
 
+    createButton = Button(tempWindow, 
+                          text='Create Document',
+                          bg='darkblue', 
+                          fg='white', 
+                          command=createDoc).grid(row=7, column=3, columnspan=3, sticky=E+W)
+    
 # Center the Window on the Monitor # 
 # Status: FULLY WORKING
 def center(toplevel):
