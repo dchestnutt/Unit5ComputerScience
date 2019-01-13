@@ -5,7 +5,7 @@
 
 
 ###########################
-## Prototype Version 1.2 ##
+## Prototype Version 1.3 ##
 ###########################
 
 
@@ -21,6 +21,8 @@
 # 8. IMPLEMENT search consultations function
 # 9. IMPLEMENT create & edit appointments function
 # 10. CHANGE colours & formatting in mainWindow to make it look better
+# 11. Print mail merged documents?
+# 12. Save mail merged documents to patient records?
 
 
 # ***** Importing Modules ***** #
@@ -42,10 +44,7 @@ from datetime import date
 
 global userDetails
 userDetails = []
-
-global currentPatientDetails
 currentPatientDetails = []
-
 
 # ***** Functions and Procedures ***** #
 
@@ -62,7 +61,7 @@ currentPatientDetails = []
 # close and the user will be returned to the main application.
 
 # Mail Merge Data into Documents #
-
+# Status: FULL WORKING
 def newDoc():
     searchTerm = StringVar()
     docType = StringVar()
@@ -73,7 +72,7 @@ def newDoc():
     lastname = StringVar()
 
     tempWindow = Tk()
-    tempWindow.geometry('460x200')
+    tempWindow.geometry('460x140')
     tempWindow.title("Create a New Document")
 
     center(tempWindow)
@@ -85,8 +84,6 @@ def newDoc():
             dobDay = comboboxDOBDay.get()
             dobMonth = comboboxDOBMonth.get()
             dobYear = comboboxDOBYear.get()
-
-            dob = str(dobDay) + "/" + str(dobMonth) + "/" + str(dobYear) 
 
             values = [firstname, lastname, dobDay, dobMonth, dobYear]
 
@@ -114,9 +111,9 @@ def newDoc():
             result = cursor.fetchall()
             
             if result:
-                tupleDetails2 = StringVar()
-
-                cursor = conn.cursor()
+                tupleDetails2 = ""
+                stringDetails2 = ""
+                currentPatientDetails = []
 
                 cursor.execute('SELECT * FROM PatientDemo WHERE forename = ? and surname =  ? and dateOfBirth = ?', (firstname, lastname, dob))
             
@@ -128,12 +125,15 @@ def newDoc():
 
                 ms.showinfo('Succesful!', 'The record of ' + fullname + ' has been loaded.', parent=tempWindow)
 
-                return currentPatientDetails
+                tempWindow.destroy()
+                createDoc(currentPatientDetails)
             else:
                 ms.showerror('Patient Not Found', 'No patients with these matching details have been found.')
                 entryFirstname.delete(0, END)
                 entryLastname.delete(0, END)
-                entryDOB.delete(0, END)
+                comboboxDOBDay.current(0)
+                comboboxDOBMonth.current(0)
+                comboboxDOBYear.current(0)
        
     spacerLabel = Label(tempWindow, 
                         text=" ")
@@ -148,18 +148,6 @@ def newDoc():
                         text=" ",
                         width=4)
     spacerLabel.grid(row=0, column=6, rowspan=9)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=4, column=0, columnspan=9)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=8, column=0, columnspan=9)
-
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=6, column=0, columnspan=9)
 
     spacerLabel = Label(tempWindow, 
                         text=" ",
@@ -232,107 +220,360 @@ def newDoc():
                         text=" ")
     spacerLabel.grid(row=4, column=0, columnspan=5)
 
-    labelDocType = Label(tempWindow, 
+    def createDoc(currentPatientDetails):
+        enteredCorrOrigin = ''
+        
+        tempWindow2 = Tk()
+        tempWindow2.geometry('460x200')
+        tempWindow2.title("Create a New Document")
+
+        center(tempWindow2)
+
+        spacerLabel = Label(tempWindow2, 
+                        text=" ")
+        spacerLabel.grid(row=0, column=0, columnspan=8)
+
+        spacerLabel = Label(tempWindow2, 
+                        text=" ")
+        spacerLabel.grid(row=2, column=0, columnspan=8)
+
+        spacerLabel = Label(tempWindow2, 
+                        text=" ")
+        spacerLabel.grid(row=8, column=0, columnspan=8)
+
+        spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+        spacerLabel.grid(row=0, column=0, rowspan=9)
+
+        spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+        spacerLabel.grid(row=0, column=2, rowspan=9)
+
+        spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+        spacerLabel.grid(row=0, column=5, rowspan=9)
+
+        spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+        spacerLabel.grid(row=0, column=7, rowspan=9)
+
+        labelDocType = Label(tempWindow2, 
                               text="Document Type: ", 
                               font=("corbel", 10))
-    labelDocType.grid(row=5, column=1)
-    comboboxDocType = ttk.Combobox(tempWindow, 
-                                 textvariable=docType)
-    comboboxDocType.grid(row=5, column=3, columnspan=3, sticky=E+W)
-    comboboxDocType.config(values = ('Please Select...', 'Attend RE Tests', 'Attend RE Correspondence', 'Attend Annual Clinic', 'Repeat Tests'), width=17)
-    comboboxDocType.current([0])
+        labelDocType.grid(row=1, column=1)
+        comboboxDocType = ttk.Combobox(tempWindow2, 
+                                    textvariable=docType)
+        comboboxDocType.grid(row=1, column=3, columnspan=2, sticky=E+W)
+        comboboxDocType.config(values = ('Please Select...', 'Attend RE Tests', 'Attend RE Correspondence', 'Attend Annual Clinic', 'Repeat Tests'), width=17)
+        comboboxDocType.current([0])
 
-    def getCombobox():
-        templateType = ""
-        
-        result = comboboxDocType.get()
+        def getCombobox(currentPatientDetails):
+            def mergeTT1(currentPatientDetails):
+                longDate = "DATE AS POSTMARK"
 
-        if result == 'Attend RE Tests':
-            templateType = 1
-        elif result == 'Attend RE Correspondence':
-            templateType = 2
-        elif result == 'Attend Annual Clinic':
-            templateType = 3
-        elif result == 'Repeat Tests':
-            templateType = 4
-        else:
-            print("ERROR LINE 126")
+                userTitle = userDetails[3]
+                userFirstname = userDetails[4]
+                userFirstInitial = userFirstname[0]
+                userSurname = userDetails[5]
 
-        return templateType
+                patientTitle = currentPatientDetails[1]
+                patientFirstname = currentPatientDetails[2]
+                patientSurname = currentPatientDetails[3]
+                patientDOB = currentPatientDetails[5]
+                patientCountry = currentPatientDetails[7]
+                patientCounty = currentPatientDetails[11]
+                patientHouseNum = currentPatientDetails[8]
+                patientStreet = currentPatientDetails[9]
+                patientPostcode = currentPatientDetails[10]
 
-    def createDoc():
-        def getCombobox():
-            templateType = ""
-        
-            result = comboboxDocType.get()
+                patientFirstInitial = patientFirstname[0]
 
-            if result == 'Attend RE Tests':
-                templateType = 1
-            elif result == 'Attend RE Correspondence':
-                templateType = 2
-            elif result == 'Attend Annual Clinic':
-                templateType = 3
-            elif result == 'Repeat Tests':
-                templateType = 4
-            else:
-                print("ERROR LINE 126")
+                with MailMerge(r'.\templates\attendReTests.docx') as document:
 
-            return templateType
-        
-        templateType = getCombobox()
+                    document.merge(Title=patientTitle,
+                               First_Initial=patientFirstInitial,
+                               Surname=patientSurname,
+                               Housenumber=patientHouseNum,
+                               Street_Name=patientStreet,
+                               Postcode=patientPostcode,
+                               County=patientCounty,
+                               Country=patientCountry,
+                               Long_Date=longDate,
+                               Firstname=patientFirstname,
+                               Staff_Title=userTitle,
+                               Staff_First_Initial=userFirstInitial,
+                               Staff_Surname=userSurname)
 
-        #list empty?????????????????
-        print(currentPatientDetails)
+                    document.write(r'.\documentOutput\TEMPattendReTests.docx')
+                    
+                    currentPatientDetails = []
 
-        longDate = "Wednesday 19 December 2018"
+                    ms.showinfo('Success!', 'Document created succesfully.')
+            
+            def mergeTT2(corrOrigin, currentPatientDetails):
+                longDate = "DATE AS POSTMARK"
                   
-        userTitle = userDetails[3]
-        userFirstname = userDetails[4]
-        userFirstInitial = userFirstname[0]
-        userSurname = userDetails[5]
+                userTitle = userDetails[3]
+                userFirstname = userDetails[4]
+                userFirstInitial = userFirstname[0]
+                userSurname = userDetails[5]
 
-        patientTitle = currentPatientDetails[1]
-        patientFirstname = currentPatientDetails[2]
-        patientSurname = currentPatientDetails[3]
-        patientDOB = currentPatientDetails[5]
-        patientCountry = currentPatientDetails[7]
-        patientCounty = currentPatientDetails[11]
-        patientHouseNum = currentPatientDetails[8]
-        patientStreet = currentPatientDetails[9]
-        patientPostcode = currentPatientDetails[10]
+                patientTitle = currentPatientDetails[1]
+                patientFirstname = currentPatientDetails[2]
+                patientSurname = currentPatientDetails[3]
+                patientDOB = currentPatientDetails[5]
+                patientCountry = currentPatientDetails[7]
+                patientCounty = currentPatientDetails[11]
+                patientHouseNum = currentPatientDetails[8]
+                patientStreet = currentPatientDetails[9]
+                patientPostcode = currentPatientDetails[10]
 
-        patientFirstInitial = patientFirstname[0]
+                patientFirstInitial = patientFirstname[0]
 
-        # Document 1 - Attend RE Test Results
-        if templateType == 1:
-            with MailMerge('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/templates/attendReTests.docx') as document:
+                with MailMerge(r'.\templates\attendReCorrespondence.docx') as document:
 
-                document.merge(title=patientTitle,
-                           first_initial=patientFirstInitial,
-                           surname=patientSurname,
-                           housenumber=patientHouseNum,
-                           street_name=patientStreet,
-                           postcode=patientPostcode,
-                           county=patientCounty,
-                           country=patientCountry,
-                           long_date=longDate,
-                           firstname=patientFirstname,
-                           staff_title=userTitle,
-                           staff_first_initial=userFirstInitial,
-                           staff_surname=userSurname)
+                    document.merge(Title=patientTitle,
+                                   First_Initial=patientFirstInitial,
+                                   Surname=patientSurname,
+                                   Housenumber=patientHouseNum,
+                                   Street_Name=patientStreet,
+                                   Postcode=patientPostcode,
+                                   County=patientCounty,
+                                   Country=patientCountry,
+                                   Long_Date=longDate,
+                                   Firstname=patientFirstname,
+                                   Staff_Title=userTitle,
+                                   Staff_First_Initial=userFirstInitial,
+                                   Staff_Surname=userSurname,
+                                   Correspondence_Origin=corrOrigin)
 
-                document.write('C:/Users/dches/source/repos/Unit5ComputerScience2/loginApplication/loginApplication/documentOutput/TESTattendReTests.docx')
+                    document.write(r'.\documentOutput\TEMPattendReCorrespondence.docx')
+
+                    currentPatientDetails = []
+
+                    ms.showinfo('Success!', 'Document created succesfully.')
+
+            def mergeTT3(clinicYear, clinicName, appDate, appTime, clinicianName, currentPatientDetails):
+                longDate = "DATE AS POSTMARK"
+                  
+                userTitle = userDetails[3]
+                userFirstname = userDetails[4]
+                userFirstInitial = userFirstname[0]
+                userSurname = userDetails[5]
+
+                patientTitle = currentPatientDetails[1]
+                patientFirstname = currentPatientDetails[2]
+                patientSurname = currentPatientDetails[3]
+                patientDOB = currentPatientDetails[5]
+                patientCountry = currentPatientDetails[7]
+                patientCounty = currentPatientDetails[11]
+                patientHouseNum = currentPatientDetails[8]
+                patientStreet = currentPatientDetails[9]
+                patientPostcode = currentPatientDetails[10]
+
+                patientFirstInitial = patientFirstname[0]
+
+                with MailMerge(r'.\templates\attendAnnualClinic.docx') as document:
+
+                    document.merge(Title=patientTitle,
+                                   First_Initial=patientFirstInitial,
+                                   Surname=patientSurname,
+                                   Housenumber=patientHouseNum,
+                                   Street_Name=patientStreet,
+                                   Postcode=patientPostcode,
+                                   County=patientCounty,
+                                   Country=patientCountry,
+                                   Long_Date=longDate,
+                                   Firstname=patientFirstname,
+                                   Staff_Title=userTitle,
+                                   Staff_First_Initial=userFirstInitial,
+                                   Staff_Surname=userSurname,
+                                   Year=clinicYear,
+                                   Clinic_Name=clinicName,
+                                   Appointment_Date=appDate,
+                                   Appointment_Time=appTime,
+                                   Clinician_Full_Name=clinicianName)
+
+                    document.write(r'.\documentOutput\TEMPattendAnnualClinic.docx')
+
+                    currentPatientDetails = []
+
+                    ms.showinfo('Success!', 'Document created succesfully.')
+
+            def mergeTT4(testReq, currentPatientDetails):
+                longDate = "DATE AS POSTMARK"
+                  
+                userTitle = userDetails[3]
+                userFirstname = userDetails[4]
+                userFirstInitial = userFirstname[0]
+                userSurname = userDetails[5]
+
+                patientTitle = currentPatientDetails[1]
+                patientFirstname = currentPatientDetails[2]
+                patientSurname = currentPatientDetails[3]
+                patientDOB = currentPatientDetails[5]
+                patientCountry = currentPatientDetails[7]
+                patientCounty = currentPatientDetails[11]
+                patientHouseNum = currentPatientDetails[8]
+                patientStreet = currentPatientDetails[9]
+                patientPostcode = currentPatientDetails[10]
+
+                patientFirstInitial = patientFirstname[0]
+
+                with MailMerge(r'.\templates\repeatTests.docx') as document:
+
+                    document.merge(Title=patientTitle,
+                                   First_Initial=patientFirstInitial,
+                                   Surname=patientSurname,
+                                   Housenumber=patientHouseNum,
+                                   Street_Name=patientStreet,
+                                   Postcode=patientPostcode,
+                                   County=patientCounty,
+                                   Country=patientCountry,
+                                   Long_Date=longDate,
+                                   Firstname=patientFirstname,
+                                   Staff_Title=userTitle,
+                                   Staff_First_Initial=userFirstInitial,
+                                   Staff_Surname=userSurname,
+                                   Tests_Required=testReq)
+
+                    document.write(r'.\documentOutput\TEMPrepeatTests.docx')
+
+                    currentPatientDetails = []
+
+                    ms.showinfo('Success!', 'Document created succesfully.')
+            
+            templateType = IntVar()
+            result = comboboxDocType.current()
+
+            if result == 1: #Attend RE Tests
+                mergeTT1(currentPatientDetails)
+                tempWindow2.destroy()
+
+            elif result == 2: # Attend RE Correspondence
+                corrOrigin = StringVar()
                 
-                ms.showinfo('Success!', 'Document created succesfully.')
-        else:
-            print("Template name ERROR")
+                def getCorrOrigin():
+                    corrOrigin = entryCorrOrigin.get()
+                    
+                    mergeTT2(corrOrigin, currentPatientDetails)
+                    tempWindow2.destroy()
 
-    createButton = Button(tempWindow, 
-                          text='Create Document',
-                          bg='darkblue', 
-                          fg='white', 
-                          command=createDoc).grid(row=7, column=3, columnspan=3, sticky=E+W)
-    
+                labelCorrOrigin = Label(tempWindow2, 
+                                      text="Correspondence Origin: ",
+                                      font=("corbel bold", 10))
+                labelCorrOrigin.grid(row=5, column=1)
+                entryCorrOrigin = Entry(tempWindow2, 
+                                    textvar=corrOrigin)
+                entryCorrOrigin.grid(row=5, column=3, columnspan=2, sticky=E+W)
+
+                createButton = Button(tempWindow2, 
+                                      text='Create',
+                                      bg='darkblue', 
+                                      fg='white', 
+                                      command=getCorrOrigin).grid(row=5, column=6, sticky=E+W)
+            
+            elif result == 3: # Attend Annual Clinic
+                data1 = StringVar()
+                data2 = StringVar()
+                data3 = StringVar()
+                data4 = StringVar()
+                data5 = StringVar()
+                
+                def getDataResults():
+                    clinicYear = entryClinYear.get()
+                    clinicName = entryClinName.get()
+                    appDate = entryAppDate.get()
+                    appTime = entryAppTime.get()
+                    clinicianName = entryClinicianName.get()
+
+                    mergeTT3(clinicYear, clinicName, appDate, appTime, clinicianName, currentPatientDetails)
+                    tempWindow2.destroy()
+
+                labelClinYear = Label(tempWindow2, 
+                                      text="Clinic Year: ",
+                                      font=("corbel bold", 10))
+                labelClinYear.grid(row=3, column=1)
+                entryClinYear = Entry(tempWindow2, 
+                                    textvar=data1)
+                entryClinYear.grid(row=3, column=3, columnspan=2, sticky=E+W)
+
+                labelClinName = Label(tempWindow2, 
+                                      text="Clinic Name: ",
+                                      font=("corbel bold", 10))
+                labelClinName.grid(row=4, column=1)
+                entryClinName = Entry(tempWindow2, 
+                                    textvar=data2)
+                entryClinName.grid(row=4, column=3, columnspan=2, sticky=E+W)
+
+                labelAppDate = Label(tempWindow2, 
+                                      text="Appointment Date: ",
+                                      font=("corbel bold", 10))
+                labelAppDate.grid(row=5, column=1)
+                entryAppDate = Entry(tempWindow2, 
+                                    textvar=data3)
+                entryAppDate.grid(row=5, column=3, columnspan=2, sticky=E+W)
+
+                labelAppTime = Label(tempWindow2, 
+                                      text="Appointment Time: ",
+                                      font=("corbel bold", 10))
+                labelAppTime.grid(row=6, column=1)
+                entryAppTime = Entry(tempWindow2, 
+                                    textvar=data4)
+                entryAppTime.grid(row=6, column=3, columnspan=2, sticky=E+W)
+
+                labelClinicianName = Label(tempWindow2, 
+                                      text="Clinician Name: ",
+                                      font=("corbel bold", 10))
+                labelClinicianName.grid(row=7, column=1)
+                entryClinicianName = Entry(tempWindow2, 
+                                    textvar=data5)
+                entryClinicianName.grid(row=7, column=3, columnspan=2, sticky=E+W)
+
+                createButton = Button(tempWindow2, 
+                                      text='Create',
+                                      bg='darkblue', 
+                                      fg='white', 
+                                      command=getDataResults).grid(row=5, column=6, sticky=E+W)
+
+            elif result == 4: # Repeat Tests
+                
+                testsReqData = StringVar()
+                
+                def getTestsReq():
+                    testsReq = entryTestsReq.get()
+                    
+                    mergeTT4(testsReq, currentPatientDetails)
+                    tempWindow2.destroy()
+
+                labelTestsReq = Label(tempWindow2, 
+                                      text="Tests Required: ",
+                                      font=("corbel bold", 10))
+                labelTestsReq.grid(row=5, column=1)
+                entryTestsReq = Entry(tempWindow2, 
+                                    textvar=testsReqData)
+                entryTestsReq.grid(row=5, column=3, columnspan=2, sticky=E+W)
+
+                createButton = Button(tempWindow2, 
+                                      text='Create',
+                                      bg='darkblue', 
+                                      fg='white', 
+                                      command=getTestsReq).grid(row=5, column=6, sticky=E+W)
+
+            else:
+                print("ERROR LINE 405")
+
+        loadButton = Button(tempWindow2, 
+                            text='Load',
+                            bg='darkblue', 
+                            fg='white', 
+                            command= lambda: getCombobox(currentPatientDetails)).grid(row=1, column=6, sticky=E+W)
+
+
 # Center the Window on the Monitor # 
 # Status: FULLY WORKING
 def center(toplevel):
@@ -346,6 +587,7 @@ def center(toplevel):
     y = screen_height/2 - size[1]/2
 
     toplevel.geometry("+%d+%d" % (x, y)) 
+
 
 # Create a New User Account # 
 # Status: FULLY WORKING
@@ -388,10 +630,6 @@ def createUser():
     def appendUser(username, password, title, firstname, surname, email, mobile, userType):
         with sqlite3.connect('Users.db') as usersDB:
             cursorUser = usersDB.cursor()
-
-        #cursorUser.execute('''CREATE TABLE IF NOT EXISTS UserAccounts (
-        #                    userID INTEGER PRIMARY KEY, username TEXT, password TEXT, title TEXT, firstname TEXT, 
-        #                    surname TEXT, email TEXT, mobile TEXT, userType TEXT)''')
        
         insertUser = '''INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, userType) 
                         VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)'''
@@ -590,10 +828,12 @@ def createUser():
 
     tempWindow.mainloop()
 
+
 # Edit an Existing User Account # 
 # Status: NOT YET IMPLEMENTED
 def editUser():
     print("Edit User Function Called.")
+
 
 # Change current User Account # 
 # Status: BROKEN
@@ -601,10 +841,12 @@ def changeUser():
     window.destroy()
     os.system("application.py")
 
+
 # Search Patient Records # 
 # Status: NOT YET IMPLEMENTED
 def searchPatient():
     print("Search Patient Records Function Called.")
+
 
 # Edit Patient Records #
 # Status: BROKEN :(
@@ -1041,6 +1283,7 @@ def editPatient():
 
     tempWindow.mainloop()
 
+
 # Create a new Patient Record #
 # Status: BROKEN :(
 def addPatient():
@@ -1110,11 +1353,6 @@ def addPatient():
         
         with conn:
             cursor = conn.cursor()
-            
-        #cursor.execute('''CREATE TABLE IF NOT EXISTS PatientDemo (patientID INTEGER PRIMARY KEY, patientTitle TEXT, 
-        #                forename TEXT, surname TEXT, prevSurname TEXT, dateOfBirth TEXT, gender TEXT, country TEXT, 
-        #                housenumber TEXT, street TEXT, postcode TEXT, county TEXT, contactnumber TEXT, regType TEXT, 
-        #                oldGP TEXT, oldGPAddress TEXT, oldGPPostcode TEXT, hcn TEXT)''')
         
         insertPatientDemo = '''INSERT INTO PatientDemo (patientID, patientTitle, forename, surname, prevSurname, dateOfBirth, 
                             gender, country, housenumber, street, postcode, county, contactnumber, regType, oldGP, oldGPAddress, 
@@ -1122,8 +1360,6 @@ def addPatient():
         cursor.execute(insertPatientDemo, [(title), (forename), (surname), (prevSurname), (dob), (genderNew), (country), 
                                            (housenumber), (street), (postcode), (county), (contactNo), (regType), (oldGP), (oldGPAddress), 
                                            (oldGPPostcode), (hcn)])
-
-        #cursor.execute("CREATE TABLE IF NOT EXISTS PatientAF (patientID INTEGER PRIMARY KEY, personnelNum TEXT, enDate TEXT, diDate TEXT)")
         
         insertPatientAF = "INSERT INTO PatientAF (patientID, personnelNum, enDate, diDate) VALUES (NULL, ?, ?, ?)"
         cursor.execute(insertPatientAF, [(personnelNum), (enDate), (diDate)])
@@ -1476,237 +1712,415 @@ def addPatient():
 
     tempWindow.mainloop()
 
+
 # Add a new Document # 
 # Status: NOT YET IMPLEMENTED
 def addDocument():
     print("Add New Document Function Called.")
+
 
 # View a Document #
 # Status: NOT YET IMPLEMENTED
 def viewDocument():
     print("View Document Function Called.")
 
+
 # View Health Statistics #
 # Status: NOT YET IMPLEMENTED
 def viewStatistics():
     print("View Statistics Function Called.")
+
 
 # Internal Communications #
 # Status: NOT IMPLEMENTED // MAY NOT IMPLEMENT
 def internalComms():
     print("Internal Communications Function Called.")
 
+
 # View Item Stocks List #
 # Status: NOT IMPLEMENTED // MAY NOT IMPLEMENT
 def viewStock():
     print("View Item Stock Lists.")
+
 
 # Edit Item Stocks List #
 # Status: NOT IMPLEMENTED // MAY NOT IMPLEMENT
 def editStock():
     print("Edit Item Stock Lists.")
 
+
 # Begin a new Consultation #
 # Status: WORKING // NOT FULLY FUNCTIONAL - (needs ability to search for patients)
 def newCons():
-    tempWindow = Tk()
-    tempWindow.geometry('740x670+300+20')
-    tempWindow.title("Antrim Castle Surgery - Medical Informations System")
-
-    def saveCons():
-        print("Consultation Saved.")
-
-    def delCons():
-        print("Consultation Deleted.")
-
-    def viewDetails():
-        print("View Details Function Called.")
-
     searchTerm = StringVar()
-    scrollbar1 = Scrollbar(tempWindow)
-    scrollbar2 = Scrollbar(tempWindow)
-    scrollbar3 = Scrollbar(tempWindow)
-    scrollbar4 = Scrollbar(tempWindow)
-    scrollbar5 = Scrollbar(tempWindow)
+    docType = StringVar()
+    dobDay = StringVar()
+    dobMonth = StringVar()
+    dobYear = StringVar()
+    firstname = StringVar()
+    lastname = StringVar()
 
-    # Define Columns #
-    spacerLabel = Label(tempWindow, 
-                        text=" ", 
-                        width=2)
-    spacerLabel.grid(row=0, column=0)
-    spacerLabel = Label(tempWindow, 
-                        text=" ", 
-                        width=30)
-    spacerLabel.grid(row=0, column=1)
-    spacerLabel = Label(tempWindow, 
-                        text=" ", 
-                        width=30)
-    spacerLabel.grid(row=0, column=2)
-    spacerLabel = Label(tempWindow, 
-                        text=" ", 
-                        width=30)
-    spacerLabel.grid(row=0, column=3)
-    spacerLabel = Label(tempWindow, 
-                        text=" ", 
-                        width=2)
-    spacerLabel.grid(row=0, column=4)
-    # END.
+    tempWindow2 = Tk()
+    tempWindow2.geometry('460x140')
+    tempWindow2.title("Select Patient Record")
 
-    spacerLabel = Label(tempWindow, 
+    center(tempWindow2)
+
+    def searchUser():       
+        def getValues():
+            firstname = entryFirstname.get()
+            lastname = entryLastname.get()
+            dobDay = comboboxDOBDay.get()
+            dobMonth = comboboxDOBMonth.get()
+            dobYear = comboboxDOBYear.get()
+
+            values = [firstname, lastname, dobDay, dobMonth, dobYear]
+
+            return values
+
+        values = getValues()
+        
+        firstname = values[0]
+        lastname = values[1]
+        dobDay = values[2]
+        dobMonth = values[3]
+        dobYear = values[4]
+        
+        dob = str(dobDay) + "/" + str(dobMonth) + "/" + str(dobYear)
+
+        fullname = str(firstname) + " " + str(lastname)
+
+        conn = sqlite3.connect('Patients.db')
+        
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM PatientDemo WHERE forename = ? and surname = ? and dateOfBirth = ?", (firstname, lastname, dob))
+
+            result = cursor.fetchall()
+            
+            if result:
+                tupleDetails2 = ""
+                stringDetails2 = ""
+                currentPatientDetails = []
+
+                cursor.execute('SELECT * FROM PatientDemo WHERE forename = ? and surname =  ? and dateOfBirth = ?', (firstname, lastname, dob))
+            
+                tupleDetails2 = cursor.fetchall()
+
+                for stringDetails2 in tupleDetails2:
+                    for detail in stringDetails2:
+                        currentPatientDetails.append(detail)
+
+                ms.showinfo('Succesful!', 'The record of ' + fullname + ' has been loaded.', parent=tempWindow2)
+
+                tempWindow2.destroy()
+                dataEntry(currentPatientDetails)
+            else:
+                ms.showerror('Patient Not Found', 'No patients with these matching details have been found.')
+                entryFirstname.delete(0, END)
+                entryLastname.delete(0, END)
+                comboboxDOBDay.current(0)
+                comboboxDOBMonth.current(0)
+                comboboxDOBYear.current(0)
+
+    spacerLabel = Label(tempWindow2, 
                         text=" ")
-    spacerLabel.grid(row=0, column=0, columnspan=4)
+    spacerLabel.grid(row=0, column=0, columnspan=9)
 
-    labelSearch = Label(tempWindow, 
-                        text="Search for Patient: ",
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=0, rowspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=6, rowspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=2, rowspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=8, rowspan=9)
+
+    labelFirstname = Label(tempWindow2, 
+                        text="Patient Firstname: ",
                         font=("corbel bold", 10))
-    labelSearch.grid(row=1, column=1)
-    entrySearch = Entry(tempWindow, 
-                        textvar=searchTerm)
-    entrySearch.grid(row=1, column=2, sticky=E+W)
+    labelFirstname.grid(row=1, column=1)
+    entryFirstname = Entry(tempWindow2, 
+                        textvar=firstname)
+    entryFirstname.grid(row=1, column=3, columnspan=3, sticky=E+W)
 
-    searchButton = Button(tempWindow, 
+    labelLastname = Label(tempWindow2, 
+                        text="Patient Lastname: ",
+                        font=("corbel bold", 10))
+    labelLastname.grid(row=2, column=1)
+    entryLastname = Entry(tempWindow2, 
+                        textvar=lastname)
+    entryLastname.grid(row=2, column=3, columnspan=3, sticky=E+W)
+
+    labelDocType = Label(tempWindow2, 
+                              text="Patient Date of Birth: ", 
+                              font=("corbel bold", 10))
+    labelDocType.grid(row=3, column=1)
+    
+    comboboxDOBDay = ttk.Combobox(tempWindow2, 
+                                   textvariable=dobDay)
+    comboboxDOBDay.grid(row=3, column=3, sticky=E+W)
+    comboboxDOBDay.config(values = ('DD', '01', '02', '03', '04', '05', '05', '07', '08', '09', '10', '11', '12', '13', '14',
+                                     '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                                     '30', '31'), width=4)
+    comboboxDOBDay.current([0])
+
+    comboboxDOBMonth = ttk.Combobox(tempWindow2, 
+                                   textvariable=dobMonth)
+    comboboxDOBMonth.grid(row=3, column=4, sticky=E+W)
+    comboboxDOBMonth.config(values = ('MM', '01', '02', '03', '04', '05', '05', '07', '08', '09', '10', '11', '12'), width=4)
+    comboboxDOBMonth.current([0])
+
+    comboboxDOBYear = ttk.Combobox(tempWindow2, 
+                                   textvariable=dobYear)
+    comboboxDOBYear.grid(row=3, column=5, sticky=E+W)
+    comboboxDOBYear.config(values = ('YYYY', '1900', '1901', '1902', '1903', '1904', '1905', '1906', '1907', '1908', '1909',
+                                     '1910', '1911', '1912', '1913', '1914', '1915', '1916', '1917', '1918', '1919', '1920', 
+                                     '1921', '1922', '1923', '1924', '1925', '1926', '1927', '1928', '1929', '1930', '1931', 
+                                     '1932', '1933', '1934', '1935', '1936', '1937', '1938', '1939', '1940', '1941', '1942', 
+                                     '1943', '1944', '1945', '1946', '1947', '1948', '1949', '1950', '1951', '1952', '1953', 
+                                     '1954', '1955', '1956', '1957', '1958', '1959', '1960', '1961', '1962', '1963', '1964', 
+                                     '1965', '1966', '1967', '1968', '1969', '1970', '1971', '1972', '1973', '1974', '1975',
+                                     '1976', '1977', '1978', '1979', '1980', '1981', '1982', '1983', '1984', '1985', '1986',
+                                     '1987', '1988', '1989', '1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997', 
+                                     '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008',
+                                     '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019'), width=9)
+    comboboxDOBYear.current([0])
+
+    searchButton = Button(tempWindow2, 
                           text='Search', 
                           bg='darkblue', 
                           fg='white', 
-                          command=checkUser).grid(row=1, column=3)
+                          command=searchUser).grid(row=2, column=7)
 
-    spacerLabel = Label(tempWindow, 
+    spacerLabel = Label(tempWindow2, 
                         text=" ")
-    spacerLabel.grid(row=2, column=0, columnspan=4)
+    spacerLabel.grid(row=4, column=0, columnspan=5)
 
-    labelPC = Label(tempWindow, 
-                    text="Presenting Complaint (PC)", 
-                    font=("corbel bold", 10))
-    labelPC.grid(row=3, column=1, columnspan=3)
-    entryPC = Text(tempWindow, 
-                   height=3, 
-                   width=86)
-    entryPC.grid(row=4, column=1, columnspan=3)
-    entryPC.config(yscrollcommand=scrollbar1.set)
-    scrollbar1.grid(row=4, column=4, sticky=N+S)
-    scrollbar1.config(command=entryPC.yview)
+    def dataEntry(currentPatientDetails):
+        tempWindow = Tk()
+        tempWindow.geometry('740x670+300+20')
+        tempWindow.title("Antrim Castle Surgery - Medical Informations System")
 
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=5, column=0, columnspan=4)
+        center(tempWindow)
 
-    labelOE = Label(tempWindow, 
-                    text="On Examination (O/E)", 
-                    font=("corbel bold", 10))
-    labelOE.grid(row=6, column=1, columnspan=3)
-    entryOE = Text(tempWindow, 
-                   height=3, 
-                   width=86)
-    entryOE.grid(row=7, column=1, columnspan=3)
-    entryOE.config(yscrollcommand=scrollbar2.set)
-    scrollbar2.grid(row=7, column=4, sticky=N+S)
-    scrollbar2.config(command=entryOE.yview)
+        def saveCons():
+            currentPatientDetails = []
+            print("Consultation Saved.")
 
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=8, column=0, columnspan=4)
+        def delCons():
+            currentPatientDetails = []
+            tempWindow.destroy()
 
-    labelHX = Label(tempWindow, 
-                    text="History - Medical & Social (Hx)", 
-                    font=("corbel bold", 10))
-    labelHX.grid(row=9, column=1, columnspan=3)
-    entryHX = Text(tempWindow, 
-                   height=3, 
-                   width=86)
-    entryHX.grid(row=10, column=1, columnspan=3)
-    entryHX.config(yscrollcommand=scrollbar3.set)
-    scrollbar3.grid(row=10, column=4, sticky=N+S)
-    scrollbar3.config(command=entryHX.yview)
+        def viewDetails(currentPatientDetails):
+            print("View Details Function Called.")
 
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=11, column=0, columnspan=4)
+        searchTerm = StringVar()
+        scrollbar1 = Scrollbar(tempWindow)
+        scrollbar2 = Scrollbar(tempWindow)
+        scrollbar3 = Scrollbar(tempWindow)
+        scrollbar4 = Scrollbar(tempWindow)
+        scrollbar5 = Scrollbar(tempWindow)
 
-    labelPX = Label(tempWindow, 
-                    text="Treatment Plan/Medications (Px)", 
-                    font=("corbel bold", 10))
-    labelPX.grid(row=12, column=1, columnspan=3)
-    entryPX = Text(tempWindow, 
-                   height=3, 
-                   width=86)
-    entryPX.grid(row=13, column=1, columnspan=3)
-    entryPX.config(yscrollcommand=scrollbar4.set)
-    scrollbar4.grid(row=13, column=4, sticky=N+S)
-    scrollbar4.config(command=entryPX.yview)
+        # Define Columns #
+        spacerLabel = Label(tempWindow, 
+                            text=" ", 
+                            width=2)
+        spacerLabel.grid(row=0, column=0)
+        spacerLabel = Label(tempWindow, 
+                            text=" ", 
+                            width=30)
+        spacerLabel.grid(row=0, column=1)
+        spacerLabel = Label(tempWindow, 
+                            text=" ", 
+                            width=30)
+        spacerLabel.grid(row=0, column=2)
+        spacerLabel = Label(tempWindow, 
+                            text=" ", 
+                            width=30)
+        spacerLabel.grid(row=0, column=3)
+        spacerLabel = Label(tempWindow, 
+                            text=" ", 
+                            width=2)
+        spacerLabel.grid(row=0, column=4)
+        # END.
 
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=14, column=0, columnspan=4)
+        spacerLabel = Label(tempWindow, 
+                            text=" ")
+        spacerLabel.grid(row=0, column=0, columnspan=5)
 
-    labelDX = Label(tempWindow, 
-                    text="Diagnosis (Dx)", 
-                    font=("corbel bold", 10))
-    labelDX.grid(row=15, column=1, columnspan=3)
-    entryDX = Text(tempWindow, 
-                   height=1, 
-                   width=86)
-    entryDX.grid(row=16, column=1, columnspan=3)
+        patientTitle = currentPatientDetails[1]
+        patientFirstName = currentPatientDetails[2]
+        patientLastName = currentPatientDetails[3]
+        patientDOB = currentPatientDetails[5]
+        patientHCN = currentPatientDetails[17]
 
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=17, column=0, columnspan=4)
+        textData = (patientTitle + " " + patientFirstName + " " + patientLastName + ", Date of Birth: " + patientDOB + ", Health & Care Number: " + patientHCN)
 
-    labelCom = Label(tempWindow, 
-                     text="Comments", 
-                     font=("corbel bold", 10))
-    labelCom.grid(row=18, column=1, columnspan=3)
-    entryCom = Text(tempWindow, 
-                    height=3, 
-                    width=86)
-    entryCom.grid(row=19, column=1, columnspan=3)
-    entryCom.config(yscrollcommand=scrollbar5.set)
-    scrollbar5.grid(row=19, column=4, sticky=N+S)
-    scrollbar5.config(command=entryCom.yview)
+        spacerLabel = Label(tempWindow, 
+                            text="Patient Selected: ",
+                            font=("corbel bold", 10))
+        spacerLabel.grid(row=1, column=1, sticky=E)
 
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=20, column=0, columnspan=4)
+        spacerLabel = Label(tempWindow, 
+                            text=textData)
+        spacerLabel.grid(row=1, column=2, columnspan=3, sticky=W)
 
-    saveCons = Button(tempWindow, 
-                      text='Save Consultation', 
-                      bg='darkblue', 
-                      fg='white', 
-                      command=saveCons).grid(row=21, column=1)
-    delCons = Button(tempWindow, 
-                     text='Delete Consultation', 
-                     bg='darkblue', 
-                     fg='white', 
-                     command=delCons).grid(row=21, column=2)
-    viewDetails = Button(tempWindow, 
-                         text='View Patient Details', 
+        spacerLabel = Label(tempWindow, 
+                            text=" ")
+        spacerLabel.grid(row=2, column=0, columnspan=4)
+
+        labelPC = Label(tempWindow, 
+                        text="Presenting Complaint (PC)", 
+                        font=("corbel bold", 10))
+        labelPC.grid(row=3, column=1, columnspan=3)
+        entryPC = Text(tempWindow, 
+                       height=3, 
+                       width=86)
+        entryPC.grid(row=4, column=1, columnspan=3)
+        entryPC.config(yscrollcommand=scrollbar1.set)
+        scrollbar1.grid(row=4, column=4, sticky=N+S)
+        scrollbar1.config(command=entryPC.yview)
+
+        spacerLabel = Label(tempWindow, 
+                            text=" ")
+        spacerLabel.grid(row=5, column=0, columnspan=4)
+
+        labelOE = Label(tempWindow, 
+                        text="On Examination (O/E)", 
+                        font=("corbel bold", 10))
+        labelOE.grid(row=6, column=1, columnspan=3)
+        entryOE = Text(tempWindow, 
+                       height=3, 
+                       width=86)
+        entryOE.grid(row=7, column=1, columnspan=3)
+        entryOE.config(yscrollcommand=scrollbar2.set)
+        scrollbar2.grid(row=7, column=4, sticky=N+S)
+        scrollbar2.config(command=entryOE.yview)
+
+        spacerLabel = Label(tempWindow, 
+                            text=" ")
+        spacerLabel.grid(row=8, column=0, columnspan=4)
+
+        labelHX = Label(tempWindow, 
+                        text="History - Medical & Social (Hx)", 
+                        font=("corbel bold", 10))
+        labelHX.grid(row=9, column=1, columnspan=3)
+        entryHX = Text(tempWindow, 
+                       height=3, 
+                       width=86)
+        entryHX.grid(row=10, column=1, columnspan=3)
+        entryHX.config(yscrollcommand=scrollbar3.set)
+        scrollbar3.grid(row=10, column=4, sticky=N+S)
+        scrollbar3.config(command=entryHX.yview)
+
+        spacerLabel = Label(tempWindow, 
+                            text=" ")
+        spacerLabel.grid(row=11, column=0, columnspan=4)
+
+        labelPX = Label(tempWindow, 
+                        text="Treatment Plan/Medications (Px)", 
+                        font=("corbel bold", 10))
+        labelPX.grid(row=12, column=1, columnspan=3)
+        entryPX = Text(tempWindow, 
+                       height=3, 
+                       width=86)
+        entryPX.grid(row=13, column=1, columnspan=3)
+        entryPX.config(yscrollcommand=scrollbar4.set)
+        scrollbar4.grid(row=13, column=4, sticky=N+S)
+        scrollbar4.config(command=entryPX.yview)
+
+        spacerLabel = Label(tempWindow, 
+                            text=" ")
+        spacerLabel.grid(row=14, column=0, columnspan=4)
+
+        labelDX = Label(tempWindow, 
+                        text="Diagnosis (Dx)", 
+                        font=("corbel bold", 10))
+        labelDX.grid(row=15, column=1, columnspan=3)
+        entryDX = Text(tempWindow, 
+                       height=1, 
+                       width=86)
+        entryDX.grid(row=16, column=1, columnspan=3)
+
+        spacerLabel = Label(tempWindow, 
+                            text=" ")
+        spacerLabel.grid(row=17, column=0, columnspan=4)
+
+        labelCom = Label(tempWindow, 
+                         text="Comments", 
+                         font=("corbel bold", 10))
+        labelCom.grid(row=18, column=1, columnspan=3)
+        entryCom = Text(tempWindow, 
+                        height=3, 
+                        width=86)
+        entryCom.grid(row=19, column=1, columnspan=3)
+        entryCom.config(yscrollcommand=scrollbar5.set)
+        scrollbar5.grid(row=19, column=4, sticky=N+S)
+        scrollbar5.config(command=entryCom.yview)
+
+        spacerLabel = Label(tempWindow, 
+                            text=" ")
+        spacerLabel.grid(row=20, column=0, columnspan=4)
+
+        saveCons = Button(tempWindow, 
+                          text='Save Consultation', 
+                          bg='darkblue', 
+                          fg='white', 
+                          command=saveCons).grid(row=21, column=1)
+        delCons = Button(tempWindow, 
+                         text='Delete Consultation', 
                          bg='darkblue', 
                          fg='white', 
-                         command=viewDetails).grid(row=21, column=3)
+                         command=delCons).grid(row=21, column=2)
+        viewDetails = Button(tempWindow, 
+                             text='View Patient Details', 
+                             bg='darkblue', 
+                             fg='white', 
+                             command= lambda: viewDetails(currentPatientDetails)).grid(row=21, column=3)
 
-    tempWindow.mainloop()
+        tempWindow.mainloop()
+
 
 # Search Consultations #
 # Status: NOT YET IMPLEMENTED
 def searchCons():
     print("Search Consultations Function Called.")
 
+
 # Create a New Appointment #
 # Status: NOT YET IMPLEMENTED
 def newApp():
     print("Create a New Appointment Function Called.")
+
 
 # Edit Patient Appointments #
 # Status: NOT YET IMPLEMENTED
 def editApp():
     print("Edit Appointment Function Called.")
 
+
 # Create the main Program Window #
 # Status: WORKING // NOT FULLY FUNCTIONAL - (add calendar & change colours/formatting etc.)
 def mainWindow():
     window = Tk()
-    window.geometry('1366x768+0+0')
+    window.geometry('1366x768')
     window.title("Antrim Castle Surgery - Medical Informations System") 
     window.config(bg="#202C4F")
+
+    center(window)
 
     def logOff():
         window.destroy()
@@ -1794,8 +2208,6 @@ def mainWindow():
                         bg="#202C4F")
     spacerLabel.grid(row=0, column=0, columnspan=9)
 
-    # START. - These labels format the window by 
-    # dividing it into 8 columns of equal width.
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, bg="#202C4F")
@@ -1840,7 +2252,6 @@ def mainWindow():
                         width=20, 
                         bg="#202C4F")
     spacerLabel.grid(row=0, column=8, rowspan=20)
-    # END.
 
     labelInstructions = Label(window, 
                               text="Options Menu",
@@ -1999,9 +2410,8 @@ def mainWindow():
                        bg="#202C4F")
     labelHello.grid(row=4, column=3, columnspan=3, rowspan=2)
 
-
-    # ***** Running the Code ***** #
     window.mainloop()
+
 
 # Check User Details for Validity #
 # Status: FULLY WORKING
@@ -2034,6 +2444,7 @@ def checkUser():
             entryPassword.delete(0, END)
 
 ignoreThis = 1
+
 
 # ***** Creating an Admin User Account ***** #
 
