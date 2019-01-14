@@ -61,7 +61,7 @@ currentPatientDetails = []
 # close and the user will be returned to the main application.
 
 # Mail Merge Data into Documents #
-# Status: FULL WORKING
+# Status: FULL WORKING - ?add ability to print/save doc
 def newDoc():
     searchTerm = StringVar()
     docType = StringVar()
@@ -918,19 +918,12 @@ def editPatient():
         with conn:
             cursor = conn.cursor()
             
-        #cursor.execute('''CREATE TABLE IF NOT EXISTS PatientDemo (patientID INTEGER PRIMARY KEY, patientTitle TEXT, 
-        #                forename TEXT, surname TEXT, prevSurname TEXT, dateOfBirth TEXT, gender TEXT, country TEXT, 
-        #                housenumber TEXT, street TEXT, postcode TEXT, county TEXT, contactnumber TEXT, regType TEXT, 
-        #                oldGP TEXT, oldGPAddress TEXT, oldGPPostcode TEXT, hcn TEXT)''')
-        
         insertPatientDemo = '''INSERT INTO PatientDemo (patientID, patientTitle, forename, surname, prevSurname, dateOfBirth, 
                             gender, country, housenumber, street, postcode, county, contactnumber, regType, oldGP, oldGPAddress, 
                             oldGPPostcode, hcn) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''' 
         cursor.execute(insertPatientDemo, [(title), (forename), (surname), (prevSurname), (dob), (genderNew), (country), 
                                            (housenumber), (street), (postcode), (county), (contactNo), (regType), (oldGP), (oldGPAddress), 
                                            (oldGPPostcode), (hcn)])
-
-        #cursor.execute("CREATE TABLE IF NOT EXISTS PatientAF (patientID INTEGER PRIMARY KEY, personnelNum TEXT, enDate TEXT, diDate TEXT)")
         
         insertPatientAF = "INSERT INTO PatientAF (patientID, personnelNum, enDate, diDate) VALUES (NULL, ?, ?, ?)"
         cursor.execute(insertPatientAF, [(personnelNum), (enDate), (diDate)])
@@ -950,6 +943,231 @@ def editPatient():
             clearWindow()
         else:
             tempWindow.destroy()
+
+    dobDay = StringVar()
+    dobMonth = StringVar()
+    dobYear = StringVar()
+    firstname = StringVar()
+    lastname = StringVar()
+
+    tempWindow2 = Tk()
+    tempWindow2.geometry('460x140')
+    tempWindow2.title("Create a New Document")
+
+    center(tempWindow2)
+    
+    def fillForm(currentPatientDetails):
+        entryForename.delete(0, END)
+        entryForename.insert(0, currentPatientDetails[2])
+
+        entrySurname.delete(0, END)
+        entrySurname.insert(0, currentPatientDetails[3])
+
+        if currentPatientDetails[4] is not None:
+            entryPrevSurname.delete(0, END)
+            entryPrevSurname.insert(0, currentPatientDetails[4])
+
+        entryDOB.delete(0, END)
+        entryDOB.insert(0, currentPatientDetails[5])
+
+        entryHousenumber.delete(0, END)
+        entryHousenumber.insert(0, currentPatientDetails[8])
+
+        entryStreet.delete(0, END)
+        entryStreet.insert(0, currentPatientDetails[9])
+
+        entryPostcode.delete(0, END)
+        entryPostcode.insert(0, currentPatientDetails[10])
+
+        entryCounty.delete(0, END)
+        entryCounty.insert(0, currentPatientDetails[11])
+
+        entryContactNo.delete(0, END)
+        entryContactNo.insert(0, currentPatientDetails[12])
+
+        if currentPatientDetails[14] is not None:
+            entryOldGP.delete(0, END)
+            entryOldGP.insert(0, currentPatientDetails[14])
+
+        if currentPatientDetails[15] is not None:
+            entryOldGPAddress.delete(0, END)
+            entryOldGPAddress.insert(0, currentPatientDetails[15])
+       
+        if currentPatientDetails[16] is not None:
+            entryOldGPPostcode.delete(0, END)
+            entryOldGPPostcode.insert(0, currentPatientDetails[16])
+
+        entryHCN.delete(0, END)
+        entryHCN.insert(0, currentPatientDetails[17])
+
+        titleReturn = currentPatientDetails[1]
+        countryReturn = currentPatientDetails[7]
+        regTypeReturn = currentPatientDetails[13]
+
+        comboboxTitle.set(titleReturn)
+        comboboxCountry.set(countryReturn)
+        comboboxRegType.set(regTypeReturn)
+
+        if currentPatientDetails[6] == 'Female':
+            print("Female selected")
+            gender.set(1)
+        elif currentPatientDetails[6] == 'Male':
+            print("male selected")
+            gender.set(2)
+        else:
+            print("ERROR IN GENDER SELECTION LINE 1018")
+
+        #organYNNew = organYN.get()
+        #kidneyNew = kidney.get()
+        #heartNew = heart.get()
+        #liverNew = liver.get()
+        #corneasNew = corneas.get()
+        #lungsNew = lungs.get()
+        #pancreasNew = pancreas.get()
+
+
+    def searchUser():       
+        def getValues():
+            firstname = entryFirstname.get()
+            lastname = entryLastname.get()
+            dobDay = comboboxDOBDay.get()
+            dobMonth = comboboxDOBMonth.get()
+            dobYear = comboboxDOBYear.get()
+
+            values = [firstname, lastname, dobDay, dobMonth, dobYear]
+
+            return values
+
+        values = getValues()
+        
+        firstname = values[0]
+        lastname = values[1]
+        dobDay = values[2]
+        dobMonth = values[3]
+        dobYear = values[4]
+        
+        dob = str(dobDay) + "/" + str(dobMonth) + "/" + str(dobYear)
+
+        fullname = str(firstname) + " " + str(lastname)
+
+        conn = sqlite3.connect('Patients.db')
+        
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM PatientDemo WHERE forename = ? and surname = ? and dateOfBirth = ?", (firstname, lastname, dob))
+
+            result = cursor.fetchall()
+            
+            if result:
+                tupleDetails2 = ""
+                stringDetails2 = ""
+                currentPatientDetails = []
+
+                cursor.execute('SELECT * FROM PatientDemo WHERE forename = ? and surname =  ? and dateOfBirth = ?', (firstname, lastname, dob))
+            
+                tupleDetails2 = cursor.fetchall()
+
+                for stringDetails2 in tupleDetails2:
+                    for detail in stringDetails2:
+                        currentPatientDetails.append(detail)
+
+                ms.showinfo('Succesful!', 'The record of ' + fullname + ' has been loaded.', parent=tempWindow2)
+
+                tempWindow2.destroy()
+                fillForm(currentPatientDetails)
+            else:
+                ms.showerror('Patient Not Found', 'No patients with these matching details have been found.')
+                entryFirstname.delete(0, END)
+                entryLastname.delete(0, END)
+                comboboxDOBDay.current(0)
+                comboboxDOBMonth.current(0)
+                comboboxDOBYear.current(0)
+       
+    spacerLabel = Label(tempWindow2, 
+                        text=" ")
+    spacerLabel.grid(row=0, column=0, columnspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=0, rowspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=6, rowspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=2, rowspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=8, rowspan=9)
+
+    labelFirstname = Label(tempWindow2, 
+                        text="Patient Firstname: ",
+                        font=("corbel bold", 10))
+    labelFirstname.grid(row=1, column=1)
+    entryFirstname = Entry(tempWindow2, 
+                        textvar=firstname)
+    entryFirstname.grid(row=1, column=3, columnspan=3, sticky=E+W)
+
+    labelLastname = Label(tempWindow2, 
+                        text="Patient Lastname: ",
+                        font=("corbel bold", 10))
+    labelLastname.grid(row=2, column=1)
+    entryLastname = Entry(tempWindow2, 
+                        textvar=lastname)
+    entryLastname.grid(row=2, column=3, columnspan=3, sticky=E+W)
+
+    labelDocType = Label(tempWindow2, 
+                              text="Patient Date of Birth: ", 
+                              font=("corbel bold", 10))
+    labelDocType.grid(row=3, column=1)
+    
+    comboboxDOBDay = ttk.Combobox(tempWindow2, 
+                                   textvariable=dobDay)
+    comboboxDOBDay.grid(row=3, column=3, sticky=E+W)
+    comboboxDOBDay.config(values = ('DD', '01', '02', '03', '04', '05', '05', '07', '08', '09', '10', '11', '12', '13', '14',
+                                     '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                                     '30', '31'), width=4)
+    comboboxDOBDay.current([0])
+
+    comboboxDOBMonth = ttk.Combobox(tempWindow2, 
+                                   textvariable=dobMonth)
+    comboboxDOBMonth.grid(row=3, column=4, sticky=E+W)
+    comboboxDOBMonth.config(values = ('MM', '01', '02', '03', '04', '05', '05', '07', '08', '09', '10', '11', '12'), width=4)
+    comboboxDOBMonth.current([0])
+
+    comboboxDOBYear = ttk.Combobox(tempWindow2, 
+                                   textvariable=dobYear)
+    comboboxDOBYear.grid(row=3, column=5, sticky=E+W)
+    comboboxDOBYear.config(values = ('YYYY', '1900', '1901', '1902', '1903', '1904', '1905', '1906', '1907', '1908', '1909',
+                                     '1910', '1911', '1912', '1913', '1914', '1915', '1916', '1917', '1918', '1919', '1920', 
+                                     '1921', '1922', '1923', '1924', '1925', '1926', '1927', '1928', '1929', '1930', '1931', 
+                                     '1932', '1933', '1934', '1935', '1936', '1937', '1938', '1939', '1940', '1941', '1942', 
+                                     '1943', '1944', '1945', '1946', '1947', '1948', '1949', '1950', '1951', '1952', '1953', 
+                                     '1954', '1955', '1956', '1957', '1958', '1959', '1960', '1961', '1962', '1963', '1964', 
+                                     '1965', '1966', '1967', '1968', '1969', '1970', '1971', '1972', '1973', '1974', '1975',
+                                     '1976', '1977', '1978', '1979', '1980', '1981', '1982', '1983', '1984', '1985', '1986',
+                                     '1987', '1988', '1989', '1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997', 
+                                     '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008',
+                                     '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019'), width=9)
+    comboboxDOBYear.current([0])
+
+    searchButton = Button(tempWindow2, 
+                          text='Search', 
+                          bg='darkblue', 
+                          fg='white', 
+                          command=searchUser).grid(row=2, column=7)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ")
+    spacerLabel.grid(row=4, column=0, columnspan=5)
 
     def getPatientValues(genderNew):
         title = comboboxTitle.get()
@@ -1049,14 +1267,14 @@ def editPatient():
                         text="Gender: ", 
                         font=("corbel", 10))
     labelGender.grid(row=8, column=0)
-    Radiobutton(tempWindow, 
-                text="Male",
-                variable=gender,
-                value="Male").grid(row=8, column=1)
-    Radiobutton(tempWindow,  
-                text="Female",
-                variable=gender,
-                value="Female").grid(row=8, column=2)
+    rbMale = Radiobutton(tempWindow, 
+                        text="Male",
+                        variable=gender,
+                        value="Male").grid(row=8, column=1)
+    rbFemale = Radiobutton(tempWindow,  
+                        text="Female",
+                        variable=gender,
+                        value="Female").grid(row=8, column=2)
 
     labelCountry = Label(tempWindow, 
                          text="Country of Birth: ", 
