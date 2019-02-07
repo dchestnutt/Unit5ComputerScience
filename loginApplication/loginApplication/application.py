@@ -31,6 +31,7 @@ from __future__ import print_function
 
 import datetime
 
+import win32api
 from tkinter import *
 from tkinter import messagebox as ms
 from tkinter import Menu
@@ -47,6 +48,7 @@ from datetime import date
 global userDetails
 userDetails = []
 currentPatientDetails = []
+
 
 # ***** Functions and Procedures ***** #
 
@@ -3612,7 +3614,7 @@ def checkUser():
             entryUsername.delete(0, END) # Clear entry fields for a second attempt
             entryPassword.delete(0, END)
 
-ignoreThis = 1
+
 
 
 # ***** Creating an Admin User Account ***** #
