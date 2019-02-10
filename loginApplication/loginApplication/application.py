@@ -30,8 +30,9 @@
 from __future__ import print_function
 
 import datetime
-
 import win32api
+import win32print
+import tempfile
 from tkinter import *
 from tkinter import messagebox as ms
 from tkinter import Menu
@@ -65,7 +66,7 @@ currentPatientDetails = []
 # close and the user will be returned to the main application.
 
 # Mail Merge Data into Documents #
-# Status: FULL WORKING - ?add ability to print/save doc
+# Status: FULL WORKING
 def newDoc():
     searchTerm = StringVar()
     docType = StringVar()
@@ -316,7 +317,20 @@ def newDoc():
                     
                     currentPatientDetails = []
 
-                    ms.showinfo('Success!', 'Document created succesfully.')
+                    printQuery = ms.askyesno("Succesful!", "Would you like to print the document?", parent=tempWindow2)
+
+                    if printQuery == True:
+                        filename = (r'.\documentOutput\TEMPattendReTests.docx')
+                        win32api.ShellExecute (
+                          0,
+                          "print",
+                          filename,
+                          '/d:"%s"' % win32print.GetDefaultPrinter (),
+                          ".",
+                          0
+                        )
+                    else:
+                        tempWindow.destroy()
             
             def mergeTT2(corrOrigin, currentPatientDetails):
                 longDate = "DATE AS POSTMARK"
@@ -359,7 +373,20 @@ def newDoc():
 
                     currentPatientDetails = []
 
-                    ms.showinfo('Success!', 'Document created succesfully.')
+                    printQuery = ms.askyesno("Succesful!", "Would you like to print the document?", parent=tempWindow2)
+
+                    if printQuery == True:
+                        filename = (r'.\documentOutput\TEMPattendReCorrespondence.docx')
+                        win32api.ShellExecute (
+                          0,
+                          "print",
+                          filename,
+                          '/d:"%s"' % win32print.GetDefaultPrinter (),
+                          ".",
+                          0
+                        )
+                    else:
+                        tempWindow.destroy()
 
             def mergeTT3(clinicYear, clinicName, appDate, appTime, clinicianName, currentPatientDetails):
                 longDate = "DATE AS POSTMARK"
@@ -406,7 +433,20 @@ def newDoc():
 
                     currentPatientDetails = []
 
-                    ms.showinfo('Success!', 'Document created succesfully.')
+                    printQuery = ms.askyesno("Succesful!", "Would you like to print the document?", parent=tempWindow2)
+
+                    if printQuery == True:
+                        filename = (r'.\documentOutput\TEMPattendAnnualClinic.docx')
+                        win32api.ShellExecute (
+                          0,
+                          "print",
+                          filename,
+                          '/d:"%s"' % win32print.GetDefaultPrinter (),
+                          ".",
+                          0
+                        )
+                    else:
+                        tempWindow.destroy()
 
             def mergeTT4(testReq, currentPatientDetails):
                 longDate = "DATE AS POSTMARK"
@@ -449,7 +489,20 @@ def newDoc():
 
                     currentPatientDetails = []
 
-                    ms.showinfo('Success!', 'Document created succesfully.')
+                    printQuery = ms.askyesno("Succesful!", "Would you like to print the document?", parent=tempWindow2)
+
+                    if printQuery == True:
+                        filename = (r'.\documentOutput\TEMPrepeatTests.docx')
+                        win32api.ShellExecute (
+                          0,
+                          "print",
+                          filename,
+                          '/d:"%s"' % win32print.GetDefaultPrinter (),
+                          ".",
+                          0
+                        )
+                    else:
+                        tempWindow.destroy()
             
             templateType = IntVar()
             result = comboboxDocType.current()
