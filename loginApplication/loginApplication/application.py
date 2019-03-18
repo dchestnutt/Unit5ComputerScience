@@ -39,6 +39,7 @@ from tkinter import Menu
 from tkinter import ttk
 import sqlite3
 import os
+import smtplib
 
 from mailmerge import MailMerge
 from datetime import date
@@ -658,7 +659,7 @@ def newMed():
     lastname = StringVar()
 
     tempWindow = Tk()
-    tempWindow.geometry('460x140')
+    tempWindow.geometry('480x160')
     tempWindow.title("Add new Medical Data")
 
     center(tempWindow)
@@ -798,9 +799,20 @@ def newMed():
 
     searchButton = Button(tempWindow, 
                           text='Search', 
-                          bg='darkblue', 
-                          fg='white', 
+                          bg='#09425A', 
+                          fg='#FFFFFF', 
                           command=searchUser).grid(row=2, column=7)
+
+    spacerLabel = Label(tempWindow, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=4, column=0, columnspan=9)
+
+    searchButton = Button(tempWindow, 
+                          text='Use Previous Patient Record', 
+                          bg='#09425A', 
+                          fg='#FFFFFF', 
+                          command=searchUser).grid(row=5, column=3, columnspan=3)
 
     spacerLabel = Label(tempWindow, 
                         text=" ")
@@ -3323,6 +3335,126 @@ def newApp():
 def editApp():
     print("Edit Appointment Function Called.")
 
+# Reset Password #
+# Status: NOT YET IMPLEMENTED
+def resetPassword():
+    tempWindow2 = Tk()
+    tempWindow2.geometry('350x200')
+    tempWindow2.title("Password Reset Widget")
+    tempWindow2.config(bg="white")
+
+    center(tempWindow2)
+
+    currentUsername = StringVar()
+
+    def getEmail():
+        conn = sqlite3.connect('Users.db') # Establish the database connection by designating which db file to connect to
+
+        with conn:                         # Use the databse connection established to carry out the following
+            userEmail = StringVar()     # Set the datatype for the coming fetch statement
+
+            cursorUser = conn.cursor()
+
+            cursorUser.execute('SELECT email FROM UserAccounts WHERE username = ?', (entryUsername.get(),))
+            # ^ since the user has been authenticated above, the username is now used (as it is a
+            # unique value - to pull all of the user details and save them to a list
+
+            userEmail = cursorUser.fetchall()    
+            # The user details are at first returned as a tuple in "tupleDetails"
+
+            if userEmail:
+                smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
+                
+                smtpObj.ehlo()
+
+                smtpObj.starttls()
+
+                smtpObj.login('dchestnutt4@gmail.com', 'victoriacricket')
+
+                subject = 'Temporary Password'
+                mainMessage = 'Your temporary password is: AntrimCastleSurgery'
+
+                emailBody="""Subject:%s 
+
+                          %s
+                          """ %(subject,mainMessage)
+
+                smtpObj.sendmail('dchestnutt4@gmail.com', userEmail, emailBody)
+
+                smtpObj.quit()
+
+                with sqlite3.connect('Users.db') as usersDB:
+                    cursorUser = usersDB.cursor()
+                    newPassword = 'AntrimCastleSurgery'
+
+                    updateUser = "UPDATE UserAccounts SET password = ? WHERE username = ?"
+                    updateValues = (newPassword), (entryUsername.get())
+
+                    cursorUser.execute(updateUser, updateValues)
+
+                    usersDB.commit()
+
+                    again = ms.showinfo("Succesful!", "Your password has been changed. Please check your email.", parent=tempWindow2)
+
+                tempWindow2.destroy()    # Close this window
+            else:                
+                ms.showerror('User Not Found', 'Username not recognised. Please try again.') 
+                # ^ Show error message if no user account has been found with that username
+                # and password combination
+                entryUsername.delete(0, END) # Clear entry fields for a second attempt
+                entryPassword.delete(0, END)
+
+    username = StringVar()
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ", 
+                        bg="white")
+    spacerLabel.grid(row=0, column=0, columnspan=2)
+
+    spacerLabel = Label(tempWindow2, 
+                        text="Please enter your username below.",
+                        font=("corbel bold", 12),
+                        bg="white")
+    spacerLabel.grid(row=1, column=0, columnspan=2)
+
+    spacerLabel = Label(tempWindow2, 
+                        text="An email will be sent with a temporary password.",
+                        font=("corbel bold", 12),
+                        bg="white")
+    spacerLabel.grid(row=2, column=0, columnspan=2)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ", 
+                        bg="white")
+    spacerLabel.grid(row=3, column=0, columnspan=2)
+
+    labelUsername = Label(tempWindow2, 
+                          text="Username: ", 
+                          font=("corbel", 10),
+                          bg="white",
+                          padx=5)                                   
+    labelUsername.grid(row=4, column=0, sticky=E)
+    entryUsername = Entry(tempWindow2, 
+                          textvar=currentUsername)            
+    entryUsername.grid(row=4, column=1, sticky=W)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ", 
+                        bg="white")
+    spacerLabel.grid(row=5, column=0, columnspan=2)
+
+    logedIn = Button(tempWindow2, 
+                     text='Send Temporary Password', 
+                     bg='darkblue', 
+                     fg='white',
+                     width=20,
+                     command=getEmail).grid(row=6, column=0, columnspan=2)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ", 
+                        bg="white")
+    spacerLabel.grid(row=7, column=0, columnspan=2)
+
 
 # Create the main Program Window #
 # Status: WORKING // NOT FULLY FUNCTIONAL - (add calendar & change colours/formatting etc.)
@@ -3330,7 +3462,8 @@ def mainWindow():
     window = Tk()
     window.geometry('1366x768')
     window.title("Antrim Castle Surgery - Medical Informations System") 
-    window.config(bg="#202C4F")
+    window.config(bg="#FFFFFF")
+    window.iconbitmap('surgeryWindowLogo.ico')
 
     center(window)
 
@@ -3345,6 +3478,8 @@ def mainWindow():
     menu = Menu(window)
 
     dropdownUsers = Menu(menu) 
+
+    menu.config(bg='#07C9BB')
 
     dropdownUsers.add_command(label='Create New User', 
                               command=createUser) 
@@ -3423,193 +3558,193 @@ def mainWindow():
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=0, column=0, columnspan=9)
 
     spacerLabel = Label(window, 
                         text=" ", 
-                        width=20, bg="#202C4F")
+                        width=20, bg="#FFFFFF")
     spacerLabel.grid(row=0, column=0, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=0, column=1, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=0, column=2, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=0, column=3, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=0, column=4, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=0, column=5, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=0, column=6, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=0, column=7, rowspan=20)
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=0, column=8, rowspan=20)
 
     labelInstructions = Label(window, 
                               text="Options Menu",
                               font=("Helvetica", 14, "bold"),
                               relief=RIDGE,
-                              bg="#202C4F")                 
+                              bg="#FFFFFF")                 
     labelInstructions.grid(row=3, column=0, columnspan=2)
 
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=4, column=0, columnspan=2)
 
     Button(window, 
            text='Search Patient Records', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=searchPatient).grid(row=5, column=0, columnspan=2)
     Button(window, 
            text='Register New Patients', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=addPatient).grid(row=6, column=0, columnspan=2)
     Button(window, 
            text='Edit Patient Records', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=editPatient).grid(row=7, column=0, columnspan=2)
     Button(window, 
            text='Add New Documents', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=addDocument).grid(row=8, column=0, columnspan=2)
     Button(window, 
            text='View Saved Documents', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=viewDocument).grid(row=9, column=0, columnspan=2)
     Button(window, 
            text='View Health Statistics', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=viewStatistics).grid(row=10, column=0, columnspan=2)
     Button(window, 
            text='Begin a new Consultation', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=newCons).grid(row=11, column=0, columnspan=2)
     Button(window, 
            text='Search Consultations', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=searchCons).grid(row=12, column=0, columnspan=2)
     Button(window, 
            text='Internal Communications', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=internalComms).grid(row=13, column=0, columnspan=2)
     Button(window, 
            text='Book a new Appointment', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=newApp).grid(row=14, column=0, columnspan=2)
     Button(window, 
            text='Change Appointments', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=editApp).grid(row=15, column=0, columnspan=2)
     Button(window, 
            text='View Item Stock List', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=viewStock).grid(row=16, column=0, columnspan=2)
     Button(window, 
            text='Edit Item Stock List', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=editStock).grid(row=17, column=0, columnspan=2)
     Button(window, 
            text='Create a new Document', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=newDoc).grid(row=18, column=0, columnspan=2)
     Button(window, 
            text='Add New Medical Data', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=newMed).grid(row=19, column=0, columnspan=2)
 
     labelInstructions = Label(window, 
                               text="System Options",
                               font=("Helvetica", 14, "bold"),
                               relief=RIDGE,
-                              bg="#202C4F")                                  
+                              bg="#FFFFFF")                                  
     labelInstructions.grid(row=3, column=7, columnspan=2)
 
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=4, column=7, columnspan=2)
 
     Button(window, 
            text='Create New Users', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=createUser).grid(row=5, column=7, columnspan=2)
     Button(window, 
            text='Edit User Accounts', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=editUser).grid(row=6, column=7, columnspan=2)
     Button(window, 
            text='Change Current User', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', command=changeUser).grid(row=7, column=7, columnspan=2)
+           bg='#09425A', 
+           fg='#FFFFFF', command=changeUser).grid(row=7, column=7, columnspan=2)
     Button(window, 
            text='Log-Off', 
            width=20, 
-           bg='darkgrey', 
-           fg='black', 
+           bg='#09425A', 
+           fg='#FFFFFF', 
            command=logOff).grid(row=8, column=7, columnspan=2)
 
     title = userDetails[3]
@@ -3625,13 +3760,13 @@ def mainWindow():
     spacerLabel = Label(window, 
                         text=" ", 
                         width=20, 
-                        bg="#202C4F")
+                        bg="#FFFFFF")
     spacerLabel.grid(row=5, column=0, columnspan=9)
 
     labelHello = Label(window, 
                        text=welcomeText,
                        font=("Helvetica", 14, "bold italic"),
-                       bg="#202C4F")
+                       bg="#FFFFFF")
     labelHello.grid(row=4, column=3, columnspan=3, rowspan=2)
 
     window.mainloop()
@@ -3640,21 +3775,26 @@ def mainWindow():
 # Check User Details for Validity #
 # Status: FULLY WORKING
 def checkUser():
-    conn = sqlite3.connect('Users.db')
+    conn = sqlite3.connect('Users.db') # Establish the database connection by designating which db file to connect to
 
-    with conn:                  # Connect to the database
+    with conn:                         # Use the databse connection established to carry out the following
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM UserAccounts WHERE username = ? and password = ?", (username.get(), password.get()))
+        # ^ will take the user-entered username and password and find a user-record where both the username and password match
 
         result = cursor.fetchall()  # Get all values returned from the database SELECT query
 
         if result:
-            tupleDetails = StringVar()
+            tupleDetails = StringVar() # Set the datatype for the coming fetch statement
 
             cursorUser = conn.cursor()
 
             cursorUser.execute('SELECT * FROM UserAccounts WHERE username = ?', (username.get(),))
+            # ^ since the user has been authenticated above, the username is now used (as it is a
+            # unique value - to pull all of the user details and save them to a list
+
             tupleDetails = cursorUser.fetchall()    
+            # The user details are at first returned as a tuple in "tupleDetails"
 
             for stringDetails in tupleDetails:      # Add each value pulled from the database to
                 for detail in stringDetails:        # a global list to allow them to be used later
@@ -3663,11 +3803,13 @@ def checkUser():
             tempWindow.destroy()    # Close this window
             mainWindow()            # Re-open the main menu
         else:               # If no user details found - 
-            ms.showerror('User Not Found', 'Username or Password not Found.') # Show error message
+            ms.showerror('User Not Found', 'Username or Password not Found.') 
+            # ^ Show error message if no user account has been found with that username
+            # and password combination
             entryUsername.delete(0, END) # Clear entry fields for a second attempt
             entryPassword.delete(0, END)
 
-
+ignoreThis = 1
 
 
 # ***** Creating an Admin User Account ***** #
@@ -3696,7 +3838,7 @@ def checkUser():
 # "Users" database. This allows for us to ensure confidentiality & security.
 
 tempWindow = Tk()
-tempWindow.geometry('500x280+580+250')
+tempWindow.geometry('500x300+580+250')
 tempWindow.title("Antrim Castle Surgery - Medical Informations System")
 tempWindow.config(bg="white")
 
@@ -3757,5 +3899,17 @@ logedIn = Button(tempWindow,
                  fg='white',
                  width=20,
                  command=checkUser).grid(row=8, column=0, columnspan=2)
+
+spacerLabel = Label(tempWindow, 
+                    text=" ", 
+                    bg="white")
+spacerLabel.grid(row=9, column=0, columnspan=2)
+
+passwordReset = Button(tempWindow, 
+                       text='Forgot your password?', 
+                       bg='#09425A', 
+                       fg='#FFFFFF',
+                       width=20,
+                       command=resetPassword).grid(row=10, column=0, columnspan=2)
 
 tempWindow.mainloop()
