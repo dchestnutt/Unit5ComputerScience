@@ -1212,7 +1212,9 @@ def createUser():
 
         usersDB.commit()
 
-        again = ms.askyesno("Succesful!", "Would you like to create another user?", parent=tempWindow)
+        again = ms.askyesno("Succesful!", 
+                            "Would you like to create another user?", 
+                            parent=tempWindow)
 
         if again == True:
             clearWindow()
@@ -3794,6 +3796,7 @@ def checkUser():
             # unique value - to pull all of the user details and save them to a list
 
             tupleDetails = cursorUser.fetchall()    
+
             # The user details are at first returned as a tuple in "tupleDetails"
 
             for stringDetails in tupleDetails:      # Add each value pulled from the database to
