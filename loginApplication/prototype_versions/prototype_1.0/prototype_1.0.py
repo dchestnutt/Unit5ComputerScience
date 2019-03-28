@@ -239,7 +239,7 @@ def editUser():
 # Change current User Account #
 def changeUser():
     window.destroy()
-    os.system("application.py")
+    os.system("prototype_1.0.py")
 
 # Search Patient Records #
 def searchPatient():
@@ -538,7 +538,7 @@ def viewDocument():
 # Log Off the System #
 def logOff():
     window.destroy()
-    os.system("application.py")
+    os.system("prototype_1.0.py")
 
 # Create the main Program Window #
 def mainWindow():

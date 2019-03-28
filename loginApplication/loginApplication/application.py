@@ -4,25 +4,9 @@
 ######################################
 
 
-###########################
-## Prototype Version 1.3 ##
-###########################
-
-
-# ***** Things To-Do ***** #
-
-# 1. FIX Radiobuttons & Checkbuttons not returning values in addPatient()
-# 2. FIX search of patients.db within newCons()
-# 3. IMPLEMENT calendar function on mainWindow to display booked appointments for that specific user
-# 4. IMPLEMENT edit user accounts function
-# 5. IMPLEMENT search patient records function
-# 6. IMPLEMENT add & view documents function
-# 7. IMPLEMENT view statistics function
-# 8. IMPLEMENT search consultations function
-# 9. IMPLEMENT create & edit appointments function
-# 10. CHANGE colours & formatting in mainWindow to make it look better
-# 11. Print mail merged documents?
-# 12. Save mail merged documents to patient records?
+###################################
+## Software Development Solution ##
+###################################
 
 
 # ***** Importing Modules ***** #
@@ -631,7 +615,6 @@ def newDoc():
                             fg='white', 
                             command= lambda: getCombobox(currentPatientDetails)).grid(row=1, column=6, sticky=E+W)
 
-
 # Center the Window on the Monitor # 
 # Status: FULLY WORKING
 def center(toplevel):
@@ -645,7 +628,6 @@ def center(toplevel):
     y = screen_height/2 - size[1]/2
 
     toplevel.geometry("+%d+%d" % (x, y)) 
-
 
 # Enter new Patient Medical Data #
 # Status: FULLY WORKING
@@ -1163,7 +1145,6 @@ def newMed():
                             fg='white', 
                             command= lambda: getCombobox(currentPatientDetails)).grid(row=1, column=6, sticky=E+W)
 
-
 # Create a New User Account # 
 # Status: FULLY WORKING
 def createUser():
@@ -1404,7 +1385,6 @@ def createUser():
            command=tempWindow.destroy).grid(row=12, column=8, columnspan=2)
 
     tempWindow.mainloop()
-
 
 # Edit an Existing User Account # 
 # Status: FULLY WORKING
@@ -1793,24 +1773,355 @@ def editUser():
         fillData(searchedUserDetails)
         tempWindow.mainloop()
 
-
 # Search Patient Records # 
 # Status: NOT YET IMPLEMENTED
 def searchPatient():
-    print("Search Patient Records Function Called.")
+    tempWindow2 = Tk()
+    tempWindow2.geometry('470x120')
+    tempWindow2.title("Create a New Document")
 
+    center(tempWindow2)
+
+    dobDay = StringVar()
+    dobMonth = StringVar()
+    dobYear = StringVar()
+    firstname = StringVar()
+    lastname = StringVar()
+
+    def mainWindow(currentPatientDetails, currentPatientDetailsOD, currentPatientDetailsAF):
+        tempWindow = Tk()
+        tempWindow.geometry('425x380')
+        tempWindow.title("Patient Registration Overview")
+
+        center(tempWindow)
+
+        def viewOD(currentPatientDetailsOD):
+            print("View Organ Donor Records Function Called.")
+
+        def viewAF(currentPatientDetailsAF):
+            print("View Armed Forces Records Function Called.")
+
+        def viewCons():
+            print("View Recent Consultations Function Called.")
+
+        def viewMed():
+            print("View Medical History Function Called.")
+
+        patientTitle = currentPatientDetails[1]
+        firstName = currentPatientDetails[2]
+        lastName = currentPatientDetails[3]
+
+        fullName = patientTitle + " " + firstName + " " + lastName
+
+        dateOfBirth = currentPatientDetails[5]
+
+        houseNum = currentPatientDetails[8]
+        street = currentPatientDetails[9]
+        postcode = currentPatientDetails[10]
+        county = currentPatientDetails[11]
+
+        address1 = houseNum + " " + street
+        address2 = county
+        address3 = postcode
+
+        patientHCN = currentPatientDetails[17]
+
+        contactNum = currentPatientDetails[12]
+
+        # BEGIN FORMATTING #
+        spacerLabel = Label(tempWindow, text=" ", width=5)
+        spacerLabel.grid(row=0, column=0, rowspan=15)
+
+        spacerLabel = Label(tempWindow, text=" ", width=20)
+        spacerLabel.grid(row=0, column=1, rowspan=15)
+
+        spacerLabel = Label(tempWindow, text=" ", width=5)
+        spacerLabel.grid(row=0, column=2, rowspan=15)
+
+        spacerLabel = Label(tempWindow, text=" ", width=20)
+        spacerLabel.grid(row=0, column=3, rowspan=15)
+        
+        spacerLabel = Label(tempWindow, text=" ", width=5)
+        spacerLabel.grid(row=0, column=4, rowspan=15)
+
+        i = 0
+
+        while i < 15:
+            spacerLabel = Label(tempWindow, text=" ", width=10)
+            spacerLabel.grid(row=i, column=0, columnspan=5)
+            
+            i += 1
+        # END FORMATTING #
+
+        labelTitle = Label(tempWindow, 
+                           text="PATIENT OVERVIEW", 
+                           font=("corbel bold", 14))                 
+        labelTitle.grid(row=1, column=1, columnspan=3)                   
+        
+        labelName = Label(tempWindow, 
+                           text="Full Name:", 
+                           font=("corbel bold", 10))                 
+        labelName.grid(row=3, column=1)
+        
+        labelDOB = Label(tempWindow, 
+                           text="Date of Birth:", 
+                           font=("corbel bold", 10))                 
+        labelDOB.grid(row=4, column=1)
+
+        labelAdd = Label(tempWindow, 
+                           text="Address:", 
+                           font=("corbel bold", 10))                 
+        labelAdd.grid(row=6, column=1)
+
+        labelHCN = Label(tempWindow, 
+                           text="H&C Number:", 
+                           font=("corbel bold", 10))                 
+        labelHCN.grid(row=8, column=1)
+
+        labelContact = Label(tempWindow, 
+                           text="Contact Number:", 
+                           font=("corbel bold", 10))                 
+        labelContact.grid(row=9, column=1)
+
+        ## DIV
+
+        labelName = Label(tempWindow, 
+                           text=fullName, 
+                           font=("corbel", 10))                 
+        labelName.grid(row=3, column=3)
+        
+        labelDOB = Label(tempWindow, 
+                           text=dateOfBirth, 
+                           font=("corbel", 10))                 
+        labelDOB.grid(row=4, column=3)
+
+        labelAdd = Label(tempWindow, 
+                           text=address1, 
+                           font=("corbel", 10))                 
+        labelAdd.grid(row=5, column=3)
+
+        labelAdd = Label(tempWindow, 
+                           text=address2, 
+                           font=("corbel", 10))                 
+        labelAdd.grid(row=6, column=3)
+
+        labelAdd = Label(tempWindow, 
+                           text=address3, 
+                           font=("corbel", 10))                 
+        labelAdd.grid(row=7, column=3)
+
+        labelHCN = Label(tempWindow, 
+                           text=patientHCN, 
+                           font=("corbel", 10))                 
+        labelHCN.grid(row=8, column=3)
+
+        labelContact = Label(tempWindow, 
+                           text=contactNum, 
+                           font=("corbel", 10))                 
+        labelContact.grid(row=9, column=3)
+        
+        navButton = Button(tempWindow, 
+                           text='Medical History', 
+                           bg='#09425A', 
+                           fg='#FFFFFF',
+                           width=20,
+                           command=viewMed).grid(row=11, column=1)
+
+        navButton = Button(tempWindow, 
+                           text='Organ Donor Status', 
+                           bg='#09425A', 
+                           fg='#FFFFFF',
+                           width=20,
+                           command= lambda: viewOD(currentPatientDetailsOD)).grid(row=11, column=3)
+
+        navButton = Button(tempWindow, 
+                           text='Consultations', 
+                           bg='#09425A', 
+                           fg='#FFFFFF',
+                           width=20,
+                           command=viewCons).grid(row=13, column=1)
+
+        navButton = Button(tempWindow, 
+                           text='Armed Forces Records', 
+                           bg='#09425A', 
+                           fg='#FFFFFF',
+                           width=20,
+                           command= lambda: viewAF(currentPatientDetailsAF)).grid(row=13, column=3)
+        
+    def searchUser():       
+        def getValues():
+            firstname = entryFirstname.get()
+            lastname = entryLastname.get()
+            dobDay = comboboxDOBDay.get()
+            dobMonth = comboboxDOBMonth.get()
+            dobYear = comboboxDOBYear.get()
+
+            values = [firstname, lastname, dobDay, dobMonth, dobYear]
+
+            return values
+
+        values = getValues()
+        
+        firstname = values[0]
+        lastname = values[1]
+        dobDay = values[2]
+        dobMonth = values[3]
+        dobYear = values[4]
+        
+        dob = str(dobDay) + "/" + str(dobMonth) + "/" + str(dobYear)
+
+        fullname = str(firstname) + " " + str(lastname)
+
+        conn = sqlite3.connect('Patients.db')
+        
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM PatientDemo WHERE forename = ? and surname = ? and dateOfBirth = ?", (firstname, lastname, dob))
+
+            result = cursor.fetchall()
+            
+            if result:
+                tupleDetails2 = ""
+                stringDetails2 = ""
+                currentPatientDetails = []
+                currentPatientDetailsOD = []
+                currentPatientDetailsAF = []
+
+                cursor.execute('SELECT * FROM PatientDemo WHERE forename = ? and surname =  ? and dateOfBirth = ?', (firstname, lastname, dob))
+            
+                tupleDetails2 = cursor.fetchall()
+
+                for stringDetails2 in tupleDetails2:
+                    for detail in stringDetails2:
+                        currentPatientDetails.append(detail)
+
+                patientID = str(currentPatientDetails[0])
+
+                cursor.execute('SELECT * FROM PatientOD WHERE patientID = ?', (patientID))
+            
+                tupleDetails2 = cursor.fetchall()
+
+                for stringDetails2 in tupleDetails2:
+                    for detail in stringDetails2:
+                        currentPatientDetailsOD.append(detail)
+
+                cursor.execute('SELECT * FROM PatientAF WHERE patientID = ?', (patientID))
+            
+                tupleDetails2 = cursor.fetchall()
+
+                for stringDetails2 in tupleDetails2:
+                    for detail in stringDetails2:
+                        currentPatientDetailsAF.append(detail)
+
+                ms.showinfo('Succesful!', 'The record of ' + fullname + ' has been loaded.', parent=tempWindow2)
+
+                tempWindow2.destroy()
+                mainWindow(currentPatientDetails, currentPatientDetailsOD, currentPatientDetailsAF)
+            else:
+                ms.showerror('Patient Not Found', 'No patients with these matching details have been found.')
+                entryFirstname.delete(0, END)
+                entryLastname.delete(0, END)
+                comboboxDOBDay.current(0)
+                comboboxDOBMonth.current(0)
+                comboboxDOBYear.current(0)
+       
+    spacerLabel = Label(tempWindow2, 
+                        text=" ")
+    spacerLabel.grid(row=0, column=0, columnspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=0, rowspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=6, rowspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=2, rowspan=9)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ",
+                        width=4)
+    spacerLabel.grid(row=0, column=8, rowspan=9)
+
+    labelFirstname = Label(tempWindow2, 
+                        text="Patient Firstname: ",
+                        font=("corbel bold", 10))
+    labelFirstname.grid(row=1, column=1)
+    entryFirstname = Entry(tempWindow2, 
+                        textvar=firstname)
+    entryFirstname.grid(row=1, column=3, columnspan=3, sticky=E+W)
+
+    labelLastname = Label(tempWindow2, 
+                        text="Patient Lastname: ",
+                        font=("corbel bold", 10))
+    labelLastname.grid(row=2, column=1)
+    entryLastname = Entry(tempWindow2, 
+                        textvar=lastname)
+    entryLastname.grid(row=2, column=3, columnspan=3, sticky=E+W)
+
+    labelDocType = Label(tempWindow2, 
+                              text="Patient Date of Birth: ", 
+                              font=("corbel bold", 10))
+    labelDocType.grid(row=3, column=1)
+    
+    comboboxDOBDay = ttk.Combobox(tempWindow2, 
+                                   textvariable=dobDay)
+    comboboxDOBDay.grid(row=3, column=3, sticky=E+W)
+    comboboxDOBDay.config(values = ('DD', '01', '02', '03', '04', '05', '05', '07', '08', '09', '10', '11', '12', '13', '14',
+                                     '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                                     '30', '31'), width=4)
+    comboboxDOBDay.current([0])
+
+    comboboxDOBMonth = ttk.Combobox(tempWindow2, 
+                                   textvariable=dobMonth)
+    comboboxDOBMonth.grid(row=3, column=4, sticky=E+W)
+    comboboxDOBMonth.config(values = ('MM', '01', '02', '03', '04', '05', '05', '07', '08', '09', '10', '11', '12'), width=4)
+    comboboxDOBMonth.current([0])
+
+    comboboxDOBYear = ttk.Combobox(tempWindow2, 
+                                   textvariable=dobYear)
+    comboboxDOBYear.grid(row=3, column=5, sticky=E+W)
+    comboboxDOBYear.config(values = ('YYYY', '1900', '1901', '1902', '1903', '1904', '1905', '1906', '1907', '1908', '1909',
+                                     '1910', '1911', '1912', '1913', '1914', '1915', '1916', '1917', '1918', '1919', '1920', 
+                                     '1921', '1922', '1923', '1924', '1925', '1926', '1927', '1928', '1929', '1930', '1931', 
+                                     '1932', '1933', '1934', '1935', '1936', '1937', '1938', '1939', '1940', '1941', '1942', 
+                                     '1943', '1944', '1945', '1946', '1947', '1948', '1949', '1950', '1951', '1952', '1953', 
+                                     '1954', '1955', '1956', '1957', '1958', '1959', '1960', '1961', '1962', '1963', '1964', 
+                                     '1965', '1966', '1967', '1968', '1969', '1970', '1971', '1972', '1973', '1974', '1975',
+                                     '1976', '1977', '1978', '1979', '1980', '1981', '1982', '1983', '1984', '1985', '1986',
+                                     '1987', '1988', '1989', '1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997', 
+                                     '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008',
+                                     '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019'), width=9)
+    comboboxDOBYear.current([0])
+
+    searchButton = Button(tempWindow2, 
+                          text='Search', 
+                          bg='darkblue', 
+                          fg='white', 
+                          command=searchUser).grid(row=2, column=7)
+
+    spacerLabel = Label(tempWindow2, 
+                        text=" ")
+    spacerLabel.grid(row=4, column=0, columnspan=5)
+
+    tempWindow2.mainloop()
 
 # View Surgery Statistics # 
 # Status: TO BE REMOVED
 def viewStatistics():
     print("View Surgery Statistics Function Called.")
 
-
 # Internal Communications # 
 # Status: TO BE REMOVED
 def internalComms():
     print("Internal Communications Function Called.")
-
 
 # Edit Patient Records #
 # Status: BROKEN :( - does not fill in values of checkboxes or radiobuttons
@@ -2488,7 +2799,6 @@ def editPatient():
 
     tempWindow2.mainloop()
 
-
 # Create a new Patient Record #
 # Status: BROKEN :(
 def addPatient():
@@ -2914,30 +3224,25 @@ def addPatient():
 
     tempWindow.mainloop()
 
-
 # Add a new Document # 
-# Status: NOT YET IMPLEMENTED
+# Status: TO BE REMOVED
 def addDocument():
     print("Add New Document Function Called.")
 
-
 # View a Document #
-# Status: NOT YET IMPLEMENTED
+# Status: TO BE REMOVED
 def viewDocument():
     print("View Document Function Called.")
-
 
 # View Item Stocks List #
 # Status: NOT YET IMPLEMENTED
 def viewStock():
     print("View Item Stock Lists.")
 
-
 # Edit Item Stocks List #
 # Status: NOT YET IMPLEMENTED
 def editStock():
     print("Edit Item Stock Lists.")
-
 
 # Begin a new Consultation #
 # Status: FULLY WORKING
@@ -3319,18 +3624,15 @@ def newCons():
 
         tempWindow.mainloop()
 
-
 # Search Consultations #
 # Status: NOT YET IMPLEMENTED
 def searchCons():
     print("Search Consultations Function Called.")
 
-
 # Create a New Appointment #
 # Status: NOT YET IMPLEMENTED
 def newApp():
     print("Create a New Appointment Function Called.")
-
 
 # Edit Patient Appointments #
 # Status: NOT YET IMPLEMENTED
@@ -3338,7 +3640,7 @@ def editApp():
     print("Edit Appointment Function Called.")
 
 # Reset Password #
-# Status: NOT YET IMPLEMENTED
+# Status: FULLY WORKING
 def resetPassword():
     tempWindow2 = Tk()
     tempWindow2.geometry('350x200')
@@ -3456,7 +3758,6 @@ def resetPassword():
                         text=" ", 
                         bg="white")
     spacerLabel.grid(row=7, column=0, columnspan=2)
-
 
 # Create the main Program Window #
 # Status: WORKING // NOT FULLY FUNCTIONAL - (add calendar & change colours/formatting etc.)
@@ -3773,7 +4074,6 @@ def mainWindow():
 
     window.mainloop()
 
-
 # Check User Details for Validity #
 # Status: FULLY WORKING
 def checkUser():
@@ -3812,26 +4112,7 @@ def checkUser():
             entryUsername.delete(0, END) # Clear entry fields for a second attempt
             entryPassword.delete(0, END)
 
-ignoreThis = 1
 
-
-# ***** Creating an Admin User Account ***** #
-
-# Note: This code should be commented out. It is only needed to create the initial user
-#       account which is used to log-in for the first time and therefore create 
-#       subsequent user accounts and access levels etc. 
-
-#conn = sqlite3.connect('Users.db')
-#with conn:
-#    cursor = conn.cursor()
-#
-#    cursor.execute('''CREATE TABLE IF NOT EXISTS UserAccounts (userID INTEGER PRIMARY KEY, username TEXT, 
-#                      password TEXT, title TEXT, firstname TEXT, surname TEXT, email TEXT, mobile TEXT, userType TEXT)''')
-#    cursor.execute('''INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, 
-#                      userType) VALUES (NULL, 'admin', 'Password1', 'Mr', 'System', 'Administrator', 'systemadmin@acs.com', 
-#                      '02894413910', 'Administrator')''')
-#    
-#    conn.commit()
 
 
 # ***** Drawing the Login Window ***** #
@@ -3839,6 +4120,16 @@ ignoreThis = 1
 # This window will be used to initialise our program by asking the user for their
 # login details and checking this against the details which are stored in our
 # "Users" database. This allows for us to ensure confidentiality & security.
+
+ignoreThis = 1
+
+
+# ***** Log-in Window Generation ***** #
+
+# Note: This code below serves as the first and main program loop. The window generated
+#       will allow the user to authenticate themselves within the system and allows for
+#       access levels and access rights to be implemented. It also serves as the root of
+#       all following (tKinter) window loops.
 
 tempWindow = Tk()
 tempWindow.geometry('500x300+580+250')
@@ -3916,3 +4207,5 @@ passwordReset = Button(tempWindow,
                        command=resetPassword).grid(row=10, column=0, columnspan=2)
 
 tempWindow.mainloop()
+
+## EOF ##
