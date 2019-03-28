@@ -11,25 +11,35 @@
 
 # ***** Importing Modules ***** #
 
-from __future__ import print_function
-
+# Date-time modules
 import datetime
+from datetime import date
+
+# API modules - (printer interfacing)
 import win32api
 import win32print
 import tempfile
+
+# tKinter modules - (graphics)
 from tkinter import *
 from tkinter import messagebox as ms
 from tkinter import Menu
 from tkinter import ttk
+
+# SQLite modules - (databases)
 import sqlite3
+
+# Other modules
 import os
+
+# SMPTP Libraries - (email)
 import smtplib
 
+# Document modules (mail-merge & microsoft word interfacing)
 from mailmerge import MailMerge
-from datetime import date
 
 
-# ***** Initial Declaration of Variables ***** #
+# ***** Initial Declaration of Global Variables ***** #
 
 global userDetails
 userDetails = []
@@ -1794,6 +1804,52 @@ def searchPatient():
         tempWindow.title("Patient Registration Overview")
 
         center(tempWindow)
+
+        patientID = currentPatientDetails[0]
+
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM PatientMed WHERE patientID = ?", (patientID))
+        
+        result = cursor.fetchall()
+            
+        if result:
+            tupleDetails2 = ""
+            stringDetails2 = ""
+            recentPatientMed1 = []
+            recentPatientMed2 = []
+            recentPatientMed3 = []
+
+            cursor.execute('SELECT * FROM PatientDemo WHERE forename = ? and surname =  ? and dateOfBirth = ?', (firstname, lastname, dob))
+            
+            tupleDetails2 = cursor.fetchall()
+
+            for stringDetails2 in tupleDetails2:
+                for detail in stringDetails2:
+                    currentPatientDetails.append(detail)
+
+            patientID = str(currentPatientDetails[0])
+
+            cursor.execute('SELECT * FROM PatientOD WHERE patientID = ?', (patientID))
+            
+            tupleDetails2 = cursor.fetchall()
+
+            for stringDetails2 in tupleDetails2:
+                for detail in stringDetails2:
+                    currentPatientDetailsOD.append(detail)
+
+            cursor.execute('SELECT * FROM PatientAF WHERE patientID = ?', (patientID))
+            
+            tupleDetails2 = cursor.fetchall()
+
+            for stringDetails2 in tupleDetails2:
+                for detail in stringDetails2:
+                    currentPatientDetailsAF.append(detail)
+
+            ms.showinfo('Succesful!', 'The record of ' + fullname + ' has been loaded.', parent=tempWindow2)
+
+            tempWindow2.destroy()
+            mainWindow(currentPatientDetails, currentPatientDetailsOD, currentPatientDetailsAF)
 
         def viewOD(currentPatientDetailsOD):
             print("View Organ Donor Records Function Called.")
