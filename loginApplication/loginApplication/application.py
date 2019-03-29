@@ -1157,244 +1157,259 @@ def newMed():
 
 # Create a New User Account # 
 # Status: FULLY WORKING
-def createUser():
+def createUser():  
     tempWindow = Tk()
     tempWindow.geometry('700x300')
     tempWindow.title("Create a New User")
 
     center(tempWindow)
 
-    usernameNew = StringVar()
-    passwordNew = StringVar()
-    titleNew = StringVar()
-    firstnameNew = StringVar()
-    surnameNew = StringVar()
-    emailNew = StringVar()
-    mobileNew = StringVar()
-    userTypeNew = StringVar()
-    canViewPatientData = StringVar()
-    canEditPatientData = StringVar()
-    canViewConsultations = StringVar()
-    canEditConsultations = StringVar()
-    canCommunicatePatients = StringVar()
-    canViewStatistics = StringVar()
-    canViewAppointments = StringVar()
-    canCancelAppointments = StringVar()
-    canCreateUsers = StringVar()
-    canEditUsers = StringVar()
+    accountType = userDetails[8]
+    
+    if accountType == "Doctor" or "Practice Nurse" or "Pharmacist" or "Councillor" or "Receptionist":
+        ms.showerror("Access Denied", 
+                     "You do not have access to this feature. If this is in error please contact the systems administrator.", 
+                     parent=tempWindow)
+        tempWindow.destroy()
 
-    def clearWindow():
-        entryUsername.delete(0, END)
-        entryPassword.delete(0, END)
-        entryFirstname.delete(0, END)
-        entrySurname.delete(0, END)
-        comboboxTitle.current([0])
-        comboboxUserType.current([0])
-        entryEmail.delete(0, END)
-        entryMobile.delete(0, END)
+    elif accountType == "Administrator" or "Practice Manager":
+        usernameNew = StringVar()
+        passwordNew = StringVar()
+        titleNew = StringVar()
+        firstnameNew = StringVar()
+        surnameNew = StringVar()
+        emailNew = StringVar()
+        mobileNew = StringVar()
+        userTypeNew = StringVar()
+        canViewPatientData = StringVar()
+        canEditPatientData = StringVar()
+        canViewConsultations = StringVar()
+        canEditConsultations = StringVar()
+        canCommunicatePatients = StringVar()
+        canViewStatistics = StringVar()
+        canViewAppointments = StringVar()
+        canCancelAppointments = StringVar()
+        canCreateUsers = StringVar()
+        canEditUsers = StringVar()
 
-    def appendUser(username, password, title, firstname, surname, email, mobile, userType):
-        with sqlite3.connect('Users.db') as usersDB:
-            cursorUser = usersDB.cursor()
+        def clearWindow():
+            entryUsername.delete(0, END)
+            entryPassword.delete(0, END)
+            entryFirstname.delete(0, END)
+            entrySurname.delete(0, END)
+            comboboxTitle.current([0])
+            comboboxUserType.current([0])
+            entryEmail.delete(0, END)
+            entryMobile.delete(0, END)
+
+        def appendUser(username, password, title, firstname, surname, email, mobile, userType):
+            with sqlite3.connect('Users.db') as usersDB:
+                cursorUser = usersDB.cursor()
        
-        insertUser = '''INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, userType) 
-                        VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)'''
-        cursorUser.execute(insertUser,[(username), (password), (title), (firstname), (surname), (email), (mobile), (userType)])
+            insertUser = '''INSERT INTO UserAccounts (userID, username, password, title, firstname, surname, email, mobile, userType) 
+                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)'''
+            cursorUser.execute(insertUser,[(username), (password), (title), (firstname), (surname), (email), (mobile), (userType)])
 
-        usersDB.commit()
+            usersDB.commit()
 
-        again = ms.askyesno("Succesful!", 
-                            "Would you like to create another user?", 
-                            parent=tempWindow)
+            again = ms.askyesno("Succesful!", 
+                                "Would you like to create another user?", 
+                                parent=tempWindow)
 
-        if again == True:
-            clearWindow()
-        else:
-            tempWindow.destroy()
+            if again == True:
+                clearWindow()
+            else:
+                tempWindow.destroy()
 
-    def getValues():
-        username = entryUsername.get()
-        password = entryPassword.get()
-        title = comboboxTitle.get()
-        firstname = entryFirstName.get()
-        surname = entrySurname.get()
-        email = entryEmail.get()
-        mobile = entryMobile.get()
-        userType = comboboxUserType.get()
+        def getValues():
+            username = entryUsername.get()
+            password = entryPassword.get()
+            title = comboboxTitle.get()
+            firstname = entryFirstName.get()
+            surname = entrySurname.get()
+            email = entryEmail.get()
+            mobile = entryMobile.get()
+            userType = comboboxUserType.get()
 
-        appendUser(username, password, title, firstname, surname, email, mobile, userType)
+            appendUser(username, password, title, firstname, surname, email, mobile, userType)
 
-    labelInstructions = Label(tempWindow, 
-                             text="Antrim Castle Surgery - Administration Portal (Create a User)",
-                             font=("corbel bold", 14),
-                             anchor=N)                 
-    labelInstructions.grid(row=0, column=1, columnspan=8) 
+        labelInstructions = Label(tempWindow, 
+                                 text="Antrim Castle Surgery - Administration Portal (Create a User)",
+                                 font=("corbel bold", 14),
+                                 anchor=N)                 
+        labelInstructions.grid(row=0, column=1, columnspan=8) 
 
-    spacerLabel = Label(tempWindow, 
-                        text=" ", 
-                        width=20)
-    spacerLabel.grid(row=1, column=0, columnspan=8)
+        spacerLabel = Label(tempWindow, 
+                            text=" ", 
+                            width=20)
+        spacerLabel.grid(row=1, column=0, columnspan=8)
 
-    labelUsername = Label(tempWindow, 
-                          text="Username: ", 
-                          font=("corbel", 10))                 
-    labelUsername.grid(row=2, column=0)                   
-    entryUsername = Entry(tempWindow, 
-                          textvariable=usernameNew) 
-    entryUsername.grid(row=2, column=1, columnspan=2)            
+        labelUsername = Label(tempWindow, 
+                              text="Username: ", 
+                              font=("corbel", 10))                 
+        labelUsername.grid(row=2, column=0)                   
+        entryUsername = Entry(tempWindow, 
+                              textvariable=usernameNew) 
+        entryUsername.grid(row=2, column=1, columnspan=2)            
     
-    labelPassword = Label(tempWindow, 
-                          text="Password: ", 
-                          font=("corbel", 10))                 
-    labelPassword.grid(row=3, column=0)                   
-    entryPassword = Entry(tempWindow, textvar=passwordNew) 
-    entryPassword.grid(row=3, column=1, columnspan=2)
+        labelPassword = Label(tempWindow, 
+                              text="Password: ", 
+                              font=("corbel", 10))                 
+        labelPassword.grid(row=3, column=0)                   
+        entryPassword = Entry(tempWindow, textvar=passwordNew) 
+        entryPassword.grid(row=3, column=1, columnspan=2)
 
-    spacerLabel = Label(tempWindow, text=" ", width=20)
-    spacerLabel.grid(row=4, column=0, columnspan=3)
+        spacerLabel = Label(tempWindow, text=" ", width=20)
+        spacerLabel.grid(row=4, column=0, columnspan=3)
     
-    labelFirstName = Label(tempWindow, 
-                          text="Forename: ", 
-                          font=("corbel", 10))                 
-    labelFirstName.grid(row=5, column=0)                   
-    entryFirstName = Entry(tempWindow, 
-                           textvar=firstnameNew) 
-    entryFirstName.grid(row=5, column=1, columnspan=2)            
+        labelFirstName = Label(tempWindow, 
+                              text="Forename: ", 
+                              font=("corbel", 10))                 
+        labelFirstName.grid(row=5, column=0)                   
+        entryFirstName = Entry(tempWindow, 
+                               textvar=firstnameNew) 
+        entryFirstName.grid(row=5, column=1, columnspan=2)            
     
-    labelSurname = Label(tempWindow, 
-                          text="Surname: ", 
-                          font=("corbel", 10))                 
-    labelSurname.grid(row=6, column=0)                   
-    entrySurname = Entry(tempWindow, textvar=surnameNew) 
-    entrySurname.grid(row=6, column=1, columnspan=2)
+        labelSurname = Label(tempWindow, 
+                              text="Surname: ", 
+                              font=("corbel", 10))                 
+        labelSurname.grid(row=6, column=0)                   
+        entrySurname = Entry(tempWindow, textvar=surnameNew) 
+        entrySurname.grid(row=6, column=1, columnspan=2)
 
-    labelTitle = Label(tempWindow, 
-                          text="Title: ", 
-                          font=("corbel", 10))                 
-    labelTitle.grid(row=7, column=0)                   
-    comboboxTitle = ttk.Combobox(tempWindow, 
-                                 textvariable=titleNew)
-    comboboxTitle.grid(row=7, column=1, columnspan=2)
-    comboboxTitle.config(values = ('Mr', 'Mrs', 'Miss', 'Ms', 'Dr', 'Prof'), width=17)
+        labelTitle = Label(tempWindow, 
+                              text="Title: ", 
+                              font=("corbel", 10))                 
+        labelTitle.grid(row=7, column=0)                   
+        comboboxTitle = ttk.Combobox(tempWindow, 
+                                     textvariable=titleNew)
+        comboboxTitle.grid(row=7, column=1, columnspan=2)
+        comboboxTitle.config(values = ('Mr', 'Mrs', 'Miss', 'Ms', 'Dr', 'Prof'), width=17)
 
-    spacerLabel = Label(tempWindow, 
-                        text=" ")
-    spacerLabel.grid(row=0, column=4, rowspan=10)
+        spacerLabel = Label(tempWindow, 
+                            text=" ")
+        spacerLabel.grid(row=0, column=4, rowspan=10)
 
-    labelUserType = Label(tempWindow, 
-                          text="User Type: ", 
-                          font=("corbel", 10))                 
-    labelUserType.grid(row=8, column=5)                   
-    comboboxUserType = ttk.Combobox(tempWindow, 
-                                    textvariable=userTypeNew)
-    comboboxUserType.grid(row=8, column=6, columnspan=2)
-    comboboxUserType.config(values = ('Doctor', 'Practice Nurse', 'Treatment Nurse', 'Pharmacist', 
-                                      'Councillor', 'Receptionist', 'Practice Manager', 'Administrator'), width=17)
+        labelUserType = Label(tempWindow, 
+                              text="User Type: ", 
+                              font=("corbel", 10))                 
+        labelUserType.grid(row=8, column=5)                   
+        comboboxUserType = ttk.Combobox(tempWindow, 
+                                        textvariable=userTypeNew)
+        comboboxUserType.grid(row=8, column=6, columnspan=2)
+        comboboxUserType.config(values = ('Doctor', 'Practice Nurse', 'Treatment Nurse', 'Pharmacist', 
+                                          'Councillor', 'Receptionist', 'Practice Manager', 'Administrator'), width=17)
 
-    labelEmail = Label(tempWindow,
-                       text="E-mail: ",
-                       font=("corbel", 10))
-    labelEmail.grid(row=9, column=0)
-    entryEmail = Entry(tempWindow, 
-                       textvar=emailNew)
-    entryEmail.grid(row=9, column=1, columnspan=2)
+        labelEmail = Label(tempWindow,
+                           text="E-mail: ",
+                           font=("corbel", 10))
+        labelEmail.grid(row=9, column=0)
+        entryEmail = Entry(tempWindow, 
+                           textvar=emailNew)
+        entryEmail.grid(row=9, column=1, columnspan=2)
 
-    labelMobile = Label(tempWindow,
-                       text="Mobile: ",
-                       font=("corbel", 10))
-    labelMobile.grid(row=10, column=0)
-    entryMobile = Entry(tempWindow, 
-                        textvar=mobileNew)
-    entryMobile.grid(row=10, column=1, columnspan=2)
+        labelMobile = Label(tempWindow,
+                           text="Mobile: ",
+                           font=("corbel", 10))
+        labelMobile.grid(row=10, column=0)
+        entryMobile = Entry(tempWindow, 
+                            textvar=mobileNew)
+        entryMobile.grid(row=10, column=1, columnspan=2)
 
-    labelPermissions = Label(tempWindow,    
-                             text="User Permissions: ",  
-                             font=("corbel", 10))
-    labelPermissions.grid(row=2, column=5, columnspan=2)                                                    
-    Checkbutton(tempWindow, 
-                text="View Patient Data", 
-                cursor='hand2',
-                font=("corbel", 10),
-                variable=canViewPatientData,
-                onvalue='Yes', offvalue='No').grid(row=2, column=7, sticky='W',)  
-    Checkbutton(tempWindow, 
-                text="Edit Patient Data", 
-                cursor='hand2',
-                font=("corbel", 10),
-                variable=canEditPatientData,
-                onvalue='Yes', 
-                offvalue='No').grid(row=3, column=7, sticky='W',)
-    Checkbutton(tempWindow, 
-                text="View Patient Consultation Notes", 
-                cursor='hand2',
-                font=("corbel", 10),
-                variable=canViewConsultations,
-                onvalue='Yes', 
-                offvalue='No').grid(row=4, column=7, sticky='W',)
-    Checkbutton(tempWindow, 
-                text="Edit Patient Consultation Notes", 
-                cursor='hand2',
-                font=("corbel", 10),
-                variable=canEditConsultations,
-                onvalue='Yes', 
-                offvalue='No').grid(row=5, column=7, sticky='W',)
-    Checkbutton(tempWindow, 
-                text="Communicate with Patients", 
-                cursor='hand2',
-                font=("corbel", 10),
-                variable=canCommunicatePatients,
-                onvalue='Yes', 
-                offvalue='No').grid(row=6, column=7, sticky='W',)
-    Checkbutton(tempWindow, 
-                text="View Patient Statistics", 
-                cursor='hand2',
-                font=("corbel", 10),
-                variable=canViewStatistics,
-                onvalue='Yes', 
-                offvalue='No').grid(row=2, column=8, sticky='W',)
-    Checkbutton(tempWindow, 
-                text="View Patient Appointments", 
-                cursor='hand2',
-                font=("corbel", 10),
-                variable=canViewAppointments,
-                onvalue='Yes', 
-                offvalue='No').grid(row=3, column=8, sticky='W',)
-    Checkbutton(tempWindow, 
-                text="Cancel Patient Appointments", 
-                cursor='hand2',
-                font=("corbel", 10),
-                variable=canCancelAppointments,
-                onvalue='Yes', 
-                offvalue='No').grid(row=4, column=8, sticky='W',)
-    Checkbutton(tempWindow, 
-                text="Create New User Accounts", 
-                cursor='hand2',
-                font=("corbel", 10),
-                variable=canCreateUsers,
-                onvalue='Yes', 
-                offvalue='No').grid(row=5, column=8, sticky='W',)
-    Checkbutton(tempWindow, 
-                text="Edit User Accounts", 
-                cursor='hand2',
-                font=("corbel", 10),
-                variable=canEditUsers,
-                onvalue='Yes', 
-                offvalue='No').grid(row=6, column=8, sticky='W',)
+        labelPermissions = Label(tempWindow,    
+                                 text="User Permissions: ",  
+                                 font=("corbel", 10))
+        labelPermissions.grid(row=2, column=5, columnspan=2)                                                    
+        Checkbutton(tempWindow, 
+                    text="View Patient Data", 
+                    cursor='hand2',
+                    font=("corbel", 10),
+                    variable=canViewPatientData,
+                    onvalue='Yes', offvalue='No').grid(row=2, column=7, sticky='W',)  
+        Checkbutton(tempWindow, 
+                    text="Edit Patient Data", 
+                    cursor='hand2',
+                    font=("corbel", 10),
+                    variable=canEditPatientData,
+                    onvalue='Yes', 
+                    offvalue='No').grid(row=3, column=7, sticky='W',)
+        Checkbutton(tempWindow, 
+                    text="View Patient Consultation Notes", 
+                    cursor='hand2',
+                    font=("corbel", 10),
+                    variable=canViewConsultations,
+                    onvalue='Yes', 
+                    offvalue='No').grid(row=4, column=7, sticky='W',)
+        Checkbutton(tempWindow, 
+                    text="Edit Patient Consultation Notes", 
+                    cursor='hand2',
+                    font=("corbel", 10),
+                    variable=canEditConsultations,
+                    onvalue='Yes', 
+                    offvalue='No').grid(row=5, column=7, sticky='W',)
+        Checkbutton(tempWindow, 
+                    text="Communicate with Patients", 
+                    cursor='hand2',
+                    font=("corbel", 10),
+                    variable=canCommunicatePatients,
+                    onvalue='Yes', 
+                    offvalue='No').grid(row=6, column=7, sticky='W',)
+        Checkbutton(tempWindow, 
+                    text="View Patient Statistics", 
+                    cursor='hand2',
+                    font=("corbel", 10),
+                    variable=canViewStatistics,
+                    onvalue='Yes', 
+                    offvalue='No').grid(row=2, column=8, sticky='W',)
+        Checkbutton(tempWindow, 
+                    text="View Patient Appointments", 
+                    cursor='hand2',
+                    font=("corbel", 10),
+                    variable=canViewAppointments,
+                    onvalue='Yes', 
+                    offvalue='No').grid(row=3, column=8, sticky='W',)
+        Checkbutton(tempWindow, 
+                    text="Cancel Patient Appointments", 
+                    cursor='hand2',
+                    font=("corbel", 10),
+                    variable=canCancelAppointments,
+                    onvalue='Yes', 
+                    offvalue='No').grid(row=4, column=8, sticky='W',)
+        Checkbutton(tempWindow, 
+                    text="Create New User Accounts", 
+                    cursor='hand2',
+                    font=("corbel", 10),
+                    variable=canCreateUsers,
+                    onvalue='Yes', 
+                    offvalue='No').grid(row=5, column=8, sticky='W',)
+        Checkbutton(tempWindow, 
+                    text="Edit User Accounts", 
+                    cursor='hand2',
+                    font=("corbel", 10),
+                    variable=canEditUsers,
+                    onvalue='Yes', 
+                    offvalue='No').grid(row=6, column=8, sticky='W',)
 
-    Button(tempWindow, 
-           text='Create User', 
-           width=20, 
-           bg='darkblue', 
-           fg='white', 
-           command=getValues).grid(row=12, column=5, columnspan=3)
-    Button(tempWindow, 
-           text='Exit', 
-           width=20, 
-           bg='darkblue', 
-           fg='white', 
-           command=tempWindow.destroy).grid(row=12, column=8, columnspan=2)
+        Button(tempWindow, 
+               text='Create User', 
+               width=20, 
+               bg='darkblue', 
+               fg='white', 
+               command=getValues).grid(row=12, column=5, columnspan=3)
+        Button(tempWindow, 
+               text='Exit', 
+               width=20, 
+               bg='darkblue', 
+               fg='white', 
+               command=tempWindow.destroy).grid(row=12, column=8, columnspan=2)
 
-    tempWindow.mainloop()
+        tempWindow.mainloop()
+
+    else:
+        ms.showerror("Permissions Error", 
+                     "ERROR CODE 001 - Please report this error to your systems administrator.", 
+                     parent=tempWindow)
+        tempWindow.destroy()
 
 # Edit an Existing User Account # 
 # Status: FULLY WORKING
@@ -1674,7 +1689,7 @@ def editUser():
         comboboxUserType = ttk.Combobox(tempWindow, 
                                         textvariable=userTypeNew)
         comboboxUserType.grid(row=8, column=6, columnspan=2)
-        comboboxUserType.config(values = ('Doctor', 'Practice Nurse', 'Treatment Nurse', 'Pharmacist', 
+        comboboxUserType.config(values = ('Doctor', 'Practice Nurse', 'Pharmacist', 
                                           'Councillor', 'Receptionist', 'Practice Manager', 'Administrator'), width=17)
 
         labelEmail = Label(tempWindow,
@@ -3271,6 +3286,7 @@ def addPatient():
            fg='white', 
            cursor='hand2', 
            command= lambda: getPatientValues(gender.get())).grid(row=18, column=1, columnspan=2)
+
     Button(tempWindow, 
            text='Exit', 
            bg='darkblue', 
@@ -4168,15 +4184,6 @@ def checkUser():
             entryUsername.delete(0, END) # Clear entry fields for a second attempt
             entryPassword.delete(0, END)
 
-
-
-
-# ***** Drawing the Login Window ***** #
-
-# This window will be used to initialise our program by asking the user for their
-# login details and checking this against the details which are stored in our
-# "Users" database. This allows for us to ensure confidentiality & security.
-
 ignoreThis = 1
 
 
@@ -4186,6 +4193,10 @@ ignoreThis = 1
 #       will allow the user to authenticate themselves within the system and allows for
 #       access levels and access rights to be implemented. It also serves as the root of
 #       all following (tKinter) window loops.
+#
+# This window will be used to initialise our program by asking the user for their
+# login details and checking this against the details which are stored in our
+# "Users" database. This allows for us to ensure confidentiality & security
 
 tempWindow = Tk()
 tempWindow.geometry('500x300+580+250')
