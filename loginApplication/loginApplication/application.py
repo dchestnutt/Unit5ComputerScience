@@ -1207,16 +1207,20 @@ def createUser():
     tempWindow.title("Create a New User")
 
     center(tempWindow)
-
+    
     accountType = userDetails[8]
     
-    if accountType == "Doctor" or "Practice Nurse" or "Pharmacist" or "Councillor" or "Receptionist":
+    print(userDetails)
+
+    print(accountType)
+
+    if accountType == "Doctor" or accountType == "Practice Nurse" or accountType == "Pharmacist" or accountType == "Councillor" or accountType == "Receptionist":
         ms.showerror("Access Denied", 
                      "You do not have access to this feature. If this is in error please contact the systems administrator.", 
                      parent=tempWindow)
         tempWindow.destroy()
 
-    elif accountType == "Administrator" or "Practice Manager":
+    elif accountType == "Administrator" or accountType == "Practice Manager":
         usernameNew = StringVar()
         passwordNew = StringVar()
         titleNew = StringVar()
