@@ -2103,6 +2103,8 @@ def searchPatient():
 
             center(tempWindow3)
 
+            print(recentPatientMed)
+
             # BEGIN FORMATTING #
             spacerLabel = Label(tempWindow3, text=" ", width=5)
             spacerLabel.grid(row=0, column=0, rowspan=23)
@@ -4363,6 +4365,25 @@ def newCons():
 
         center(tempWindow)
 
+        def clearWindow():
+            entryPC.delete(0, END)
+            entryPC.insert('1.0', 'N/A')
+
+            entryOE.delete(0, END)
+            entryOE.insert('1.0', 'N/A')
+
+            entryHX.delete(0, END)
+            entryHX.insert('1.0', 'N/A')
+
+            entryPX.delete(0, END)
+            entryPX.insert('1.0', 'N/A')
+            
+            entryDX.delete(0, END)
+            entryDX.insert('1.0', 'N/A')
+
+            entryCom.delete(0, END)
+            entryCom.insert('1.0', 'N/A')
+
         def saveCons(complaint, examination, history, treatment, diagnosis, comments):
             currentDT = datetime.datetime.now()
 
@@ -4370,10 +4391,10 @@ def newCons():
             currentM = currentDT.month
             currentD = currentDT.day
             currentH = currentDT.hour
-            currentM = currentDT.minute
+            currentMin = currentDT.minute
 
             currentDate = str(currentD) + "/" + str(currentM) + "/" + str(currentY)
-            currentTime = str(currentH) + ":" + str(currentM)
+            currentTime = str(currentH) + ":" + str(currentMin)
 
             patientID = currentPatientDetails[0]
             userID = userDetails[0]
@@ -4383,11 +4404,11 @@ def newCons():
        
                 insertCons = '''INSERT INTO PatientCons (consultationID, patientID, userID, time, date, complaint, examination, history, treatment, diagnosis, comments) 
                                 VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
-                cursorCons.execute(insertUser,[(patientID), (userID), (currentTime), (currentDate), (complaint), (examination), (history), (treatment), (diagnosis), (comments)])
+                cursorCons.execute(insertCons,[(patientID), (userID), (currentTime), (currentDate), (complaint), (examination), (history), (treatment), (diagnosis), (comments)])
 
                 patientsDB.commit()
 
-                again = ms.askyesno("Succesful!", "Would you like to create another user?", parent=tempWindow)
+                again = ms.askyesno("Succesful!", "Would you like to write another consultation?", parent=tempWindow)
 
                 if again == True:
                     clearWindow()
@@ -4570,7 +4591,7 @@ def newCons():
                             text=" ")
         spacerLabel.grid(row=20, column=0, columnspan=4)
 
-        saveCons = Button(tempWindow, 
+        saveConsult = Button(tempWindow, 
                           text='Save Consultation', 
                           bg='darkblue', 
                           fg='white', 
@@ -4580,7 +4601,7 @@ def newCons():
                          bg='darkblue', 
                          fg='white', 
                          command=delCons).grid(row=21, column=2)
-        viewDetails = Button(tempWindow, 
+        viewDeets = Button(tempWindow, 
                              text='View Patient Details', 
                              bg='darkblue', 
                              fg='white', 
