@@ -64,6 +64,10 @@ currentPatientDetails = []
 # Mail Merge Data into Documents #
 # Status: FULL WORKING
 def newDoc():
+    # This function will allow users to generate a new document to be sent to
+    # a patient based on the merger of saved data and user-entered data.
+    
+    # Variables for use within tKtiner defined:
     searchTerm = StringVar()
     docType = StringVar()
     dobDay = StringVar()
@@ -72,14 +76,18 @@ def newDoc():
     firstname = StringVar()
     lastname = StringVar()
 
+    # Generate the tKinter window
     tempWindow = Tk()
     tempWindow.geometry('460x140')
     tempWindow.title("Create a New Document")
 
+    # Call the centre function to centre the window on the screen
     center(tempWindow)
     
     def searchUser():       
         def getValues():
+            # This function will get the values from the tKinter entry fields
+            # and assign them to a list to be used in finding the patient record
             firstname = entryFirstname.get()
             lastname = entryLastname.get()
             dobDay = comboboxDOBDay.get()
@@ -88,7 +96,7 @@ def newDoc():
 
             values = [firstname, lastname, dobDay, dobMonth, dobYear]
 
-            return values
+            return values # return the patient details
 
         values = getValues()
         
@@ -97,45 +105,59 @@ def newDoc():
         dobDay = values[2]
         dobMonth = values[3]
         dobYear = values[4]
-        
+        # ^ this will separate out the values from the list
+
         dob = str(dobDay) + "/" + str(dobMonth) + "/" + str(dobYear)
+        # ^ by concattenating the entered DOB values we will get the patients
+        # DOB in the format as it is saved in the DB
 
         fullname = str(firstname) + " " + str(lastname)
+        # ^ this is not used for searching, it is used to return the message
+        # of what patient record has been loaded, to ensure the data is being
+        # written about the correct patient
 
-        conn = sqlite3.connect('Patients.db')
+        conn = sqlite3.connect('Patients.db') # connect to the database
         
         with conn:
             cursor = conn.cursor()
 
             cursor.execute("SELECT * FROM PatientDemo WHERE forename = ? and surname = ? and dateOfBirth = ?", (firstname, lastname, dob))
+            # search the database to see if a record matching the search details exists and if it does (if result) continue with the
+            # retrieving of the data from the database
 
             result = cursor.fetchall()
             
-            if result:
+            if result: # if record does exist
                 tupleDetails2 = ""
                 stringDetails2 = ""
                 currentPatientDetails = []
+                # ^ declare data structures needed to collect patient details in an appropriate structure
 
                 cursor.execute('SELECT * FROM PatientDemo WHERE forename = ? and surname =  ? and dateOfBirth = ?', (firstname, lastname, dob))
-            
+                # ^ now that we know record exists; get data and return it (as a tuple)
+
                 tupleDetails2 = cursor.fetchall()
 
-                for stringDetails2 in tupleDetails2:
-                    for detail in stringDetails2:
-                        currentPatientDetails.append(detail)
+                for stringDetails2 in tupleDetails2: # separate tuple into a long string
+                    for detail in stringDetails2: # separate string into values within a list
+                        currentPatientDetails.append(detail) # append each item from string into the list
 
                 ms.showinfo('Succesful!', 'The record of ' + fullname + ' has been loaded.', parent=tempWindow)
+                # ^ show success message if patient details are correctly returned and record loaded
 
-                tempWindow.destroy()
-                createDoc(currentPatientDetails)
-            else:
+                tempWindow.destroy() # destory the patient record search window
+                createDoc(currentPatientDetails) # call the createDoc function and pass in the current patient details
+            else: # else if no record is found with those details; produce error
                 ms.showerror('Patient Not Found', 'No patients with these matching details have been found.')
                 entryFirstname.delete(0, END)
                 entryLastname.delete(0, END)
                 comboboxDOBDay.current(0)
                 comboboxDOBMonth.current(0)
                 comboboxDOBYear.current(0)
+                # ^ clear all tKinter entry fields to allow the user to search again
        
+    # code below will generate the window structure using tKinter .grid functions
+    # to create a set-sized grid into which I can place entry/display elements
     spacerLabel = Label(tempWindow, 
                         text=" ")
     spacerLabel.grid(row=0, column=0, columnspan=9)
@@ -159,7 +181,10 @@ def newDoc():
                         text=" ",
                         width=4)
     spacerLabel.grid(row=0, column=8, rowspan=9)
-
+    # end of window formatting
+    
+    # This tKinter code first produces a label which is inserted to the pre-defined grid
+    # followed by an entry box adjacent which allows the user to enter corresponding information
     labelFirstname = Label(tempWindow, 
                         text="Patient Firstname: ",
                         font=("corbel bold", 10))
@@ -168,13 +193,15 @@ def newDoc():
                         textvar=firstname)
     entryFirstname.grid(row=1, column=3, columnspan=3, sticky=E+W)
 
-    labelLastname = Label(tempWindow, 
-                        text="Patient Lastname: ",
-                        font=("corbel bold", 10))
-    labelLastname.grid(row=2, column=1)
+    # as before
+    labelLastname = Label(tempWindow, # this defines the window into whih this element should be inserted
+                        text="Patient Lastname: ", # this defines the text to be displayed
+                        font=("corbel bold", 10)) # this formats the text with font, sytle and size
+    labelLastname.grid(row=2, column=1) # this indicates the position of the grid into which to place the element
     entryLastname = Entry(tempWindow, 
-                        textvar=lastname)
-    entryLastname.grid(row=2, column=3, columnspan=3, sticky=E+W)
+                        textvar=lastname) # this assigns the entry by the user to a variable
+    entryLastname.grid(row=2, column=3, columnspan=3, sticky=E+W) 
+    # ^ this indicates the insertion point for the entry field and formats the entry box 
 
     labelDocType = Label(tempWindow, 
                               text="Patient Date of Birth: ", 
@@ -188,6 +215,9 @@ def newDoc():
                                      '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
                                      '30', '31'), width=4)
     comboboxDOBDay.current([0])
+    # these comboboxes allow the user to select from predefined options when choosing a patient DOB - this is important
+    # in ensuring the data is valid and in ensuring the data follows the same format in which it has been saved in
+    # the database (so that it can be acurately searched)
 
     comboboxDOBMonth = ttk.Combobox(tempWindow, 
                                    textvariable=dobMonth)
@@ -209,13 +239,14 @@ def newDoc():
                                      '1987', '1988', '1989', '1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997', 
                                      '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008',
                                      '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019'), width=9)
-    comboboxDOBYear.current([0])
+    comboboxDOBYear.current([0]) # set the current value/default display value of the combobox to "YYYY"
 
     searchButton = Button(tempWindow, 
                           text='Search', 
                           bg='darkblue', 
                           fg='white', 
                           command=searchUser).grid(row=2, column=7)
+    # this code defines the search button, when pressed it will call the indicated function/procedure 
 
     spacerLabel = Label(tempWindow, 
                         text=" ")
@@ -224,12 +255,15 @@ def newDoc():
     def createDoc(currentPatientDetails):
         enteredCorrOrigin = ''
         
+        # the code below will generate the new window formed once a patient has been succesfully selected and
+        # the user is now ready to enter information for the document generator
         tempWindow2 = Tk()
         tempWindow2.geometry('460x200')
         tempWindow2.title("Create a New Document")
 
         center(tempWindow2)
 
+        # as before, the following code will format the window
         spacerLabel = Label(tempWindow2, 
                         text=" ")
         spacerLabel.grid(row=0, column=0, columnspan=8)
@@ -261,6 +295,7 @@ def newDoc():
                         text=" ",
                         width=4)
         spacerLabel.grid(row=0, column=7, rowspan=9)
+        # end of formatting
 
         labelDocType = Label(tempWindow2, 
                               text="Document Type: ", 
@@ -270,10 +305,16 @@ def newDoc():
                                     textvariable=docType)
         comboboxDocType.grid(row=1, column=3, columnspan=2, sticky=E+W)
         comboboxDocType.config(values = ('Please Select...', 'Attend RE Tests', 'Attend RE Correspondence', 'Attend Annual Clinic', 'Repeat Tests'), width=17)
-        comboboxDocType.current([0])
+        comboboxDocType.current([0]) # set current value to "please select..."
+        # as before, this defined options for the document type combobox, ensuring valid data is entered
 
         def getCombobox(currentPatientDetails):
+            # this function will get the value of the document type chosen in the above combobox,
+            # then use this to ask the user for the relevant information for that document, it will
+            # then merge this information into the document
+
             def mergeTT1(currentPatientDetails):
+                # this will merge the provided information into document template 1
                 longDate = "DATE AS POSTMARK"
 
                 userTitle = userDetails[3]
@@ -292,6 +333,11 @@ def newDoc():
                 patientPostcode = currentPatientDetails[10]
 
                 patientFirstInitial = patientFirstname[0]
+                # ^ above code will collect and assign the required data from the currentPatient and currentUser
+                # lists to variables so that these can be used as data in some of the merge fields
+
+                # this document takes no extra input from the user and therefore will not require extra entry
+                # and only uses the data already saved in the database
 
                 with MailMerge(r'.\templates\attendReTests.docx') as document:
 
