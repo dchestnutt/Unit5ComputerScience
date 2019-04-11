@@ -340,6 +340,8 @@ def newDoc():
                 # and only uses the data already saved in the database
 
                 with MailMerge(r'.\templates\attendReTests.docx') as document:
+                    # using the imported mailmerge module; merge these data structures into these defined
+                    # merge fields within the indicated template document
 
                     document.merge(Title=patientTitle,
                                First_Initial=patientFirstInitial,
@@ -356,13 +358,18 @@ def newDoc():
                                Staff_Surname=userSurname)
 
                     document.write(r'.\documentOutput\TEMPattendReTests.docx')
+                    # write the changes to this document
                     
                     currentPatientDetails = []
 
                     printQuery = ms.askyesno("Succesful!", "Would you like to print the document?", parent=tempWindow2)
+                    # if changes are succesfully written, display success and ask if the document needs printed
 
                     if printQuery == True:
+                        # if "yes" to print query
                         filename = (r'.\documentOutput\TEMPattendReTests.docx')
+                        # access the new written TEMPORARY file path
+                        # use the win32api module as imported
                         win32api.ShellExecute (
                           0,
                           "print",
@@ -373,8 +380,10 @@ def newDoc():
                         )
                     else:
                         tempWindow.destroy()
+                        # else if document does not need printed, close window
             
             def mergeTT2(corrOrigin, currentPatientDetails):
+                # this time we are passin in a value "corrOrigin" which has been entered by the user
                 longDate = "DATE AS POSTMARK"
                   
                 userTitle = userDetails[3]
@@ -395,6 +404,7 @@ def newDoc():
                 patientFirstInitial = patientFirstname[0]
 
                 with MailMerge(r'.\templates\attendReCorrespondence.docx') as document:
+                    # access the corresponding template file
 
                     document.merge(Title=patientTitle,
                                    First_Initial=patientFirstInitial,
@@ -431,6 +441,8 @@ def newDoc():
                         tempWindow.destroy()
 
             def mergeTT3(clinicYear, clinicName, appDate, appTime, clinicianName, currentPatientDetails):
+                # here we are passing in a large range of user-entered values
+
                 longDate = "DATE AS POSTMARK"
                   
                 userTitle = userDetails[3]
@@ -550,16 +562,26 @@ def newDoc():
             result = comboboxDocType.current()
 
             if result == 1: #Attend RE Tests
+                # this calls the appropriate function based on the document selection made
+                # in this case no further data in put is required and we jump straight to the
+                # document merger stage
+
                 mergeTT1(currentPatientDetails)
                 tempWindow2.destroy()
 
             elif result == 2: # Attend RE Correspondence
+                # if the second doc type is picked, we need to get the "correspondence origin" from the user
+                # this form will populate our pre-defined tKinter grid with entry fields to allow this
+
                 corrOrigin = StringVar()
                 
                 def getCorrOrigin():
                     corrOrigin = entryCorrOrigin.get()
+                    # get the value as entered by the user
                     
                     mergeTT2(corrOrigin, currentPatientDetails)
+                    # pass this value into the merge function
+
                     tempWindow2.destroy()
 
                 labelCorrOrigin = Label(tempWindow2, 
@@ -569,14 +591,20 @@ def newDoc():
                 entryCorrOrigin = Entry(tempWindow2, 
                                     textvar=corrOrigin)
                 entryCorrOrigin.grid(row=5, column=3, columnspan=2, sticky=E+W)
+                # ^ take input from the user of the merger value
 
                 createButton = Button(tempWindow2, 
                                       text='Create',
                                       bg='darkblue', 
                                       fg='white', 
                                       command=getCorrOrigin).grid(row=5, column=6, sticky=E+W)
+                # ^ on button press, get value of entry box
             
             elif result == 3: # Attend Annual Clinic
+                # if doc type three is picked, w ehave 5 items of data to collect, this code will
+                # again populate our pre-defined tkinter grid with entry boxes to allow the user to
+                # provide this data
+
                 data1 = StringVar()
                 data2 = StringVar()
                 data3 = StringVar()
@@ -589,8 +617,11 @@ def newDoc():
                     appDate = entryAppDate.get()
                     appTime = entryAppTime.get()
                     clinicianName = entryClinicianName.get()
+                    # ^ get entry box values
 
                     mergeTT3(clinicYear, clinicName, appDate, appTime, clinicianName, currentPatientDetails)
+                    # ^ pass entry box values into the merger function
+
                     tempWindow2.destroy()
 
                 labelClinYear = Label(tempWindow2, 
@@ -632,12 +663,14 @@ def newDoc():
                 entryClinicianName = Entry(tempWindow2, 
                                     textvar=data5)
                 entryClinicianName.grid(row=7, column=3, columnspan=2, sticky=E+W)
+                # ^ populate form with entry fields
 
                 createButton = Button(tempWindow2, 
                                       text='Create',
                                       bg='darkblue', 
                                       fg='white', 
                                       command=getDataResults).grid(row=5, column=6, sticky=E+W)
+                # ^ when user is done enetering data, collect data and produce document
 
             elif result == 4: # Repeat Tests
                 
