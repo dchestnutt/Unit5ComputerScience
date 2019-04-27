@@ -503,6 +503,11 @@ def newDoc():
                         tempWindow.destroy()
 
             def mergeTT4(testReq, currentPatientDetails):
+                # here we are only passing in one user-entered piece of data,
+                # the test which is required, all of the patient and user details
+                # can be taken from the global lists indicating the currently logged-on
+                # user and currently accessed patient record
+
                 longDate = "DATE AS POSTMARK"
                   
                 userTitle = userDetails[3]
@@ -708,16 +713,26 @@ def newDoc():
 # Center the Window on the Monitor # 
 # Status: FULLY WORKING
 def center(toplevel):
+    # This function allows us to center a generated tKinter window on the
+    # screen by getting the screen dimensions and performing calculations
+    # based on these to position the window
+    
     toplevel.update_idletasks()
 
     screen_width = toplevel.winfo_screenwidth()
     screen_height = toplevel.winfo_screenheight()
+    # ^ this gets the width and height of the (main) monitor in use
 
     size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+    
     x = screen_width/2 - size[0]/2
     y = screen_height/2 - size[1]/2
+    # ^ this performs the calculation to find the point at which to position
+    # the window based on the size of the window and the size of the monitor
 
     toplevel.geometry("+%d+%d" % (x, y)) 
+    # ^ "toplevel" is the window at the front (the window currently being viewed
+    # by the user 
 
 # Enter new Patient Medical Data #
 # Status: FULLY WORKING
